@@ -1,0 +1,172 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --primary-bg: #FFFFFF;
+    --primary-dark: #12163A;
+    --warm-surface: #F6E6D8;
+    --primary-blue: #3665EE;
+    --soft-blue: #DEE9FF;
+    --soft-mint: #E4F4EC;
+    
+    --text-primary: #12163A;
+    --text-secondary: #4B5563;
+    --text-muted: #6B7280;
+  }
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #FFFFFF;
+  color: #12163A;
+  min-height: 100vh;
+}
+
+/* Reusable Theme Palette Utility Classes */
+.bg-primary-dark {
+  background-color: #12163A;
+}
+
+.text-primary-dark {
+  color: #12163A;
+}
+
+.border-primary-dark {
+  border-color: #12163A;
+}
+
+.bg-warm-surface {
+  background-color: #F6E6D8;
+}
+
+.text-warm-surface-dark {
+  color: #12163A;
+}
+
+.border-warm-surface {
+  border-color: #EAD0BC;
+}
+
+.bg-primary-blue {
+  background-color: #3665EE;
+}
+
+.text-primary-blue {
+  color: #3665EE;
+}
+
+.border-primary-blue {
+  border-color: #3665EE;
+}
+
+.bg-soft-blue {
+  background-color: #DEE9FF;
+}
+
+.border-soft-blue {
+  border-color: #C6D9FF;
+}
+
+.bg-soft-mint {
+  background-color: #E4F4EC;
+}
+
+.border-soft-mint {
+  border-color: #C3E6D5;
+}
+
+/* Button Classes */
+.btn-primary-dark {
+  background-color: #12163A;
+  color: #FFFFFF;
+}
+
+.btn-primary-dark:hover {
+  background-color: #1A2050;
+}
+
+.btn-secondary-blue {
+  background-color: #3665EE;
+  color: #FFFFFF;
+}
+
+.btn-secondary-blue:hover {
+  background-color: #2A54D5;
+}
+
+.btn-tertiary-soft {
+  background-color: #DEE9FF;
+  color: #12163A;
+}
+
+.btn-tertiary-soft:hover {
+  background-color: #CBDDFF;
+}
+
+.btn-success-mint {
+  background-color: #E4F4EC;
+  color: #12163A;
+}
+
+.btn-success-mint:hover {
+  background-color: #D2EDDE;
+}
+
+/* Card Styling: Rounded 20-28px, Soft Shadows */
+.card-premium {
+  border-radius: 24px;
+  box-shadow: 0 4px 20px -2px rgba(18, 22, 58, 0.05);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBDDFF;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3665EE;
+}
+
+/* Animations */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.02); }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2.5s infinite ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.22s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.hover-card-lift {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 24px -4px rgba(18, 22, 58, 0.1);
+}

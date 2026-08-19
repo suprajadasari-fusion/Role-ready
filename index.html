@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Ready | Multi-Role AI Career Intelligence Platform</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-compass"></i>
+                </div>
+                <div class="brand-info">
+                    <h2>Role Ready</h2>
+                    <span class="badge-super-admin" id="active-workspace-badge">Super Admin Portal</span>
+                </div>
+            </div>
+
+            <!-- Role Switcher Dropdown in Sidebar -->
+            <div class="workspace-switcher-box">
+                <label><i class="fa-solid fa-repeat"></i> SWITCH ROLE VIEW</label>
+                <select id="role-workspace-selector" class="workspace-select">
+                    <option value="super-admin" selected>👑 Super Admin (Governance)</option>
+                    <option value="school-admin">🏫 School Admin Portal</option>
+                    <option value="college-admin">🎓 College Admin Portal</option>
+                    <option value="mentor">👨‍🏫 Mentor & Counselor Desk</option>
+                    <option value="training-admin">🏫 Training Institute Portal</option>
+                    <option value="recruiter">👔 Recruiter Talent Portal</option>
+                    <option value="company">🏢 Enterprise Company Portal</option>
+                    <option value="government">🏛️ Government Skill Desk</option>
+                </select>
+            </div>
+
+            <!-- SUPER ADMIN SIDEBAR NAV -->
+            <nav class="sidebar-nav nav-role-group" id="nav-super-admin">
+                <div class="nav-section-title">SUPER ADMIN GOVERNANCE</div>
+                <a href="#overview" class="nav-item active" data-view="overview">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard Overview</span>
+                </a>
+                <a href="#access-management" class="nav-item" data-view="access">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span>Access Provisioning</span>
+                    <span class="nav-count" id="total-entities-count">0</span>
+                </a>
+                <a href="#rbac-matrix" class="nav-item" data-view="rbac">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Permission Matrix</span>
+                </a>
+                <a href="#ai-engine" class="nav-item" data-view="ai">
+                    <i class="fa-solid fa-brain"></i>
+                    <span>AI Engine Control</span>
+                    <span class="badge-pulse">Live</span>
+                </a>
+                <a href="#audit-logs" class="nav-item" data-view="audit">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Audit & Compliance</span>
+                </a>
+
+                <div class="nav-section-title">PARTNER VERTICALS</div>
+                <a href="#" class="nav-item sub-item" data-filter="school">
+                    <i class="fa-solid fa-school text-blue-500"></i>
+                    <span>School Admins</span>
+                </a>
+                <a href="#" class="nav-item sub-item" data-filter="college">
+                    <i class="fa-solid fa-graduation-cap text-indigo-500"></i>
+                    <span>College Admins</span>
+                </a>
+                <a href="#" class="nav-item sub-item" data-filter="mentor">
+                    <i class="fa-solid fa-user-tie text-teal-500"></i>
+                    <span>Mentors</span>
+                </a>
+                <a href="#" class="nav-item sub-item" data-filter="training">
+                    <i class="fa-solid fa-chalkboard-user text-cyan-500"></i>
+                    <span>Training Institutes</span>
+                </a>
+                <a href="#" class="nav-item sub-item" data-filter="recruiter">
+                    <i class="fa-solid fa-briefcase text-blue-600"></i>
+                    <span>Recruiters</span>
+                </a>
+                <a href="#" class="nav-item sub-item" data-filter="company">
+                    <i class="fa-solid fa-building text-sky-600"></i>
+                    <span>Companies</span>
+                </a>
+                <a href="#" class="nav-item sub-item" data-filter="government">
+                    <i class="fa-solid fa-landmark text-amber-600"></i>
+                    <span>Government</span>
+                </a>
+            </nav>
+
+            <!-- SCHOOL ADMIN SIDEBAR NAV -->
+            <nav class="sidebar-nav nav-role-group hidden" id="nav-school-admin">
+                <div class="nav-section-title">SCHOOL ADMINISTRATION</div>
+                <a href="#" class="nav-item active"><i class="fa-solid fa-school"></i><span>School Overview</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-user-graduate"></i><span>Student Roster (Class 8-12)</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-dna"></i><span>Career DNA Progress</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-graduation-cap"></i><span>Stream Match Analytics</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-award"></i><span>Scholarship Applicants</span></a>
+            </nav>
+
+            <!-- COLLEGE ADMIN SIDEBAR NAV -->
+            <nav class="sidebar-nav nav-role-group hidden" id="nav-college-admin">
+                <div class="nav-section-title">COLLEGE & PLACEMENTS</div>
+                <a href="#" class="nav-item active"><i class="fa-solid fa-graduation-cap"></i><span>College Overview</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-briefcase"></i><span>Placement Drives</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-chart-line"></i><span>Student Skill Matrix</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-building"></i><span>Recruiting Partners</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-file-contract"></i><span>Offer Letters</span></a>
+            </nav>
+
+            <!-- MENTOR SIDEBAR NAV -->
+            <nav class="sidebar-nav nav-role-group hidden" id="nav-mentor">
+                <div class="nav-section-title">MENTORSHIP DESK</div>
+                <a href="#" class="nav-item active"><i class="fa-solid fa-user-tie"></i><span>Mentor Overview</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-calendar-check"></i><span>Booking Calendar</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-users"></i><span>Assigned Mentees</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-comments"></i><span>Counseling Notes</span></a>
+            </nav>
+
+            <!-- TRAINING INSTITUTE SIDEBAR NAV -->
+            <nav class="sidebar-nav nav-role-group hidden" id="nav-training-admin">
+                <div class="nav-section-title">TRAINING & SKILLS</div>
+                <a href="#" class="nav-item active"><i class="fa-solid fa-chalkboard-user"></i><span>Institute Overview</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-book-open"></i><span>Skill Courses Track</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-certificate"></i><span>Certifications</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-handshake"></i><span>Hiring Partners</span></a>
+            </nav>
+
+            <!-- RECRUITER SIDEBAR NAV -->
+            <nav class="sidebar-nav nav-role-group hidden" id="nav-recruiter">
+                <div class="nav-section-title">RECRUITMENT DESK</div>
+                <a href="#" class="nav-item active"><i class="fa-solid fa-briefcase"></i><span>Recruiter Overview</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-bullhorn"></i><span>Job Postings</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-robot"></i><span>AI Candidate Matcher</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-calendar-days"></i><span>Interviews Scheduled</span></a>
+            </nav>
+
+            <!-- COMPANY SIDEBAR NAV -->
+            <nav class="sidebar-nav nav-role-group hidden" id="nav-company">
+                <div class="nav-section-title">ENTERPRISE COMPANY</div>
+                <a href="#" class="nav-item active"><i class="fa-solid fa-building"></i><span>Company Overview</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-laptop-code"></i><span>Internship Programs</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-building-columns"></i><span>Campus Partnerships</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-chart-pie"></i><span>Talent Pipeline</span></a>
+            </nav>
+
+            <!-- GOVERNMENT SIDEBAR NAV -->
+            <nav class="sidebar-nav nav-role-group hidden" id="nav-government">
+                <div class="nav-section-title">GOVERNMENT SKILL DESK</div>
+                <a href="#" class="nav-item active"><i class="fa-solid fa-landmark"></i><span>Government Overview</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-hand-holding-dollar"></i><span>Scholarship Grants</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-map-location-dot"></i><span>District Skill Missions</span></a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-chart-column"></i><span>State Employability Index</span></a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="system-status">
+                    <div class="status-indicator online"></div>
+                    <div class="status-text">
+                        <strong>AI Career Engine v2.4</strong>
+                        <span id="system-status-sub">All Microservices Operational</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Navigation Bar -->
+            <header class="topbar">
+                <div class="topbar-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="global-search" placeholder="Search across current workspace dashboard...">
+                </div>
+
+                <div class="topbar-actions">
+                    <button class="btn btn-primary btn-glow" id="btn-open-grant-modal">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Grant Partner Access</span>
+                    </button>
+
+                    <div class="notification-wrapper">
+                        <button class="icon-btn" id="btn-notifications">
+                            <i class="fa-regular fa-bell"></i>
+                            <span class="notification-dot"></span>
+                        </button>
+                    </div>
+
+                    <div class="user-profile-menu">
+                        <div class="avatar" id="header-avatar">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </div>
+                        <div class="user-info">
+                            <span class="user-name" id="header-user-name">Root Admin</span>
+                            <span class="user-role" id="header-user-role">Super Administrator</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ==========================================================================
+                 0. SUPER ADMIN DASHBOARD VIEW (DEFAULT)
+                 ========================================================================== -->
+            <div class="workspace-view active" id="workspace-super-admin">
+                <!-- Sub Views within Super Admin -->
+                <div class="content-view active" id="view-overview">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Super Admin Control Center</h1>
+                            <p class="page-subtitle">Centralized access provisioning, multi-tenant governance & AI Career Engine control</p>
+                        </div>
+                        <div class="quick-stats-pills">
+                            <span class="pill"><i class="fa-solid fa-network-wired"></i> 7 Role Verticals Active</span>
+                            <span class="pill pill-blue"><i class="fa-solid fa-shield-halved"></i> Enterprise RBAC Active</span>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="metrics-grid">
+                        <div class="metric-card card-blue">
+                            <div class="metric-icon"><i class="fa-solid fa-building-user"></i></div>
+                            <div class="metric-data">
+                                <span class="metric-label">Total Provisioned Entities</span>
+                                <h3 class="metric-value" id="kpi-total-entities">1,482</h3>
+                                <span class="metric-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> +14.2% this month</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card card-indigo">
+                            <div class="metric-icon"><i class="fa-solid fa-users-gear"></i></div>
+                            <div class="metric-data">
+                                <span class="metric-label">Active Seat Quotas</span>
+                                <h3 class="metric-value" id="kpi-total-seats">450,000</h3>
+                                <span class="metric-trend positive"><i class="fa-solid fa-check-double"></i> 328k active students</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card card-teal">
+                            <div class="metric-icon"><i class="fa-solid fa-brain"></i></div>
+                            <div class="metric-data">
+                                <span class="metric-label">AI Career DNA Runs</span>
+                                <h3 class="metric-value" id="kpi-ai-runs">2.8M</h3>
+                                <span class="metric-trend positive"><i class="fa-solid fa-bolt"></i> 99.4% Latency &lt;450ms</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card card-sky">
+                            <div class="metric-icon"><i class="fa-solid fa-certificate"></i></div>
+                            <div class="metric-data">
+                                <span class="metric-label">Pending Verification</span>
+                                <h3 class="metric-value" id="kpi-pending-count">12</h3>
+                                <span class="metric-trend warning"><i class="fa-solid fa-clock"></i> Requires Admin Review</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Entity Access Table Panel -->
+                    <div class="panel card-container">
+                        <div class="panel-header">
+                            <div class="panel-title-area">
+                                <h2>Partner Access & Permission Management</h2>
+                                <p>Super Admin authorization hub for Schools, Colleges, Mentors, Training Institutes, Recruiters, Companies & Government</p>
+                            </div>
+                            <div class="panel-actions">
+                                <div class="filter-search-box">
+                                    <i class="fa-solid fa-filter"></i>
+                                    <input type="text" id="table-search" placeholder="Filter entities by name or domain...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Role Tabs Bar -->
+                        <div class="role-tabs-bar">
+                            <button class="role-tab active" data-role="all">
+                                <span>All Ecosystem Roles</span>
+                                <span class="tab-badge" id="badge-count-all">0</span>
+                            </button>
+                            <button class="role-tab" data-role="school">
+                                <i class="fa-solid fa-school"></i><span>Schools</span>
+                                <span class="tab-badge" id="badge-count-school">0</span>
+                            </button>
+                            <button class="role-tab" data-role="college">
+                                <i class="fa-solid fa-graduation-cap"></i><span>Colleges</span>
+                                <span class="tab-badge" id="badge-count-college">0</span>
+                            </button>
+                            <button class="role-tab" data-role="mentor">
+                                <i class="fa-solid fa-user-tie"></i><span>Mentors</span>
+                                <span class="tab-badge" id="badge-count-mentor">0</span>
+                            </button>
+                            <button class="role-tab" data-role="training">
+                                <i class="fa-solid fa-chalkboard-user"></i><span>Training Institutes</span>
+                                <span class="tab-badge" id="badge-count-training">0</span>
+                            </button>
+                            <button class="role-tab" data-role="recruiter">
+                                <i class="fa-solid fa-briefcase"></i><span>Recruiters</span>
+                                <span class="tab-badge" id="badge-count-recruiter">0</span>
+                            </button>
+                            <button class="role-tab" data-role="company">
+                                <i class="fa-solid fa-building"></i><span>Companies</span>
+                                <span class="tab-badge" id="badge-count-company">0</span>
+                            </button>
+                            <button class="role-tab" data-role="government">
+                                <i class="fa-solid fa-landmark"></i><span>Government</span>
+                                <span class="tab-badge" id="badge-count-government">0</span>
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="data-table" id="entities-table">
+                                <thead>
+                                    <tr>
+                                        <th>Entity / Organization Name</th>
+                                        <th>Role Category</th>
+                                        <th>Admin Contact & Domain</th>
+                                        <th>Seat Quota</th>
+                                        <th>Granted Features</th>
+                                        <th>Access Status</th>
+                                        <th>Onboarded</th>
+                                        <th class="text-right">Admin Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="entities-table-body"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="table-footer">
+                            <div class="table-info">Showing <span id="showing-count">0</span> of <span id="total-count">0</span> entities</div>
+                            <div class="pagination">
+                                <button class="page-btn disabled"><i class="fa-solid fa-chevron-left"></i> Previous</button>
+                                <span class="page-number active">1</span>
+                                <button class="page-btn disabled">Next <i class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Secondary Grid -->
+                    <div class="grid-2-col">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <div class="panel-title-area">
+                                    <h3>Role Distribution & License Breakdown</h3>
+                                    <p>Active partner licenses across the 7 role verticals</p>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <div class="role-distribution-bars" id="role-bars-container"></div>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <div class="panel-title-area">
+                                    <h3>Real-Time Security Audit Stream</h3>
+                                    <p>Super Admin access grants, permission changes & credentials resets</p>
+                                </div>
+                                <button class="btn btn-sm btn-outline" id="btn-view-full-logs">View All</button>
+                            </div>
+                            <div class="audit-stream" id="audit-feed"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Permission Matrix Sub View -->
+                <div class="content-view" id="view-rbac">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Role-Based Access Control (RBAC) Matrix</h1>
+                            <p class="page-subtitle">Configure granular module permissions and data visibility for each partner role</p>
+                        </div>
+                        <button class="btn btn-primary" id="btn-save-rbac"><i class="fa-solid fa-floppy-disk"></i> Save Global Matrix</button>
+                    </div>
+                    <div class="panel">
+                        <div class="table-responsive">
+                            <table class="data-table rbac-table">
+                                <thead>
+                                    <tr>
+                                        <th>Platform Module / Capability</th>
+                                        <th>School Admin</th>
+                                        <th>College Admin</th>
+                                        <th>Mentor</th>
+                                        <th>Training Inst.</th>
+                                        <th>Recruiter</th>
+                                        <th>Company</th>
+                                        <th>Government</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rbac-matrix-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Engine Control Sub View -->
+                <div class="content-view" id="view-ai">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">AI Career Intelligence Engine Config</h1>
+                            <p class="page-subtitle">Tune Career DNA generation parameters, recommendation weights, and model algorithms</p>
+                        </div>
+                        <span class="badge-status active"><i class="fa-solid fa-circle-check"></i> OpenAI & Custom ML Models Active</span>
+                    </div>
+
+                    <div class="grid-2-col">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3><i class="fa-solid fa-sliders text-blue-600"></i> Recommendation Algorithm Weighting</h3>
+                            </div>
+                            <div class="ai-controls-form">
+                                <div class="form-group">
+                                    <label>Academic Aptitude Weight: <strong id="val-aptitude">40%</strong></label>
+                                    <input type="range" class="slider" min="10" max="80" value="40" id="slider-aptitude">
+                                </div>
+                                <div class="form-group">
+                                    <label>Psychometric Interest Weight: <strong id="val-interest">35%</strong></label>
+                                    <input type="range" class="slider" min="10" max="80" value="35" id="slider-interest">
+                                </div>
+                                <div class="form-group">
+                                    <label>Industry Market Demand Weight: <strong id="val-market">25%</strong></label>
+                                    <input type="range" class="slider" min="5" max="50" value="25" id="slider-market">
+                                </div>
+                                <button class="btn btn-primary btn-sm" id="btn-update-ai">Apply AI Weights</button>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3><i class="fa-solid fa-shield-virus text-indigo-600"></i> AI Microservice Health & Latency</h3>
+                            </div>
+                            <div class="ai-health-stats">
+                                <div class="stat-row"><span>Career DNA Engine</span><span class="badge-status active">412 ms • 99.9% Uptime</span></div>
+                                <div class="stat-row"><span>College & Course Matcher</span><span class="badge-status active">180 ms • 100% Uptime</span></div>
+                                <div class="stat-row"><span>Scholarship Discovery AI</span><span class="badge-status active">240 ms • 99.8% Uptime</span></div>
+                                <div class="stat-row"><span>Resume ATS Scanner</span><span class="badge-status active">310 ms • 100% Uptime</span></div>
+                                <div class="stat-row"><span>Interview AI Assistant</span><span class="badge-status active">520 ms • 99.5% Uptime</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audit Logs Sub View -->
+                <div class="content-view" id="view-audit">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">System Audit & Compliance Logs</h1>
+                            <p class="page-subtitle">Immutable log of all Super Admin access provisioning and security modifications</p>
+                        </div>
+                        <button class="btn btn-outline" id="btn-export-logs"><i class="fa-solid fa-download"></i> Export Log Report (CSV)</button>
+                    </div>
+                    <div class="panel">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Administrator</th>
+                                        <th>Action Type</th>
+                                        <th>Target Entity</th>
+                                        <th>Role Granted</th>
+                                        <th>IP Address</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="full-audit-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 1. SCHOOL ADMIN DASHBOARD WORKSPACE
+                 ========================================================================== -->
+            <div class="workspace-view hidden" id="workspace-school-admin">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">🏫 School Admin Dashboard - Delhi Public School</h1>
+                        <p class="page-subtitle">K-12 Student Career DNA, Stream Recommendation & Board Performance Tracking</p>
+                    </div>
+                    <span class="badge-role badge-role-school"><i class="fa-solid fa-circle-check"></i> CBSE / ICSE Verified License</span>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card card-blue">
+                        <div class="metric-icon"><i class="fa-solid fa-user-graduate"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Enrolled Students (Class 8-12)</span>
+                            <h3 class="metric-value">3,820</h3>
+                            <span class="metric-trend positive"><i class="fa-solid fa-check"></i> 100% Profile Completion</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-indigo">
+                        <div class="metric-icon"><i class="fa-solid fa-dna"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Career DNA Completed</span>
+                            <h3 class="metric-value">3,450</h3>
+                            <span class="metric-trend positive"><i class="fa-solid fa-bolt"></i> 90.3% Completion Rate</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-teal">
+                        <div class="metric-icon"><i class="fa-solid fa-compass-drafting"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Stream Match (STEM / Commerce)</span>
+                            <h3 class="metric-value">68% / 22%</h3>
+                            <span class="metric-trend positive">10% Humanities Fit</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-sky">
+                        <div class="metric-icon"><i class="fa-solid fa-award"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Scholarships Recommended</span>
+                            <h3 class="metric-value">412</h3>
+                            <span class="metric-trend positive">$120k Total Value</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>Student Career DNA & Stream Guidance Matrix</h3>
+                        <button class="btn btn-primary btn-sm"><i class="fa-solid fa-download"></i> Export Roster</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Class & Section</th>
+                                    <th>Aptitude Score</th>
+                                    <th>Top AI Stream Fit</th>
+                                    <th>Recommended Career Path</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Aarav Sharma</td><td>Class 10-A</td><td>94/100</td><td><span class="pill pill-blue">PCM / Engineering Fit</span></td><td>Software Engineering / AI</td><td><span class="badge-status active">Career DNA Generated</span></td></tr>
+                                <tr><td>Riya Sen</td><td>Class 10-B</td><td>88/100</td><td><span class="pill pill-blue">Commerce / Economics Fit</span></td><td>Financial Analyst / CA</td><td><span class="badge-status active">Career DNA Generated</span></td></tr>
+                                <tr><td>Karan Patel</td><td>Class 11-C</td><td>91/100</td><td><span class="pill pill-blue">PCB / Medical Fit</span></td><td>Biotechnology / Healthcare</td><td><span class="badge-status active">Career DNA Generated</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 2. COLLEGE ADMIN DASHBOARD WORKSPACE
+                 ========================================================================== -->
+            <div class="workspace-view hidden" id="workspace-college-admin">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">🎓 College Admin Dashboard - IIT Bombay</h1>
+                        <p class="page-subtitle">Higher Education Placement Portal, Campus Drives & Skill Gap Intelligence</p>
+                    </div>
+                    <span class="badge-role badge-role-college"><i class="fa-solid fa-building-columns"></i> University Admin Verified</span>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card card-blue">
+                        <div class="metric-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Total Undergrads</span>
+                            <h3 class="metric-value">11,450</h3>
+                            <span class="metric-trend positive">9 Batches Tracked</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-indigo">
+                        <div class="metric-icon"><i class="fa-solid fa-briefcase"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Placement Success Rate</span>
+                            <h3 class="metric-value">94.2%</h3>
+                            <span class="metric-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> +5.1% YoY</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-teal">
+                        <div class="metric-icon"><i class="fa-solid fa-handshake"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Active Corporate Recruiters</span>
+                            <h3 class="metric-value">148</h3>
+                            <span class="metric-trend positive">18 Campus Drives Open</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-sky">
+                        <div class="metric-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Average Package CTC</span>
+                            <h3 class="metric-value">$24.5 LPA</h3>
+                            <span class="metric-trend positive">Max CTC: $110 LPA</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>Upcoming Campus Placement Drives</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Company</th>
+                                    <th>Role Offered</th>
+                                    <th>Eligible Streams</th>
+                                    <th>CTC Package</th>
+                                    <th>Applicants</th>
+                                    <th>Drive Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Google Cloud</td><td>Software Engineer II</td><td>CS, IT, ECE</td><td>$38 LPA</td><td>410 Students</td><td>12 March 2026</td></tr>
+                                <tr><td>Microsoft Research</td><td>AI/ML Scientist</td><td>CS, Data Science</td><td>$42 LPA</td><td>280 Students</td><td>18 March 2026</td></tr>
+                                <tr><td>Goldman Sachs</td><td>Quant Analyst</td><td>Math, CS, Finance</td><td>$32 LPA</td><td>320 Students</td><td>22 March 2026</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 3. MENTOR DASHBOARD WORKSPACE
+                 ========================================================================== -->
+            <div class="workspace-view hidden" id="workspace-mentor">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">👨‍🏫 Mentor Desk - Dr. Rajesh Sharma</h1>
+                        <p class="page-subtitle">1-on-1 Student Career Counseling, Booking Calendar & Guidance Review</p>
+                    </div>
+                    <span class="badge-role badge-role-mentor"><i class="fa-solid fa-star"></i> 4.9/5 Rating (210 Reviews)</span>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card card-teal">
+                        <div class="metric-icon"><i class="fa-solid fa-users"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Assigned Mentees</span>
+                            <h3 class="metric-value">42</h3>
+                            <span class="metric-trend positive">Active Mentorship</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-blue">
+                        <div class="metric-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Sessions Completed</span>
+                            <h3 class="metric-value">184</h3>
+                            <span class="metric-trend positive">98% Satisfaction</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-indigo">
+                        <div class="metric-icon"><i class="fa-solid fa-clock"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Upcoming Bookings</span>
+                            <h3 class="metric-value">6</h3>
+                            <span class="metric-trend warning">Next session today at 2:00 PM</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-sky">
+                        <div class="metric-icon"><i class="fa-solid fa-award"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Mentor Credits</span>
+                            <h3 class="metric-value">2,850</h3>
+                            <span class="metric-trend positive">Level: Master Counselor</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>Scheduled Mentorship Appointments</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Mentee Name</th><th>Career Focus</th><th>Session Time</th><th>Career DNA Match</th><th>Action</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Siddharth Mehta</td><td>AI Engineering Pathway</td><td>Today, 2:00 PM</td><td><span class="badge-status active">96% Fit</span></td><td><button class="btn btn-sm btn-primary">Start Video Session</button></td></tr>
+                                <tr><td>Ananya Gupta</td><td>Data Science vs Product Management</td><td>Tomorrow, 11:00 AM</td><td><span class="badge-status active">89% Fit</span></td><td><button class="btn btn-sm btn-outline">Review Career DNA</button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 4. TRAINING INSTITUTE DASHBOARD WORKSPACE
+                 ========================================================================== -->
+            <div class="workspace-view hidden" id="workspace-training-admin">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">🏫 Training Institute Portal - Apex Skill Academy</h1>
+                        <p class="page-subtitle">Vocational Bootcamps, Skill Certifications & Corporate Hiring Placement Tracks</p>
+                    </div>
+                    <span class="badge-role badge-role-training"><i class="fa-solid fa-certificate"></i> Certified Skill Provider</span>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card card-teal">
+                        <div class="metric-icon"><i class="fa-solid fa-book-open"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Active Trainees</span>
+                            <h3 class="metric-value">2,900</h3>
+                            <span class="metric-trend positive">12 Active Certification Courses</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-blue">
+                        <div class="metric-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Graduation & Cert Rate</span>
+                            <h3 class="metric-value">91.4%</h3>
+                            <span class="metric-trend positive">Industry Accredited</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-indigo">
+                        <div class="metric-icon"><i class="fa-solid fa-handshake"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Corporate Placement Partners</span>
+                            <h3 class="metric-value">64</h3>
+                            <span class="metric-trend positive">Tech & Cloud Industry</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-sky">
+                        <div class="metric-icon"><i class="fa-solid fa-bolt"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Placement Index</span>
+                            <h3 class="metric-value">88%</h3>
+                            <span class="metric-trend positive">Hired within 90 days</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 5. RECRUITER DASHBOARD WORKSPACE
+                 ========================================================================== -->
+            <div class="workspace-view hidden" id="workspace-recruiter">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">👔 Recruiter Talent Portal - Infosys HR Team</h1>
+                        <p class="page-subtitle">AI Candidate Matching, ATS Resume Scoring & Candidate Hiring Pipeline</p>
+                    </div>
+                    <span class="badge-role badge-role-recruiter"><i class="fa-solid fa-briefcase"></i> Verified Corporate Recruiter</span>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card card-blue">
+                        <div class="metric-icon"><i class="fa-solid fa-bullhorn"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Active Job Postings</span>
+                            <h3 class="metric-value">18</h3>
+                            <span class="metric-trend positive">Across 6 Locations</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-indigo">
+                        <div class="metric-icon"><i class="fa-solid fa-file-lines"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Applications Received</span>
+                            <h3 class="metric-value">1,240</h3>
+                            <span class="metric-trend positive">AI Screened</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-teal">
+                        <div class="metric-icon"><i class="fa-solid fa-robot"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Avg AI ATS Score Fit</span>
+                            <h3 class="metric-value">88%</h3>
+                            <span class="metric-trend positive">High Skill Alignment</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-sky">
+                        <div class="metric-icon"><i class="fa-solid fa-user-check"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Offers Extended</span>
+                            <h3 class="metric-value">42</h3>
+                            <span class="metric-trend positive">38 Accepted</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 6. COMPANY DASHBOARD WORKSPACE
+                 ========================================================================== -->
+            <div class="workspace-view hidden" id="workspace-company">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">🏢 Enterprise Company Portal - Tata Consultancy Services (TCS)</h1>
+                        <p class="page-subtitle">Corporate Internship Management, Campus Partnership & Talent Sourcing</p>
+                    </div>
+                    <span class="badge-role badge-role-company"><i class="fa-solid fa-building"></i> Enterprise Partner</span>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card card-blue">
+                        <div class="metric-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Internship Drives Open</span>
+                            <h3 class="metric-value">12</h3>
+                            <span class="metric-trend positive">Summer & Winter Internships</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-indigo">
+                        <div class="metric-icon"><i class="fa-solid fa-building-columns"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Partner Universities</span>
+                            <h3 class="metric-value">45</h3>
+                            <span class="metric-trend positive">Direct MoU Signed</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-teal">
+                        <div class="metric-icon"><i class="fa-solid fa-users"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Enrolled Interns</span>
+                            <h3 class="metric-value">620</h3>
+                            <span class="metric-trend positive">Conversion Rate: 78%</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-sky">
+                        <div class="metric-icon"><i class="fa-solid fa-money-check-dollar"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Internship Stipend</span>
+                            <h3 class="metric-value">$850 / mo</h3>
+                            <span class="metric-trend positive">Competitive Package</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 7. GOVERNMENT DASHBOARD WORKSPACE
+                 ========================================================================== -->
+            <div class="workspace-view hidden" id="workspace-government">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">🏛️ Government Skill Portal - National Skill Development Mission</h1>
+                        <p class="page-subtitle">State Scholarship Grant Disbursal, District Skill Missions & Employability Monitoring</p>
+                    </div>
+                    <span class="badge-role badge-role-government"><i class="fa-solid fa-landmark"></i> Official Government Ministry</span>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card card-blue">
+                        <div class="metric-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Scholarship Funds Disbursed</span>
+                            <h3 class="metric-value">$14.2M</h3>
+                            <span class="metric-trend positive">48,200 Beneficiaries</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-indigo">
+                        <div class="metric-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Active District Missions</span>
+                            <h3 class="metric-value">124</h3>
+                            <span class="metric-trend positive">Statewide Coverage</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-teal">
+                        <div class="metric-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">State Employability Index</span>
+                            <h3 class="metric-value">82.4%</h3>
+                            <span class="metric-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> +8.2% YoY</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card card-sky">
+                        <div class="metric-icon"><i class="fa-solid fa-check-double"></i></div>
+                        <div class="metric-data">
+                            <span class="metric-label">Verified Skill Certificates</span>
+                            <h3 class="metric-value">110,000</h3>
+                            <span class="metric-trend positive">Government Accredited</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals & Toasts -->
+    <div class="modal-overlay" id="grant-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div>
+                    <h2 class="modal-title"><i class="fa-solid fa-user-plus text-blue-600"></i> Grant Ecosystem Partner Access</h2>
+                    <p class="modal-subtitle">Provision a new School Admin, College Admin, Mentor, Training Institute, Recruiter, Company or Government agency</p>
+                </div>
+                <button class="modal-close" id="btn-close-grant-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form id="grant-access-form">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group col-span-2">
+                            <label for="entity-name">Organization / Entity Name *</label>
+                            <input type="text" id="entity-name" required placeholder="e.g. St. Xavier High School, IIT Delhi, Infosys Talent Team, Ministry of Skill Dev">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="role-type">Select Partner Role Category *</label>
+                            <select id="role-type" required>
+                                <option value="" disabled selected>-- Select Role --</option>
+                                <option value="school">School Admin (K-12 & Boards)</option>
+                                <option value="college">College Admin (Higher Education)</option>
+                                <option value="mentor">Mentor / Career Counselor</option>
+                                <option value="training">Training Institute / Skill Provider</option>
+                                <option value="recruiter">Recruiter / HR Specialist</option>
+                                <option value="company">Company / Enterprise Employer</option>
+                                <option value="government">Government Body / Ministry</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="admin-email">Primary Admin Email *</label>
+                            <input type="email" id="admin-email" required placeholder="admin@organization.org">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="verified-domain">Allowed Official Domain</label>
+                            <input type="text" id="verified-domain" placeholder="e.g. stxaviers.edu or infosys.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="seat-quota">Allocated Student/User Seats Quota *</label>
+                            <input type="number" id="seat-quota" required min="1" max="100000" value="1000">
+                        </div>
+
+                        <div class="form-group col-span-2">
+                            <label>Module & Feature Permissions Granted</label>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-item"><input type="checkbox" name="permissions" value="AI Discover Engine" checked><span>AI Career Discovery & DNA</span></label>
+                                <label class="checkbox-item"><input type="checkbox" name="permissions" value="Scholarship Portal" checked><span>Scholarship Finder & Apply</span></label>
+                                <label class="checkbox-item"><input type="checkbox" name="permissions" value="Job & Internship Board" checked><span>Jobs & Internships Marketplace</span></label>
+                                <label class="checkbox-item"><input type="checkbox" name="permissions" value="Mentorship Marketplace" checked><span>Mentor Booking Desk</span></label>
+                                <label class="checkbox-item"><input type="checkbox" name="permissions" value="Institutional Analytics" checked><span>Advanced Analytics & Reports</span></label>
+                                <label class="checkbox-item"><input type="checkbox" name="permissions" value="AI Resume & Interview AI" checked><span>AI Resume & Mock Interview</span></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" id="btn-cancel-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-key"></i> Generate Credentials & Provision</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal modal-md">
+            <div class="modal-header">
+                <div>
+                    <h2 class="modal-title" id="edit-modal-title">Edit Entity Access</h2>
+                    <p class="modal-subtitle" id="edit-modal-subtitle">Modify seat quotas, status and module permissions</p>
+                </div>
+                <button class="modal-close" id="btn-close-edit-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-entity-id">
+                <div class="form-group">
+                    <label for="edit-seat-quota">Allocated Seat Quota</label>
+                    <input type="number" id="edit-seat-quota" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="edit-status">Access Status</label>
+                    <select id="edit-status" class="form-control">
+                        <option value="active">Active & Verified</option>
+                        <option value="pending">Pending Admin Review</option>
+                        <option value="suspended">Suspended / Revoked</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="btn-cancel-edit">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-save-edit">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+    <script src="app.js"></script>
+</body>
+</html>
