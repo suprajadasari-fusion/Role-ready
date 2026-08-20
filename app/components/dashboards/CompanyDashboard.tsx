@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { 
-  FaBuilding, 
-  FaBriefcase, 
-  FaGraduationCap, 
-  FaUsersGear, 
-  FaIndianRupeeSign, 
-  FaArrowTrendUp 
-} from 'react-icons/fa6';
+  FiGrid, 
+  FiBriefcase, 
+  FiBookOpen, 
+  FiUsers, 
+  FiDollarSign, 
+  FiTrendingUp 
+} from 'react-icons/fi';
 import { ActionModal } from '../ActionModal';
 import { StudentToolsViews } from '../StudentToolsViews';
 
@@ -61,7 +61,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
         <div className={`flex items-center justify-between pb-4 border-b ${borderDivider}`}>
           <div>
             <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-              <FaBriefcase className="w-5 h-5 text-blue-500" /> Corporate Internship Programs Page
+              <FiBriefcase className="w-5 h-5 text-blue-500" /> Corporate Internship Programs Page
             </h2>
             <p className={textMuted}>Summer & Winter internship cohorts for university engineering students</p>
           </div>
@@ -106,7 +106,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
     return (
       <div className={`rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`}>
         <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-          <FaGraduationCap className="w-5 h-5 text-blue-500" /> Campus University MoUs Page
+          <FiBookOpen className="w-5 h-5 text-blue-500" /> Campus University MoUs Page
         </h2>
         <p className={textMuted}>45 Partner universities with signed corporate recruitment MoUs</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -125,7 +125,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
     return (
       <div className={`rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`}>
         <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-          <FaUsersGear className="w-5 h-5 text-blue-500" /> Talent Funnel Pipeline Page
+          <FiUsers className="w-5 h-5 text-blue-500" /> Talent Funnel Pipeline Page
         </h2>
         <p className={textMuted}>Pipeline stage metrics from campus sourcing to PPO conversion</p>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -137,7 +137,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
           ].map((pip, i) => (
             <div key={i} className={`p-4 rounded-xl border space-y-1 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`} onClick={() => onShowToast(`Viewing stage pipeline for ${pip.stage}`)}>
               <span className={`font-semibold block ${textMuted}`}>{pip.stage}</span>
-              <div className="text-2xl font-extrabold text-blue-400">{pip.count}</div>
+              <div className="text-2xl font-bold text-blue-400">{pip.count}</div>
               <span className={`text-[11px] ${textMuted}`}>{pip.sub}</span>
             </div>
           ))}
@@ -151,7 +151,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
     <div className={`rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`}>
       <div className={`pb-4 border-b ${borderDivider}`}>
         <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-          <FaBuilding className="w-5 h-5 text-blue-500" /> Enterprise Company Portal Overview
+          <FiGrid className="w-5 h-5 text-blue-500" /> Enterprise Company Portal Overview
         </h2>
         <p className={textMuted}>Corporate internship drives, university MoUs, intern enrollment, and PPO conversions</p>
       </div>
@@ -159,27 +159,27 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`} onClick={() => onShowToast("Viewing Internship Drives")}>
           <span className={`font-semibold block ${textMuted}`}>Internship Drives</span>
-          <div className="text-2xl font-extrabold text-blue-400 mt-1">12 Drives</div>
+          <div className="text-2xl font-bold text-blue-400 mt-1">12 Drives</div>
           <span className={`text-[10px] ${textMuted}`}>Summer & Winter Tracks</span>
         </div>
 
         <div className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`} onClick={() => onShowToast("Viewing Campus MoUs")}>
           <span className={`font-semibold block ${textMuted}`}>Partner Universities</span>
-          <div className="text-2xl font-extrabold text-blue-400 mt-1">45 Colleges</div>
+          <div className="text-2xl font-bold text-blue-400 mt-1">45 Colleges</div>
           <span className={`text-[10px] ${textMuted}`}>Direct MoUs Signed</span>
         </div>
 
         <div className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`} onClick={() => onShowToast("Viewing Enrolled Interns")}>
           <span className={`font-semibold block ${textMuted}`}>Enrolled Interns</span>
-          <div className="text-2xl font-extrabold text-emerald-400 mt-1">620 Interns</div>
+          <div className="text-2xl font-bold text-emerald-400 mt-1">620 Interns</div>
           <span className="text-[10px] text-emerald-400 flex items-center gap-1 mt-1 font-bold">
-            <FaArrowTrendUp className="w-3 h-3" /> 78% PPO Conversion Rate
+            <FiTrendingUp className="w-3 h-3" /> 78% PPO Conversion Rate
           </span>
         </div>
 
         <div className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`} onClick={() => onShowToast("Viewing Monthly Stipends")}>
           <span className={`font-semibold block ${textMuted}`}>Monthly Stipend</span>
-          <div className="text-2xl font-extrabold text-emerald-400 mt-1">₹35,000 / mo</div>
+          <div className="text-2xl font-bold text-emerald-400 mt-1">₹35,000 / mo</div>
           <span className={`text-[10px] ${textMuted}`}>Competitive Package</span>
         </div>
       </div>

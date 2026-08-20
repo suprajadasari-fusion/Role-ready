@@ -1,5 +1,5 @@
 import React from 'react';
-import { RoleType } from '~/lib/types';
+import { RoleType } from '../lib/types';
 import { SchoolDashboard } from './dashboards/SchoolDashboard';
 import { CollegeDashboard } from './dashboards/CollegeDashboard';
 import { MentorDashboard } from './dashboards/MentorDashboard';

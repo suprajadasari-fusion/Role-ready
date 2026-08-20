@@ -15,6 +15,7 @@
     "strict": true,
     "allowJs": true,
     "skipLibCheck": true,
+    "noEmit": true,
     "module": "ESNext",
     "baseUrl": ".",
     "paths": {

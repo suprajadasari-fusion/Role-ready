@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { 
-  FaVolumeHigh, 
-  FaStop, 
-  FaWandMagicSparkles, 
-  FaRobot
-} from 'react-icons/fa6';
+  FiVolume2, 
+  FiSquare, 
+  FiCpu, 
+  FiMessageSquare
+} from 'react-icons/fi';
 
 interface TalkingHumanAvatarProps {
   onShowToast: (msg: string) => void;
@@ -123,12 +123,12 @@ export const TalkingHumanAvatar: React.FC<TalkingHumanAvatarProps> = ({
             }`}>
               {isSpeaking ? (
                 <>
-                  <FaVolumeHigh className="w-3.5 h-3.5 text-emerald-500 animate-bounce" />
-                  <span className="text-emerald-500 font-extrabold">Speaking Out Loud...</span>
+                  <FiVolume2 className="w-3.5 h-3.5 text-emerald-500 animate-bounce" />
+                  <span className="text-emerald-500 font-bold">Speaking Out Loud...</span>
                 </>
               ) : (
                 <>
-                  <FaWandMagicSparkles className="w-3.5 h-3.5 text-blue-500" />
+                  <FiCpu className="w-3.5 h-3.5 text-blue-500" />
                   <span>AI Advisor Active</span>
                 </>
               )}
@@ -136,7 +136,7 @@ export const TalkingHumanAvatar: React.FC<TalkingHumanAvatarProps> = ({
           </div>
 
           <div className="mt-4 text-center">
-            <h3 className={`font-extrabold text-base ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+            <h3 className={`font-bold text-base ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
               Ananya Sharma
             </h3>
             <p className={`text-xs font-medium ${isDarkMode ? 'text-blue-300' : 'text-blue-600'}`}>
@@ -155,22 +155,24 @@ export const TalkingHumanAvatar: React.FC<TalkingHumanAvatarProps> = ({
           }`}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] font-bold uppercase tracking-wider text-blue-500 flex items-center gap-1.5">
-                <FaRobot className="w-3.5 h-3.5" /> Live Voice Advice Speech
+                <FiCpu className="w-3.5 h-3.5" /> Live Voice Advice Speech
               </span>
 
               {isSpeaking ? (
                 <button 
                   onClick={stopSpeech}
+                  aria-label="Stop Voice Advice Speech"
                   className="bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/40 px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1"
                 >
-                  <FaStop className="w-3 h-3" /> Stop Voice
+                  <FiSquare className="w-3 h-3" /> Stop Voice
                 </button>
               ) : (
                 <button 
                   onClick={() => speakText(currentSpeechText)}
+                  aria-label="Speak Out Loud"
                   className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-sm"
                 >
-                  <FaVolumeHigh className="w-3 h-3" /> Speak Out Loud
+                  <FiVolume2 className="w-3 h-3" /> Speak Out Loud
                 </button>
               )}
             </div>
@@ -194,13 +196,14 @@ export const TalkingHumanAvatar: React.FC<TalkingHumanAvatarProps> = ({
                 <button
                   key={idx}
                   onClick={() => handleAskQuestion(pq.q, pq.a)}
-                  className={`text-xs px-3 py-1.5 rounded-xl transition cursor-pointer font-medium text-left border ${
+                  className={`text-xs px-3 py-1.5 rounded-xl transition cursor-pointer font-medium text-left border flex items-center gap-1.5 ${
                     isDarkMode 
                       ? 'bg-blue-950/60 hover:bg-blue-600/30 border-blue-500/30 hover:border-blue-400 text-blue-200' 
                       : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-800'
                   }`}
                 >
-                  💬 {pq.q}
+                  <FiMessageSquare className="w-3 h-3 text-blue-400 shrink-0" />
+                  <span>{pq.q}</span>
                 </button>
               ))}
             </div>
@@ -223,7 +226,7 @@ export const TalkingHumanAvatar: React.FC<TalkingHumanAvatarProps> = ({
               type="submit"
               className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-blue-600/30"
             >
-              <FaVolumeHigh className="w-3.5 h-3.5" />
+              <FiVolume2 className="w-3.5 h-3.5" />
               <span>Talk & Answer</span>
             </button>
           </form>

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchEntities, fetchAuditLogs, addEntity, updateEntity, deleteEntity } from '~/lib/api';
-import { RoleType, EcosystemEntity, StatusType } from '~/lib/types';
-import { Sidebar } from '~/components/Sidebar';
-import { Topbar } from '~/components/Topbar';
-import { GrantAccessModal } from '~/components/GrantAccessModal';
-import { EditModal } from '~/components/EditModal';
-import { RoleWorkspaceViews } from '~/components/RoleWorkspaceViews';
-import { SuperAdminDashboard } from '~/components/dashboards/SuperAdminDashboard';
+import { fetchEntities, fetchAuditLogs, addEntity, updateEntity, deleteEntity } from '../lib/api';
+import { RoleType, EcosystemEntity, StatusType } from '../lib/types';
+import { Sidebar } from '../components/Sidebar';
+import { Topbar } from '../components/Topbar';
+import { GrantAccessModal } from '../components/GrantAccessModal';
+import { EditModal } from '../components/EditModal';
+import { RoleWorkspaceViews } from '../components/RoleWorkspaceViews';
+import { SuperAdminDashboard } from '../components/dashboards/SuperAdminDashboard';
 import { FaCircleCheck, FaPlus } from 'react-icons/fa6';
 
 export default function RoleDashboardRoute() {

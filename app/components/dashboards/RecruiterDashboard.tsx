@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import { 
-  FaBriefcase, 
-  FaBuilding, 
-  FaFileLines, 
-  FaGraduationCap, 
-  FaMagnifyingGlass, 
-  FaBrain, 
-  FaCalendarDays, 
-  FaAward, 
-  FaArrowTrendUp, 
-  FaBullhorn, 
-  FaSliders, 
-  FaPlus, 
-  FaCheck, 
-  FaDownload, 
-  FaUserCheck, 
-  FaIndianRupeeSign, 
-  FaClock 
-} from 'react-icons/fa6';
+  FiBriefcase, 
+  FiGrid, 
+  FiFileText, 
+  FiBookOpen, 
+  FiSearch, 
+  FiCpu, 
+  FiCalendar, 
+  FiAward, 
+  FiTrendingUp, 
+  FiBell, 
+  FiSliders, 
+  FiPlus, 
+  FiCheck, 
+  FiDownload, 
+  FiUserCheck, 
+  FiDollarSign, 
+  FiClock 
+} from 'react-icons/fi';
 import { ActionModal } from '../ActionModal';
 
 interface RecruiterDashboardProps {
@@ -164,7 +164,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
 
             <div className="p-4 rounded-[20px] bg-[#DEE9FF] border border-[#C6D9FF] flex items-center justify-between text-[#12163A]">
               <div className="flex items-center gap-3">
-                <FaCalendarDays className="w-5 h-5 text-[#3665EE]" />
+                <FiCalendar className="w-5 h-5 text-[#3665EE]" />
                 <div>
                   <h4 className="font-bold text-sm text-[#12163A]">Upcoming Campus Placement Drive</h4>
                   <p className="text-xs text-[#4B5563]">IIT Bombay • 12th August 2026 • 480 Registered Candidates</p>
@@ -189,7 +189,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-                <FaBuilding className="w-5 h-5 text-[#3665EE]" /> Company Profile & Enterprise Verification
+                <FiGrid className="w-5 h-5 text-[#3665EE]" /> Company Profile & Enterprise Verification
               </h2>
               <p className="text-[#6B7280]">Verified employer badge, corporate registration, & campus hiring agreements</p>
             </div>
@@ -228,7 +228,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-                <FaFileLines className="w-5 h-5 text-[#3665EE]" /> Job & Internship Requisitions Hub
+                <FiFileText className="w-5 h-5 text-[#3665EE]" /> Job & Internship Requisitions Hub
               </h2>
               <p className="text-[#6B7280]">Manage active job descriptions, CTC packages, & applicant pipelines</p>
             </div>
@@ -240,7 +240,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
               ])}
               className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
-              <FaPlus className="w-3.5 h-3.5" /> Post New Job Requisition
+              <FiPlus className="w-3.5 h-3.5" /> Post New Job Requisition
             </button>
           </div>
 
@@ -272,7 +272,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-                <FaGraduationCap className="w-5 h-5 text-[#3665EE]" /> University Campus Placement Drives
+                <FiBookOpen className="w-5 h-5 text-[#3665EE]" /> University Campus Placement Drives
               </h2>
               <p className="text-[#6B7280]">Partner universities, campus drive schedules, & candidate rosters</p>
             </div>
@@ -284,7 +284,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
               ])}
               className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
-              <FaPlus className="w-3.5 h-3.5" /> Register Campus Drive
+              <FiPlus className="w-3.5 h-3.5" /> Register Campus Drive
             </button>
           </div>
 
@@ -311,7 +311,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-                <FaMagnifyingGlass className="w-5 h-5 text-[#3665EE]" /> Global Student Talent Search Engine
+                <FiSearch className="w-5 h-5 text-[#3665EE]" /> Global Student Talent Search Engine
               </h2>
               <p className="text-[#6B7280]">Search 50,000+ verified student resumes by skills, ATS fit, and degree</p>
             </div>
@@ -342,7 +342,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
           <div className="pb-4 border-b border-slate-100">
             <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-              <FaBrain className="w-5 h-5 text-[#3665EE]" /> AI Neural Candidate Matcher Engine
+              <FiCpu className="w-5 h-5 text-[#3665EE]" /> AI Neural Candidate Matcher Engine
             </h2>
             <p className="text-[#6B7280]">Screen candidates using AI ATS fit algorithms and skill alignment</p>
           </div>
@@ -381,7 +381,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-                <FaCalendarDays className="w-5 h-5 text-[#3665EE]" /> Scheduled Candidate Interviews
+                <FiCalendar className="w-5 h-5 text-[#3665EE]" /> Scheduled Candidate Interviews
               </h2>
               <p className="text-[#6B7280]">Interview panel schedules, evaluation rubrics, & video interview links</p>
             </div>
@@ -393,7 +393,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
               ])}
               className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
-              <FaPlus className="w-3.5 h-3.5" /> Schedule Candidate Interview
+              <FiPlus className="w-3.5 h-3.5" /> Schedule Candidate Interview
             </button>
           </div>
 
@@ -428,7 +428,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-                <FaAward className="w-5 h-5 text-[#3665EE]" /> Offer Letters & Compensation (CTC) Desk
+                <FiAward className="w-5 h-5 text-[#3665EE]" /> Offer Letters & Compensation (CTC) Desk
               </h2>
               <p className="text-[#6B7280]">Manage offer rollouts, CTC packages, & candidate acceptance tracking</p>
             </div>
@@ -440,7 +440,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
               ])}
               className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
-              <FaPlus className="w-3.5 h-3.5" /> Issue Offer Letter
+              <FiPlus className="w-3.5 h-3.5" /> Issue Offer Letter
             </button>
           </div>
 
@@ -465,7 +465,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
           <div className="pb-4 border-b border-slate-100">
             <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-              <FaArrowTrendUp className="w-5 h-5 text-[#3665EE]" /> Enterprise Hiring Analytics & Talent Funnel
+              <FiTrendingUp className="w-5 h-5 text-[#3665EE]" /> Enterprise Hiring Analytics & Talent Funnel
             </h2>
             <p className="text-[#6B7280]">Recruitment efficiency, time-to-hire metrics, & campus conversion rates</p>
           </div>
@@ -498,7 +498,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-                <FaBullhorn className="w-5 h-5 text-[#3665EE]" /> Recruiter Notifications & Hiring Alerts
+                <FiBell className="w-5 h-5 text-[#3665EE]" /> Recruiter Notifications & Hiring Alerts
               </h2>
               <p className="text-[#6B7280]">Candidate applications, interview confirmations, and offer acceptance receipts</p>
             </div>
@@ -531,7 +531,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
       <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
         <div className="pb-4 border-b border-slate-100">
           <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-            <FaSliders className="w-5 h-5 text-[#3665EE]" /> Recruiter Governance & System Settings
+            <FiSliders className="w-5 h-5 text-[#3665EE]" /> Recruiter Governance & System Settings
           </h2>
           <p className="text-[#6B7280]">Configure enterprise team permissions, ATS integrations, & interviewer panels</p>
         </div>

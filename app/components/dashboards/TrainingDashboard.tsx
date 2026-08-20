@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { 
-  FaChalkboardUser, 
-  FaBookOpen, 
-  FaAward, 
-  FaHandshake, 
-  FaBriefcase, 
-  FaArrowTrendUp 
-} from 'react-icons/fa6';
+  FiGrid, 
+  FiBookOpen, 
+  FiAward, 
+  FiBriefcase, 
+  FiTrendingUp 
+} from 'react-icons/fi';
 import { ActionModal } from '../ActionModal';
 import { StudentToolsViews } from '../StudentToolsViews';
 
@@ -61,7 +60,7 @@ export const TrainingDashboard: React.FC<TrainingDashboardProps> = ({
         <div className={`flex items-center justify-between pb-4 border-b ${borderDivider}`}>
           <div>
             <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-              <FaBookOpen className="w-5 h-5 text-blue-500" /> Skill Courses & Curriculum Track Page
+              <FiBookOpen className="w-5 h-5 text-blue-500" /> Skill Courses & Curriculum Track Page
             </h2>
             <p className={textMuted}>Industry bootcamps and certification learning modules</p>
           </div>
@@ -102,7 +101,7 @@ export const TrainingDashboard: React.FC<TrainingDashboardProps> = ({
     return (
       <div className={`rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`}>
         <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-          <FaAward className="w-5 h-5 text-blue-500" /> Certifications Registry Page
+          <FiAward className="w-5 h-5 text-blue-500" /> Certifications Registry Page
         </h2>
         <p className={textMuted}>Industry-accredited digital credentials issued to trainees</p>
         <div className="space-y-3">
@@ -130,7 +129,7 @@ export const TrainingDashboard: React.FC<TrainingDashboardProps> = ({
     return (
       <div className={`rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`}>
         <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-          <FaHandshake className="w-5 h-5 text-blue-500" /> Hiring Partner Enterprises Page
+          <FiBriefcase className="w-5 h-5 text-blue-500" /> Hiring Partner Enterprises Page
         </h2>
         <p className={textMuted}>64 Corporate partners recruiting directly from institute bootcamps</p>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -150,7 +149,7 @@ export const TrainingDashboard: React.FC<TrainingDashboardProps> = ({
     <div className={`rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`}>
       <div className={`pb-4 border-b ${borderDivider}`}>
         <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-          <FaChalkboardUser className="w-5 h-5 text-blue-500" /> Training Institute Portal Overview
+          <FiGrid className="w-5 h-5 text-blue-500" /> Training Institute Portal Overview
         </h2>
         <p className={textMuted}>Skill bootcamps, certified trainees, accreditation tracks, and hiring enterprise ties</p>
       </div>
@@ -158,27 +157,27 @@ export const TrainingDashboard: React.FC<TrainingDashboardProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`} onClick={() => onShowToast("Viewing Trainee Cohorts")}>
           <span className={`font-semibold block ${textMuted}`}>Active Trainees</span>
-          <div className="text-2xl font-extrabold text-blue-400 mt-1">2,900</div>
+          <div className="text-2xl font-bold text-blue-400 mt-1">2,900</div>
           <span className={`text-[10px] ${textMuted}`}>12 Certified Bootcamps</span>
         </div>
 
         <div className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`} onClick={() => onShowToast("Viewing Certification Rates")}>
           <span className={`font-semibold block ${textMuted}`}>Cert Completion</span>
-          <div className="text-2xl font-extrabold text-emerald-400 mt-1">91.4%</div>
+          <div className="text-2xl font-bold text-emerald-400 mt-1">91.4%</div>
           <span className={`text-[10px] ${textMuted}`}>Industry Accredited</span>
         </div>
 
         <div className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`} onClick={() => onShowToast("Viewing Hiring Partners")}>
           <span className={`font-semibold block ${textMuted}`}>Placement Partners</span>
-          <div className="text-2xl font-extrabold text-blue-400 mt-1">64 Companies</div>
+          <div className="text-2xl font-bold text-blue-400 mt-1">64 Companies</div>
           <span className={`text-[10px] ${textMuted}`}>Tech & Cloud Tracks</span>
         </div>
 
         <div className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`} onClick={() => onShowToast("Viewing Employment Index")}>
           <span className={`font-semibold block ${textMuted}`}>Employment Index</span>
-          <div className="text-2xl font-extrabold text-emerald-400 mt-1">88%</div>
+          <div className="text-2xl font-bold text-emerald-400 mt-1">88%</div>
           <span className="text-[10px] text-emerald-400 flex items-center gap-1 mt-1 font-bold">
-            <FaArrowTrendUp className="w-3 h-3" /> Hired within 90 days
+            <FiTrendingUp className="w-3 h-3" /> Hired within 90 days
           </span>
         </div>
       </div>

@@ -1,21 +1,18 @@
 import React from 'react';
-import { RoleType } from '~/lib/types';
+import { RoleType } from '../lib/types';
 import { 
-  FaBuildingUser, 
-  FaUsersGear, 
-  FaBrain, 
-  FaClock, 
-  FaGraduationCap, 
-  FaBriefcase, 
-  FaHandshake, 
-  FaIndianRupeeSign,
-  FaAward,
-  FaBookOpen,
-  FaBullhorn,
-  FaLandmark,
-  FaArrowTrendUp,
-  FaShieldHalved
-} from 'react-icons/fa6';
+  FiGrid, 
+  FiUsers, 
+  FiCpu, 
+  FiClock, 
+  FiAward, 
+  FiBriefcase, 
+  FiDollarSign,
+  FiBookOpen,
+  FiBell,
+  FiTrendingUp,
+  FiShield
+} from 'react-icons/fi';
 
 interface MetricsGridProps {
   currentWorkspace: RoleType;
@@ -46,12 +43,12 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
           <div className="flex items-center justify-between mb-3">
             <span className={`text-xs font-semibold ${textMuted}`}>Provisioned Entities</span>
             <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
-              <FaBuildingUser className="w-5 h-5" />
+              <FiGrid className="w-5 h-5" />
             </div>
           </div>
-          <h3 className={`text-2xl font-extrabold mb-1 ${textHeading}`}>{totalEntities}</h3>
+          <h3 className={`text-2xl font-bold mb-1 ${textHeading}`}>{totalEntities}</h3>
           <span className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
-            <FaArrowTrendUp className="w-3.5 h-3.5" /> +14.2% active growth
+            <FiTrendingUp className="w-3.5 h-3.5" /> +14.2% active growth
           </span>
         </div>
 
@@ -59,12 +56,12 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
           <div className="flex items-center justify-between mb-3">
             <span className={`text-xs font-semibold ${textMuted}`}>Active Seat Quotas</span>
             <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
-              <FaUsersGear className="w-5 h-5" />
+              <FiUsers className="w-5 h-5" />
             </div>
           </div>
-          <h3 className={`text-2xl font-extrabold mb-1 ${textHeading}`}>{totalSeats.toLocaleString()}</h3>
+          <h3 className={`text-2xl font-bold mb-1 ${textHeading}`}>{totalSeats.toLocaleString()}</h3>
           <span className="text-[11px] font-semibold text-blue-400 flex items-center gap-1">
-            <FaShieldHalved className="w-3.5 h-3.5" /> 84.6% allocated
+            <FiShield className="w-3.5 h-3.5" /> 84.6% allocated
           </span>
         </div>
 
@@ -72,12 +69,12 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
           <div className="flex items-center justify-between mb-3">
             <span className={`text-xs font-semibold ${textMuted}`}>AI Career DNA Runs</span>
             <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
-              <FaBrain className="w-5 h-5" />
+              <FiCpu className="w-5 h-5" />
             </div>
           </div>
-          <h3 className={`text-2xl font-extrabold mb-1 ${textHeading}`}>2.8M</h3>
+          <h3 className={`text-2xl font-bold mb-1 ${textHeading}`}>2.8M</h3>
           <span className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
-            <FaArrowTrendUp className="w-3.5 h-3.5" /> 99.4% Latency &lt;450ms
+            <FiTrendingUp className="w-3.5 h-3.5" /> 99.4% Latency &lt;450ms
           </span>
         </div>
 
@@ -85,10 +82,10 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
           <div className="flex items-center justify-between mb-3">
             <span className={`text-xs font-semibold ${textMuted}`}>Pending Approvals</span>
             <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
-              <FaClock className="w-5 h-5" />
+              <FiClock className="w-5 h-5" />
             </div>
           </div>
-          <h3 className={`text-2xl font-extrabold mb-1 ${textHeading}`}>{pendingCount}</h3>
+          <h3 className={`text-2xl font-bold mb-1 ${textHeading}`}>{pendingCount}</h3>
           <span className="text-[11px] font-semibold text-amber-400 flex items-center gap-1">
             Action required by Admin
           </span>
@@ -100,46 +97,46 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
   // Specialized Cards for specific role workspace views
   const roleMetricsMap: Record<string, Array<{ label: string; value: string; sub: string; icon: any }>> = {
     school: [
-      { label: "Enrolled Students (8-12)", value: "3,820", sub: "100% Profile Completion", icon: FaUsersGear },
-      { label: "Career DNA Completed", value: "3,450", sub: "90.3% Completion Rate", icon: FaBrain },
-      { label: "Top Stream Match", value: "68% STEM", sub: "22% Commerce / 10% Humanities", icon: FaGraduationCap },
-      { label: "Scholarships Fit", value: "₹1.2 Crores", sub: "412 Grants Awarded", icon: FaAward }
+      { label: "Enrolled Students (8-12)", value: "3,820", sub: "100% Profile Completion", icon: FiUsers },
+      { label: "Career DNA Completed", value: "3,450", sub: "90.3% Completion Rate", icon: FiCpu },
+      { label: "Top Stream Match", value: "68% STEM", sub: "22% Commerce / 10% Humanities", icon: FiAward },
+      { label: "Scholarships Fit", value: "₹1.2 Crores", sub: "412 Grants Awarded", icon: FiAward }
     ],
     college: [
-      { label: "Total Undergrads", value: "11,450", sub: "9 Active Batches", icon: FaGraduationCap },
-      { label: "Placement Rate", value: "94.2%", sub: "+5.1% YoY Increase", icon: FaBriefcase },
-      { label: "Corporate Partners", value: "148 Drives", sub: "18 Drives Open Now", icon: FaHandshake },
-      { label: "Average CTC Package", value: "₹24.5 LPA", sub: "Max Package: ₹110 LPA", icon: FaIndianRupeeSign }
+      { label: "Total Undergrads", value: "11,450", sub: "9 Active Batches", icon: FiAward },
+      { label: "Placement Rate", value: "94.2%", sub: "+5.1% YoY Increase", icon: FiBriefcase },
+      { label: "Corporate Partners", value: "148 Drives", sub: "18 Drives Open Now", icon: FiUsers },
+      { label: "Average CTC Package", value: "₹24.5 LPA", sub: "Max Package: ₹110 LPA", icon: FiDollarSign }
     ],
     mentor: [
-      { label: "Assigned Mentees", value: "42 Students", sub: "Active Counseling", icon: FaUsersGear },
-      { label: "Sessions Completed", value: "184 Hours", sub: "98% Satisfaction Rating", icon: FaClock },
-      { label: "Upcoming Appointments", value: "6 Sessions", sub: "Next session at 2:00 PM", icon: FaBriefcase },
-      { label: "Counselor Score", value: "4.9 / 5.0", sub: "Master Level Certified", icon: FaAward }
+      { label: "Assigned Mentees", value: "42 Students", sub: "Active Counseling", icon: FiUsers },
+      { label: "Sessions Completed", value: "184 Hours", sub: "98% Satisfaction Rating", icon: FiClock },
+      { label: "Upcoming Appointments", value: "6 Sessions", sub: "Next session at 2:00 PM", icon: FiBriefcase },
+      { label: "Counselor Score", value: "4.9 / 5.0", sub: "Master Level Certified", icon: FiAward }
     ],
     training: [
-      { label: "Active Trainees", value: "2,900", sub: "12 Certified Bootcamps", icon: FaBookOpen },
-      { label: "Cert Completion", value: "91.4%", sub: "Industry Accredited", icon: FaAward },
-      { label: "Placement Partners", value: "64 Companies", sub: "Tech & Cloud Tracks", icon: FaHandshake },
-      { label: "Employment Index", value: "88%", sub: "Hired within 90 days", icon: FaBriefcase }
+      { label: "Active Trainees", value: "2,900", sub: "12 Certified Bootcamps", icon: FiBookOpen },
+      { label: "Cert Completion", value: "91.4%", sub: "Industry Accredited", icon: FiAward },
+      { label: "Placement Partners", value: "64 Companies", sub: "Tech & Cloud Tracks", icon: FiBriefcase },
+      { label: "Employment Index", value: "88%", sub: "Hired within 90 days", icon: FiBriefcase }
     ],
     recruiter: [
-      { label: "Active Job Postings", value: "18 Roles", sub: "Across 6 Global Offices", icon: FaBullhorn },
-      { label: "Applications Received", value: "1,240", sub: "AI Resume Screened", icon: FaUsersGear },
-      { label: "Avg ATS Score Fit", value: "88%", sub: "High Skill Alignment", icon: FaBrain },
-      { label: "Offers Extended", value: "42 Extended", sub: "38 Offers Accepted", icon: FaBriefcase }
+      { label: "Active Job Postings", value: "18 Roles", sub: "Across 6 Global Offices", icon: FiBell },
+      { label: "Applications Received", value: "1,240", sub: "AI Resume Screened", icon: FiUsers },
+      { label: "Avg ATS Score Fit", value: "88%", sub: "High Skill Alignment", icon: FiCpu },
+      { label: "Offers Extended", value: "42 Extended", sub: "38 Offers Accepted", icon: FiBriefcase }
     ],
     company: [
-      { label: "Internship Drives", value: "12 Drives", sub: "Summer & Winter Tracks", icon: FaBriefcase },
-      { label: "Partner Universities", value: "45 Colleges", sub: "Direct MoUs Signed", icon: FaGraduationCap },
-      { label: "Enrolled Interns", value: "620 Interns", sub: "78% PPO Conversion Rate", icon: FaUsersGear },
-      { label: "Monthly Stipend", value: "₹35,000 / mo", sub: "Competitive Package", icon: FaIndianRupeeSign }
+      { label: "Internship Drives", value: "12 Drives", sub: "Summer & Winter Tracks", icon: FiBriefcase },
+      { label: "Partner Universities", value: "45 Colleges", sub: "Direct MoUs Signed", icon: FiAward },
+      { label: "Enrolled Interns", value: "620 Interns", sub: "78% PPO Conversion Rate", icon: FiUsers },
+      { label: "Monthly Stipend", value: "₹35,000 / mo", sub: "Competitive Package", icon: FiDollarSign }
     ],
     government: [
-      { label: "Scholarships Granted", value: "₹115 Crores", sub: "48,200 Beneficiaries", icon: FaLandmark },
-      { label: "District Missions", value: "124 Active", sub: "Statewide Skill Coverage", icon: FaBuildingUser },
-      { label: "Employability Index", value: "82.4%", sub: "+8.2% YoY Improvement", icon: FaArrowTrendUp },
-      { label: "Certified Skills", value: "110,000", sub: "Government Accredited", icon: FaAward }
+      { label: "Scholarships Granted", value: "₹115 Crores", sub: "48,200 Beneficiaries", icon: FiGrid },
+      { label: "District Missions", value: "124 Active", sub: "Statewide Skill Coverage", icon: FiGrid },
+      { label: "Employability Index", value: "82.4%", sub: "+8.2% YoY Improvement", icon: FiTrendingUp },
+      { label: "Certified Skills", value: "110,000", sub: "Government Accredited", icon: FiAward }
     ]
   };
 
