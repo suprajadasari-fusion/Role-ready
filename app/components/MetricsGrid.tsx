@@ -44,7 +44,7 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
   totalEntities,
   totalSeats,
   pendingCount,
-  isDarkMode = false
+  isDarkMode = false/
 }) => {
   const cardBg = isDarkMode 
     ? 'bg-slate-900 border-slate-800 text-white shadow-md hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-500/40 cursor-pointer transition-all duration-200' 
