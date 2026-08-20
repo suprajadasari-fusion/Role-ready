@@ -60,7 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       { id: 'overview', label: 'Dashboard', icon: FiGrid },
       { id: 'students', label: 'Students', icon: FiUsers },
       { id: 'teachers', label: 'Teachers', icon: FiUsers },
-      { id: 'assessments', label: 'Assessments & Career Readiness', icon: FiCheckSquare },
+      { id: 'assessments', label: 'Assessments & Readiness', icon: FiCheckSquare },
       { id: 'reports', label: 'Career Reports', icon: FiFileText },
       { id: 'events', label: 'Events & Video Sessions', icon: FiVideo },
       { id: 'analytics', label: 'Student Analytics', icon: FiTrendingUp },
@@ -166,19 +166,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           : 'border-transparent text-[#4B5563] hover:bg-[#DEE9FF]/60 hover:text-[#12163A]'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                       <Icon className={`w-4 h-4 shrink-0 transition-colors duration-150 ${
                         isActive ? 'text-[#3665EE]' : 'text-[#94A3B8]'
                       }`} />
-                      <span className="leading-none">{item.label}</span>
+                      <span className="leading-none truncate whitespace-nowrap text-left">{item.label}</span>
                     </div>
                     {item.id === 'access' && (
-                      <span className="bg-[#3665EE]/20 text-[#3665EE] text-[10px] px-2 py-0.5 rounded-full font-bold">
+                      <span className="bg-[#3665EE]/20 text-[#3665EE] text-[10px] px-2 py-0.5 rounded-full font-bold ml-2 shrink-0">
                         {totalEntities}
                       </span>
                     )}
                     {item.id === 'ai' && (
-                      <span className="bg-[#E4F4EC] text-[#12163A] text-[10px] px-2 py-0.5 rounded-full font-bold">Live</span>
+                      <span className="bg-[#E4F4EC] text-[#12163A] text-[10px] px-2 py-0.5 rounded-full font-bold ml-2 shrink-0">Live</span>
                     )}
                   </button>
                 );
@@ -198,11 +198,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   : 'border-transparent text-[#4B5563] hover:bg-[#DEE9FF]/60 hover:text-[#12163A]'
             }`}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
               <FiUser className={`w-4 h-4 shrink-0 transition-colors duration-150 ${
                 activeView === 'profile' ? 'text-[#3665EE]' : 'text-[#94A3B8]'
               }`} />
-              <span className="leading-none">Profile</span>
+              <span className="leading-none truncate whitespace-nowrap text-left">Profile</span>
             </div>
           </button>
         </div>
