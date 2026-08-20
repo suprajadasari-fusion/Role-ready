@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { RoleType } from '~/lib/types';
-import { UserPlus, X, Key } from 'lucide-react';
+import { RoleType } from '../lib/types';
+import { FiUserPlus, FiX, FiKey } from 'react-icons/fi';
 
 interface GrantAccessModalProps {
   isOpen: boolean;
@@ -101,18 +101,19 @@ export const GrantAccessModal: React.FC<GrantAccessModalProps> = ({
         <div className="px-6 py-5 bg-gradient-to-r from-blue-600 to-blue-800 text-white flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white">
-              <UserPlus className="w-5 h-5" />
+              <FiUserPlus className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-extrabold text-base">Grant Ecosystem Partner Access</h3>
+              <h3 className="font-bold text-base">Grant Ecosystem Partner Access</h3>
               <p className="text-xs text-blue-100 font-medium">Provision credentials for Schools, Colleges, Mentors, HR & Academies</p>
             </div>
           </div>
           <button 
             onClick={onClose}
+            aria-label="Close modal"
             className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition cursor-pointer"
           >
-            <X className="w-4 h-4 text-white" />
+            <FiX className="w-4 h-4 text-white" />
           </button>
         </div>
 
@@ -138,12 +139,12 @@ export const GrantAccessModal: React.FC<GrantAccessModalProps> = ({
                 onChange={(e) => setRole(e.target.value as RoleType)}
                 className={`w-full px-3.5 py-2.5 border rounded-xl focus:outline-none focus:ring-2 cursor-pointer ${inputBg}`}
               >
-                <option value="school" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>🏫 School Admin (K-12)</option>
-                <option value="college" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>🎓 College Admin (Higher Ed)</option>
-                <option value="mentor" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>👨‍🏫 Mentor / Counselor</option>
-                <option value="training" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>🏫 Training Institute</option>
-                <option value="recruiter" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>👔 Recruiter / HR Lead</option>
-                <option value="company" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>🏢 Enterprise Employer</option>
+                <option value="school" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>School Admin (K-12)</option>
+                <option value="college" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>College Admin (Higher Ed)</option>
+                <option value="mentor" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>Mentor / Counselor</option>
+                <option value="training" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>Training Institute</option>
+                <option value="recruiter" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>Recruiter / HR Lead</option>
+                <option value="company" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>Enterprise Employer</option>
               </select>
             </div>
 
@@ -218,7 +219,7 @@ export const GrantAccessModal: React.FC<GrantAccessModalProps> = ({
               type="submit"
               className="px-5 py-2.5 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20 transition cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95"
             >
-              <Key className="w-4 h-4" />
+              <FiKey className="w-4 h-4" />
               <span>Generate Credentials & Provision</span>
             </button>
           </div>

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchEntities, fetchAuditLogs, addEntity, updateEntity, deleteEntity } from '~/lib/api';
-import { RoleType, EcosystemEntity, StatusType } from '~/lib/types';
-import { Sidebar } from '~/components/Sidebar';
-import { Topbar } from '~/components/Topbar';
-import { GrantAccessModal } from '~/components/GrantAccessModal';
-import { EditModal } from '~/components/EditModal';
-import { RoleWorkspaceViews } from '~/components/RoleWorkspaceViews';
-import { SuperAdminDashboard } from '~/components/dashboards/SuperAdminDashboard';
+import { fetchEntities, fetchAuditLogs, addEntity, updateEntity, deleteEntity } from '../lib/api';
+import { RoleType, EcosystemEntity, StatusType } from '../lib/types';
+import { Sidebar } from '../components/Sidebar';
+import { Topbar } from '../components/Topbar';
+import { GrantAccessModal } from '../components/GrantAccessModal';
+import { EditModal } from '../components/EditModal';
+import { RoleWorkspaceViews } from '../components/RoleWorkspaceViews';
+import { SuperAdminDashboard } from '../components/Pages/SuperAdminDashboard';
 import { FaCircleCheck, FaPlus } from 'react-icons/fa6';
 
 export default function RoleDashboardRoute() {
@@ -169,6 +169,19 @@ export default function RoleDashboardRoute() {
       return portalNames[currentWorkspace] || 'Workspace Overview';
     }
 
+    if (activeSubView === 'profile') {
+      const profileTitles: Record<RoleType, string> = {
+        'super-admin': 'Super Admin Governance Profile & Security',
+        'school': 'School Admin Profile & Account Settings',
+        'college': 'College Admin Profile & Account Settings',
+        'mentor': 'Mentor Profile & Credentials Verification',
+        'training': 'Training Academy Profile & Credentials',
+        'recruiter': 'Recruiter Profile & Corporate Settings',
+        'company': 'Enterprise Company Profile & Verification'
+      };
+      return profileTitles[currentWorkspace] || 'User Profile & Settings';
+    }
+
     const titles: Record<string, string> = {
       'access': 'Access Provisioning & Quota Management Hub',
       'rbac': 'Role-Based Access Control (RBAC) Matrix',
@@ -190,7 +203,6 @@ export default function RoleDashboardRoute() {
       'scholarships': 'Institutional Scholarship & Aid Cell',
       'placement-cell': 'Campus Placement Cell & Drive Hub',
       'industry-connect': 'Corporate Recruiter & Industry MoUs',
-      'profile': 'Mentor Profile & Credentials Verification',
       'availability': 'Slot Booking & Availability Calendar',
       'student-requests': 'Student Counseling Booking Requests',
       'video-sessions': 'Live 1-on-1 Video Counseling Room',

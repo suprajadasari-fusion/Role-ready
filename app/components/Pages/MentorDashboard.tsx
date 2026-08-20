@@ -1,25 +1,24 @@
 import React, { useState } from 'react';
 import { 
-  FaUserCheck, 
-  FaBrain, 
-  FaCalendarDays, 
-  FaUsers, 
-  FaVideo, 
-  FaCompass, 
-  FaStar, 
-  FaWallet, 
-  FaBullhorn, 
-  FaSliders, 
-  FaPlus, 
-  FaMagnifyingGlass, 
-  FaDownload, 
-  FaCheck, 
-  FaClock, 
-  FaIndianRupeeSign, 
-  FaAward, 
-  FaLaptopCode,
-  FaFileLines
-} from 'react-icons/fa6';
+  FiUserCheck, 
+  FiCpu, 
+  FiCalendar, 
+  FiUsers, 
+  FiVideo, 
+  FiCompass, 
+  FiStar, 
+  FiCreditCard, 
+  FiBell, 
+  FiSliders, 
+  FiPlus, 
+  FiSearch, 
+  FiDownload, 
+  FiCheck, 
+  FiClock, 
+  FiDollarSign, 
+  FiAward, 
+  FiFileText 
+} from 'react-icons/fi';
 import { ActionModal } from '../ActionModal';
 
 interface MentorDashboardProps {
@@ -170,7 +169,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
 
             <div className="p-4 rounded-[20px] bg-[#DEE9FF] border border-[#C6D9FF] flex items-center justify-between text-[#12163A]">
               <div className="flex items-center gap-3">
-                <FaClock className="w-5 h-5 text-[#3665EE]" />
+                <FiClock className="w-5 h-5 text-[#3665EE]" />
                 <div>
                   <h4 className="font-bold text-sm text-[#12163A]">Next Video Counseling Session</h4>
                   <p className="text-xs text-[#4B5563]">Aarav Sharma (Grade 12-A) • AI & Machine Learning Pathway Strategy</p>
@@ -180,7 +179,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
                 onClick={() => onShowToast("Joining live video counseling session...")}
                 className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md"
               >
-                <FaVideo className="w-3.5 h-3.5" /> Start Video Session
+                <FiVideo className="w-3.5 h-3.5" /> Start Video Session
               </button>
             </div>
           </div>
@@ -195,7 +194,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-                <FaUserCheck className="w-5 h-5 text-[#3665EE]" /> Mentor Profile & Verification Credentials
+                <FiUserCheck className="w-5 h-5 text-[#3665EE]" /> Mentor Profile & Verification Credentials
               </h2>
               <p className="text-[#6B7280]">Verified mentor badge, academic degrees, and professional biography</p>
             </div>
@@ -234,7 +233,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-                <FaBrain className="w-5 h-5 text-[#3665EE]" /> Mentorship Skill Matrix & Technical Domains
+                <FiCpu className="w-5 h-5 text-[#3665EE]" /> Mentorship Skill Matrix & Technical Domains
               </h2>
               <p className="text-[#6B7280]">Expertise domains for AI-driven student matching</p>
             </div>
@@ -245,7 +244,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
               ])}
               className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
-              <FaPlus className="w-3.5 h-3.5" /> Add Mentorship Skill
+              <FiPlus className="w-3.5 h-3.5" /> Add Mentorship Skill
             </button>
           </div>
 
@@ -273,7 +272,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-                <FaCalendarDays className="w-5 h-5 text-[#3665EE]" /> Slot Booking & Availability Calendar
+                <FiCalendar className="w-5 h-5 text-[#3665EE]" /> Slot Booking & Availability Calendar
               </h2>
               <p className="text-[#6B7280]">Configure 1-on-1 counseling time slots and manage student bookings</p>
             </div>
@@ -285,7 +284,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
               ])}
               className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
-              <FaPlus className="w-3.5 h-3.5" /> Add Available Slot
+              <FiPlus className="w-3.5 h-3.5" /> Add Available Slot
             </button>
           </div>
 
@@ -320,7 +319,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-                <FaUsers className="w-5 h-5 text-[#3665EE]" /> Student Counseling Booking Requests
+                <FiUsers className="w-5 h-5 text-[#3665EE]" /> Student Counseling Booking Requests
               </h2>
               <p className="text-[#6B7280]">Review pending mentorship booking requests and neural alignment scores</p>
             </div>
@@ -362,7 +361,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-                <FaVideo className="w-5 h-5 text-[#3665EE]" /> Live 1-on-1 Video Counseling Room
+                <FiVideo className="w-5 h-5 text-[#3665EE]" /> Live 1-on-1 Video Counseling Room
               </h2>
               <p className="text-[#6B7280]">HD encrypted video room with live screen share & action plan notes</p>
             </div>
@@ -372,13 +371,13 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
               ])}
               className="bg-[#12163A] hover:bg-[#1A2050] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md"
             >
-              <FaFileLines className="w-3.5 h-3.5" /> Save Session Notes
+              <FiFileText className="w-3.5 h-3.5" /> Save Session Notes
             </button>
           </div>
 
           <div className="p-8 rounded-[24px] bg-[#12163A] text-white text-center space-y-4">
             <div className="w-16 h-16 rounded-full bg-[#3665EE] flex items-center justify-center mx-auto shadow-lg">
-              <FaVideo className="w-8 h-8 text-white" />
+              <FiVideo className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-lg font-bold">Encrypted Video Counseling Room</h3>
             <p className="text-xs text-slate-300 max-w-md mx-auto">
@@ -402,7 +401,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-                <FaCompass className="w-5 h-5 text-[#3665EE]" /> Student Assessment Review & Career Guidance
+                <FiCompass className="w-5 h-5 text-[#3665EE]" /> Student Assessment Review & Career Guidance
               </h2>
               <p className="text-[#6B7280]">Review Holland Code DNA passports & issue customized career roadmaps</p>
             </div>
@@ -413,7 +412,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
               ])}
               className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
-              <FaPlus className="w-3.5 h-3.5" /> Issue Career Action Plan
+              <FiPlus className="w-3.5 h-3.5" /> Issue Career Action Plan
             </button>
           </div>
 
@@ -442,7 +441,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
           <div className="pb-4 border-b border-slate-100">
             <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-              <FaStar className="w-5 h-5 text-amber-500" /> Student Ratings & Counselor Reviews
+              <FiStar className="w-5 h-5 text-amber-500" /> Student Ratings & Counselor Reviews
             </h2>
             <p className="text-[#6B7280]">Verified student feedback and rating breakdowns (4.9 / 5.0 Average Score)</p>
           </div>
@@ -475,7 +474,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-                <FaWallet className="w-5 h-5 text-[#3665EE]" /> Mentor Wallet & Bank Payout Desk
+                <FiCreditCard className="w-5 h-5 text-[#3665EE]" /> Mentor Wallet & Bank Payout Desk
               </h2>
               <p className="text-[#6B7280]">Track session earnings, wallet balance, & request direct bank transfers</p>
             </div>
@@ -485,7 +484,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
               ])}
               className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
-              <FaIndianRupeeSign className="w-3.5 h-3.5" /> Request Payout Withdrawal
+              <FiDollarSign className="w-3.5 h-3.5" /> Request Payout Withdrawal
             </button>
           </div>
 
@@ -517,7 +516,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-                <FaBullhorn className="w-5 h-5 text-[#3665EE]" /> Mentor Notifications & Session Reminders
+                <FiBell className="w-5 h-5 text-[#3665EE]" /> Mentor Notifications & Session Reminders
               </h2>
               <p className="text-[#6B7280]">Session alerts, booking requests, and payout confirmation receipts</p>
             </div>
@@ -550,7 +549,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
       <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
         <div className="pb-4 border-b border-slate-100">
           <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
-            <FaSliders className="w-5 h-5 text-[#3665EE]" /> Mentor Settings & Account Preferences
+            <FiSliders className="w-5 h-5 text-[#3665EE]" /> Mentor Settings & Account Preferences
           </h2>
           <p className="text-[#6B7280]">Configure session rates, camera/mic devices, & withdrawal bank details</p>
         </div>

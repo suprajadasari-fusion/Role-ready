@@ -1,7 +1,7 @@
 import React from 'react';
-import { Save, Sliders } from 'lucide-react';
-import { RBACModule } from '~/lib/types';
-import { saveRBACWeights } from '~/lib/api';
+import { FiSave, FiSliders } from 'react-icons/fi';
+import { RBACModule } from '../lib/types';
+import { saveRBACWeights } from '../lib/api';
 
 export const rbacModules: RBACModule[] = [
   { name: "AI Career Discovery & DNA Engine", key: "ai_discovery" },
@@ -22,8 +22,33 @@ interface RBACMatrixProps {
 export const RBACMatrix: React.FC<RBACMatrixProps> = ({ onSave, isDarkMode = false }) => {
   const roles = ["School", "College", "Mentor", "Training", "Recruiter", "Company", "Government"];
 
+  const [matrixState, setMatrixState] = React.useState<Record<string, Record<string, boolean>>>(() => {
+    const initialState: Record<string, Record<string, boolean>> = {};
+    rbacModules.forEach((mod, idx) => {
+      initialState[mod.key] = {};
+      roles.forEach((r, rIdx) => {
+        initialState[mod.key][r] = (idx + rIdx) % 2 === 0 || idx === 0;
+      });
+    });
+    return initialState;
+  });
+
+  const [isSaving, setIsSaving] = React.useState(false);
+
+  const handleToggle = (modKey: string, roleName: string) => {
+    setMatrixState(prev => ({
+      ...prev,
+      [modKey]: {
+        ...prev[modKey],
+        [roleName]: !prev[modKey]?.[roleName]
+      }
+    }));
+  };
+
   const handleSave = async () => {
-    await saveRBACWeights({ timestamp: new Date().toISOString(), modules: rbacModules });
+    setIsSaving(true);
+    await saveRBACWeights({ timestamp: new Date().toISOString(), modules: rbacModules, matrix: matrixState });
+    setIsSaving(false);
     onSave();
   };
 
@@ -40,7 +65,7 @@ export const RBACMatrix: React.FC<RBACMatrixProps> = ({ onSave, isDarkMode = fal
       <div className={`flex items-center justify-between mb-6 pb-4 border-b ${borderDivider}`}>
         <div>
           <div className="flex items-center gap-2">
-            <Sliders className="w-5 h-5 text-blue-500" />
+            <FiSliders className="w-5 h-5 text-blue-500" />
             <h2 className={`text-lg font-bold ${textHeading}`}>Role-Based Access Control (RBAC) Matrix</h2>
           </div>
           <p className={`text-xs mt-1 ${textMuted}`}>
@@ -49,10 +74,11 @@ export const RBACMatrix: React.FC<RBACMatrixProps> = ({ onSave, isDarkMode = fal
         </div>
         <button
           onClick={handleSave}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-md shadow-blue-500/20 transition cursor-pointer"
+          disabled={isSaving}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs px-4 py-2 rounded-xl shadow-md shadow-blue-500/20 transition cursor-pointer"
         >
-          <Save className="w-4 h-4" />
-          <span>Save Global RBAC Matrix</span>
+          <FiSave className="w-4 h-4" />
+          <span>{isSaving ? 'Saving Matrix...' : 'Save Global RBAC Matrix'}</span>
         </button>
       </div>
 
@@ -69,16 +95,18 @@ export const RBACMatrix: React.FC<RBACMatrixProps> = ({ onSave, isDarkMode = fal
             </tr>
           </thead>
           <tbody className={`divide-y ${borderDivider}`}>
-            {rbacModules.map((mod, idx) => (
+            {rbacModules.map((mod) => (
               <tr key={mod.key} className={`transition ${isDarkMode ? 'hover:bg-slate-800/60' : 'hover:bg-blue-50/40'}`}>
                 <td className={`py-4 px-4 font-bold ${textHeading}`}>{mod.name}</td>
-                {roles.map((r, rIdx) => {
-                  const isChecked = (idx + rIdx) % 2 === 0 || idx === 0;
+                {roles.map((r) => {
+                  const isChecked = !!matrixState[mod.key]?.[r];
                   return (
                     <td key={r} className="py-4 px-4 text-center">
                       <input 
                         type="checkbox" 
-                        defaultChecked={isChecked} 
+                        checked={isChecked}
+                        onChange={() => handleToggle(mod.key, r)}
+                        aria-label={`${mod.name} for ${r}`}
                         className="w-4 h-4 accent-blue-600 rounded cursor-pointer" 
                       />
                     </td>

@@ -55,3 +55,20 @@ export interface AIWeights {
   interest: number;
   market: number;
 }
+
+export interface UserProfile {
+  id: string;
+  fullName: string;
+  email: string;
+  mobile: string;
+  dob: string;
+  gender: string;
+  location: string;
+  education: string;
+  qualification: string;
+  skills: string[];
+  bio: string;
+  avatarUrl: string;
+  role: RoleType;
+  updatedAt?: string;
+}
