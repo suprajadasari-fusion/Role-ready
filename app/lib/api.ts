@@ -1,4 +1,4 @@
-import { EcosystemEntity, AuditLog, AIWeights } from './types';
+import { EcosystemEntity, AuditLog, AIWeights, UserProfile } from './types';
 
 // Optional Backend API Base URL (Configured via VITE_API_BASE_URL env or runtime config)
 const API_BASE_URL = typeof window !== 'undefined' 
@@ -391,5 +391,66 @@ export async function saveCounselingNote(studentId: string, notes: string): Prom
       localStorage.setItem('rr_counseling_notes', JSON.stringify(current));
     }
     return { studentId, notes };
+  });
+}
+
+// USER PROFILE API ENDPOINTS (GET /profile, PUT/PATCH /profile, POST /profile/photo)
+const defaultUserProfile: UserProfile = {
+  id: "usr-88902",
+  fullName: "Dr. Rajesh Sharma",
+  email: "rajesh.sharma@roleready.ai",
+  mobile: "+91 98765 43210",
+  dob: "1988-05-14",
+  gender: "Male",
+  location: "New Delhi, India",
+  education: "Ph.D. in Artificial Intelligence & Computer Science",
+  qualification: "Senior AI Strategist & Executive Mentor",
+  skills: ["AI Guidance", "Machine Learning", "Career Strategy", "Academic Leadership", "EdTech Policy"],
+  bio: "Passionate AI educator and career strategist dedicated to empowering students, schools, and institutions with next-generation career intelligence.",
+  avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80",
+  role: "super-admin"
+};
+
+export async function fetchUserProfile(): Promise<UserProfile> {
+  return apiFetch<UserProfile>('/profile', { method: 'GET' }, async () => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('rr_user_profile');
+      if (stored) {
+        try { return JSON.parse(stored); } catch (e) {}
+      }
+    }
+    return defaultUserProfile;
+  });
+}
+
+export async function updateUserProfile(updates: Partial<UserProfile>): Promise<UserProfile> {
+  return apiFetch<UserProfile>('/profile', {
+    method: 'PUT',
+    body: JSON.stringify(updates)
+  }, async () => {
+    const current = await fetchUserProfile();
+    const updated: UserProfile = {
+      ...current,
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('rr_user_profile', JSON.stringify(updated));
+    }
+    return updated;
+  });
+}
+
+export async function uploadProfilePhoto(base64OrUrl: string): Promise<{ avatarUrl: string }> {
+  return apiFetch<{ avatarUrl: string }>('/profile/photo', {
+    method: 'POST',
+    body: JSON.stringify({ avatarUrl: base64OrUrl })
+  }, async () => {
+    const current = await fetchUserProfile();
+    const updated = { ...current, avatarUrl: base64OrUrl, updatedAt: new Date().toISOString() };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('rr_user_profile', JSON.stringify(updated));
+    }
+    return { avatarUrl: base64OrUrl };
   });
 }

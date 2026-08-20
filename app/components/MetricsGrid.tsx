@@ -1,7 +1,7 @@
 import React from 'react';
 import { RoleType } from '../lib/types';
 import { 
-<<<<<<< HEAD
+
   FaBuildingUser, 
   FaUsersGear, 
   FaBrain, 
@@ -17,7 +17,7 @@ import {
   FaArrowTrendUp, 
   FaShieldHalved 
 } from 'react-icons/fa6';
-=======
+import {
   FiGrid, 
   FiUsers, 
   FiCpu, 
@@ -30,7 +30,6 @@ import {
   FiTrendingUp,
   FiShield
 } from 'react-icons/fi';
->>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
 
 interface MetricsGridProps {
   currentWorkspace: RoleType;
@@ -64,15 +63,9 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
               <FiGrid className="w-5 h-5" />
             </div>
           </div>
-<<<<<<< HEAD
           <h3 className={`text-2xl lg:text-3xl font-bold tracking-tight mb-1 ${textHeading}`}>{totalEntities}</h3>
           <span className="text-xs font-medium text-emerald-500 flex items-center gap-1">
             <FaArrowTrendUp className="w-3.5 h-3.5" /> +14.2% active growth
-=======
-          <h3 className={`text-2xl font-bold mb-1 ${textHeading}`}>{totalEntities}</h3>
-          <span className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
-            <FiTrendingUp className="w-3.5 h-3.5" /> +14.2% active growth
->>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </span>
         </div>
 
@@ -83,15 +76,9 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
               <FiUsers className="w-5 h-5" />
             </div>
           </div>
-<<<<<<< HEAD
           <h3 className={`text-2xl lg:text-3xl font-bold tracking-tight mb-1 ${textHeading}`}>{totalSeats.toLocaleString()}</h3>
           <span className="text-xs font-medium text-blue-500 flex items-center gap-1">
             <FaShieldHalved className="w-3.5 h-3.5" /> 84.6% allocated
-=======
-          <h3 className={`text-2xl font-bold mb-1 ${textHeading}`}>{totalSeats.toLocaleString()}</h3>
-          <span className="text-[11px] font-semibold text-blue-400 flex items-center gap-1">
-            <FiShield className="w-3.5 h-3.5" /> 84.6% allocated
->>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </span>
         </div>
 
@@ -102,15 +89,9 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
               <FiCpu className="w-5 h-5" />
             </div>
           </div>
-<<<<<<< HEAD
-          <h3 className={`text-2xl lg:text-3xl font-bold tracking-tight mb-1 ${textHeading}`}>2.8M</h3>
-          <span className="text-xs font-medium text-emerald-500 flex items-center gap-1">
-            <FaArrowTrendUp className="w-3.5 h-3.5" /> 99.4% Latency &lt;450ms
-=======
           <h3 className={`text-2xl font-bold mb-1 ${textHeading}`}>2.8M</h3>
           <span className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
             <FiTrendingUp className="w-3.5 h-3.5" /> 99.4% Latency &lt;450ms
->>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </span>
         </div>
 
@@ -121,13 +102,8 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
               <FiClock className="w-5 h-5" />
             </div>
           </div>
-<<<<<<< HEAD
-          <h3 className={`text-2xl lg:text-3xl font-bold tracking-tight mb-1 ${textHeading}`}>{pendingCount}</h3>
-          <span className="text-xs font-medium text-amber-500 flex items-center gap-1">
-=======
           <h3 className={`text-2xl font-bold mb-1 ${textHeading}`}>{pendingCount}</h3>
           <span className="text-[11px] font-semibold text-amber-400 flex items-center gap-1">
->>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             Action required by Admin
           </span>
         </div>

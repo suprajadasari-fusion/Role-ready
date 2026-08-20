@@ -220,13 +220,8 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-<<<<<<< HEAD
-              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
-                <FaBookOpen className="w-5 h-5 text-[#3665EE]" /> Academic Programs & Degree Tracks
-=======
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
                 <FiBookOpen className="w-5 h-5 text-[#3665EE]" /> Academic Programs & Degree Tracks
->>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Manage undergraduate, postgraduate, and doctoral degree programs</p>
             </div>
@@ -270,13 +265,8 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-<<<<<<< HEAD
-              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
-                <FaUserCheck className="w-5 h-5 text-[#3665EE]" /> College Admissions & Entrance Cutoff Hub
-=======
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
                 <FiUserCheck className="w-5 h-5 text-[#3665EE]" /> College Admissions & Entrance Cutoff Hub
->>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Configure admission drives, entrance examination ranks, & seat quotas</p>
             </div>
@@ -314,21 +304,12 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-<<<<<<< HEAD
-              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
-                <FaFileLines className="w-5 h-5 text-[#3665EE]" /> Student Application & Enrollment Pipeline
-=======
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
                 <FiFileText className="w-5 h-5 text-[#3665EE]" /> Student Application & Enrollment Pipeline
->>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Review student application forms, entrance rankings, and document verification</p>
             </div>
             <button 
-<<<<<<< HEAD
-              onClick={() => onShowToast("Exported Applications Pipeline CSV")}
-              className="px-4 py-2.5 rounded-xl font-medium text-sm border border-slate-200 bg-slate-50 text-[#12163A] hover:bg-slate-100 transition cursor-pointer flex items-center gap-2"
-=======
               onClick={() => {
                 const headers = ["Application ID", "Student Name", "Program Applied", "Entrance Score", "Document Status", "Application Status"];
                 const rows = applicationsList.map(a => [a.id, `"${a.name}"`, `"${a.program}"`, `"${a.score}"`, `"${a.docs}"`, `"${a.status}"`]);
@@ -342,7 +323,6 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
                 onShowToast("Downloaded Applications Pipeline CSV!");
               }}
               className="px-4 py-2 rounded-xl font-bold border border-slate-200 bg-slate-50 text-[#12163A] hover:bg-slate-100 transition cursor-pointer flex items-center gap-2"
->>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             >
               <FiDownload className="w-3.5 h-3.5" /> Export Applications
             </button>
@@ -397,13 +377,8 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-<<<<<<< HEAD
-              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
-                <FaAward className="w-5 h-5 text-[#3665EE]" /> Institutional Scholarship & Aid Cell
-=======
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
                 <FiAward className="w-5 h-5 text-[#3665EE]" /> Institutional Scholarship & Aid Cell
->>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">₹8.5 Crores in institutional merit aid and corporate scholarship grants</p>
             </div>
@@ -442,13 +417,8 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-<<<<<<< HEAD
-              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
-                <FaBriefcase className="w-5 h-5 text-[#3665EE]" /> Campus Placement Cell & Recruitment Hub
-=======
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
                 <FiBriefcase className="w-5 h-5 text-[#3665EE]" /> Campus Placement Cell & Recruitment Hub
->>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Manage corporate placement drives, CTC packages, & interview schedules</p>
             </div>
@@ -489,13 +459,8 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-<<<<<<< HEAD
-              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
-                <FaHandshake className="w-5 h-5 text-[#3665EE]" /> Industry Connect & Enterprise MoUs
-=======
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
                 <FiBriefcase className="w-5 h-5 text-[#3665EE]" /> Industry Connect & Enterprise MoUs
->>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Corporate partnerships, R&D labs, and summer/winter internship tracks</p>
             </div>
@@ -529,13 +494,8 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
       return (
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="pb-4 border-b border-slate-100">
-<<<<<<< HEAD
-            <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
-              <FaArrowTrendUp className="w-5 h-5 text-[#3665EE]" /> Institutional Performance & Placement Analytics
-=======
             <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
               <FiTrendingUp className="w-5 h-5 text-[#3665EE]" /> Institutional Performance & Placement Analytics
->>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             </h2>
             <p className="text-sm font-normal text-[#6B7280]">Placement trends, NIRF benchmarks, and corporate compensation distributions</p>
           </div>
@@ -564,13 +524,8 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-<<<<<<< HEAD
-              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
-                <FaBullhorn className="w-5 h-5 text-[#3665EE]" /> College Admin Notifications & Announcements
-=======
               <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
                 <FiBell className="w-5 h-5 text-[#3665EE]" /> College Admin Notifications & Announcements
->>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Placement deadlines, MoU updates, and institutional accreditation alerts</p>
             </div>
@@ -602,13 +557,8 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
     return (
       <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
         <div className="pb-4 border-b border-slate-100">
-<<<<<<< HEAD
-          <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
-            <FaSliders className="w-5 h-5 text-[#3665EE]" /> College Governance & System Settings
-=======
           <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
             <FiSliders className="w-5 h-5 text-[#3665EE]" /> College Governance & System Settings
->>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </h2>
           <p className="text-sm font-normal text-[#6B7280]">Configure institutional profile, academic year, campus settings, & user permissions</p>
         </div>

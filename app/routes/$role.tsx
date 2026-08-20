@@ -176,6 +176,19 @@ export default function RoleDashboardRoute() {
       return portalNames[currentWorkspace] || 'Workspace Overview';
     }
 
+    if (activeSubView === 'profile') {
+      const profileTitles: Record<RoleType, string> = {
+        'super-admin': 'Super Admin Governance Profile & Security',
+        'school': 'School Admin Profile & Account Settings',
+        'college': 'College Admin Profile & Account Settings',
+        'mentor': 'Mentor Profile & Credentials Verification',
+        'training': 'Training Academy Profile & Credentials',
+        'recruiter': 'Recruiter Profile & Corporate Settings',
+        'company': 'Enterprise Company Profile & Verification'
+      };
+      return profileTitles[currentWorkspace] || 'User Profile & Settings';
+    }
+
     const titles: Record<string, string> = {
       'discover': 'Career Discovery & Neural Alignment Engine',
       'scholarships': 'Scholarships & Institutional Merit Aid Cell',
