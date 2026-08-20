@@ -5,6 +5,7 @@ import { EntitiesTable } from '../EntitiesTable';
 import { RBACMatrix } from '../RBACMatrix';
 import { AIEngineConfig } from '../AIEngineConfig';
 import { AuditFeed } from '../AuditFeed';
+import { UserProfileView } from '../profile/UserProfileView';
 import { 
   FiShield, 
   FiBookOpen, 
@@ -91,7 +92,12 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
     return <AuditFeed logs={auditLogs} showFullTable={true} isDarkMode={isDarkMode} />;
   }
 
-  // 5. SUPER ADMIN OVERVIEW DASHBOARD PAGE
+  // 5. DEDICATED SUPER ADMIN PROFILE PAGE
+  if (activeSubView === 'profile') {
+    return <UserProfileView onShowToast={onShowToast} isDarkMode={isDarkMode} />;
+  }
+
+  // 6. SUPER ADMIN OVERVIEW DASHBOARD PAGE
   return (
     <div className="space-y-8 font-sans">
       <MetricsGrid

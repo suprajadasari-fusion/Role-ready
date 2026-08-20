@@ -6,6 +6,7 @@ import { MentorDashboard } from './dashboards/MentorDashboard';
 import { TrainingDashboard } from './dashboards/TrainingDashboard';
 import { RecruiterDashboard } from './dashboards/RecruiterDashboard';
 import { CompanyDashboard } from './dashboards/CompanyDashboard';
+import { UserProfileView } from './profile/UserProfileView';
 
 interface RoleWorkspaceViewsProps {
   currentWorkspace: RoleType;
@@ -20,6 +21,10 @@ export const RoleWorkspaceViews: React.FC<RoleWorkspaceViewsProps> = ({
   onShowToast,
   isDarkMode = false
 }) => {
+  if (activeSubView === 'profile') {
+    return <UserProfileView onShowToast={onShowToast} isDarkMode={isDarkMode} />;
+  }
+
   switch (currentWorkspace) {
     case 'school':
       return <SchoolDashboard activeSubView={activeSubView} onShowToast={onShowToast} isDarkMode={isDarkMode} />;
