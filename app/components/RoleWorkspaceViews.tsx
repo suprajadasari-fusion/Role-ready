@@ -1,11 +1,11 @@
 import React from 'react';
 import { RoleType } from '../lib/types';
-import { SchoolDashboard } from './dashboards/SchoolDashboard';
-import { CollegeDashboard } from './dashboards/CollegeDashboard';
-import { MentorDashboard } from './dashboards/MentorDashboard';
-import { TrainingDashboard } from './dashboards/TrainingDashboard';
-import { RecruiterDashboard } from './dashboards/RecruiterDashboard';
-import { CompanyDashboard } from './dashboards/CompanyDashboard';
+import { SchoolDashboard } from './Pages/SchoolDashboard';
+import { CollegeDashboard } from './Pages/CollegeDashboard';
+import { MentorDashboard } from './Pages/MentorDashboard';
+import { TrainingDashboard } from './Pages/TrainingDashboard';
+import { RecruiterDashboard } from './Pages/RecruiterDashboard';
+import { CompanyDashboard } from './Pages/CompanyDashboard';
 import { UserProfileView } from './profile/UserProfileView';
 
 interface RoleWorkspaceViewsProps {

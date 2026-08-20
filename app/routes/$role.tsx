@@ -8,7 +8,7 @@ import { Topbar } from '../components/Topbar';
 import { GrantAccessModal } from '../components/GrantAccessModal';
 import { EditModal } from '../components/EditModal';
 import { RoleWorkspaceViews } from '../components/RoleWorkspaceViews';
-import { SuperAdminDashboard } from '../components/dashboards/SuperAdminDashboard';
+import { SuperAdminDashboard } from '../components/Pages/SuperAdminDashboard';
 import { FaCircleCheck, FaPlus } from 'react-icons/fa6';
 
 export default function RoleDashboardRoute() {
