@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { EcosystemEntity, StatusType } from '~/lib/types';
-import { Edit3, X, Save } from 'lucide-react';
+import { EcosystemEntity, StatusType } from '../lib/types';
+import { FiEdit2, FiX, FiSave } from 'react-icons/fi';
 
 interface EditModalProps {
   entity: EcosystemEntity | null;
@@ -70,14 +70,19 @@ export const EditModal: React.FC<EditModalProps> = ({
       <div className={`rounded-3xl max-w-md w-full border shadow-2xl overflow-hidden animate-scale-up ${cardBg}`}>
         <div className="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <Edit3 className="w-5 h-5" />
+            <FiEdit2 className="w-5 h-5" />
             <div>
+<<<<<<< HEAD
               <h3 className="font-semibold text-base">Approval Pipeline: {entity.name}</h3>
               <p className="text-xs text-blue-100 font-normal">Super Admin authorization & verification pipeline</p>
+=======
+              <h3 className="font-bold text-sm">Approval Pipeline: {entity.name}</h3>
+              <p className="text-[11px] text-blue-100">Super Admin authorization & verification pipeline</p>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             </div>
           </div>
-          <button onClick={onClose} className="p-1 rounded-lg bg-white/10 hover:bg-white/20 transition cursor-pointer">
-            <X className="w-4 h-4 text-white" />
+          <button onClick={onClose} aria-label="Close modal" className="p-1 rounded-lg bg-white/10 hover:bg-white/20 transition cursor-pointer">
+            <FiX className="w-4 h-4 text-white" />
           </button>
         </div>
 
@@ -142,7 +147,7 @@ export const EditModal: React.FC<EditModalProps> = ({
               type="submit"
               className="px-4 py-2 rounded-xl text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white shadow-md transition cursor-pointer flex items-center gap-1.5 hover:scale-105 active:scale-95"
             >
-              <Save className="w-3.5 h-3.5" />
+              <FiSave className="w-3.5 h-3.5" />
               <span>Save Changes</span>
             </button>
           </div>

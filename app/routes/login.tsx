@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { RoleType } from '~/lib/types';
+import { RoleType } from '../lib/types';
 import { 
+<<<<<<< HEAD
   FaCompass, 
   FaEnvelope, 
   FaLock, 
@@ -20,6 +21,24 @@ import {
   FaMobileScreen,
   FaKey
 } from 'react-icons/fa6';
+=======
+  FiCompass, 
+  FiMail, 
+  FiLock, 
+  FiEye, 
+  FiEyeOff, 
+  FiArrowRight, 
+  FiShield, 
+  FiBookOpen, 
+  FiAward, 
+  FiUserCheck, 
+  FiUsers, 
+  FiBriefcase, 
+  FiGrid, 
+  FiCheckCircle,
+  FiZap
+} from 'react-icons/fi';
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
 
 export default function LoginRoute() {
   const navigate = useNavigate();
@@ -50,6 +69,7 @@ export default function LoginRoute() {
     phone: string;
     icon: any;
   }> = [
+<<<<<<< HEAD
     { role: 'super-admin', label: 'Super Admin', email: 'admin@roleready.ai', password: 'Super#Admin2026!', phone: '+91 98111 22233', icon: FaShieldHalved },
     { role: 'school', label: 'School Admin', email: 'principal@dpsrkp.edu.in', password: 'School#DPS2026!', phone: '+91 98222 33344', icon: FaSchool },
     { role: 'college', label: 'College Placement', email: 'placements@iitb.ac.in', password: 'IITB#College2026!', phone: '+91 98333 44455', icon: FaGraduationCap },
@@ -57,16 +77,29 @@ export default function LoginRoute() {
     { role: 'training', label: 'Training Institute', email: 'director@apexskill.org', password: 'Apex#Training2026!', phone: '+91 98555 66677', icon: FaChalkboardUser },
     { role: 'recruiter', label: 'Talent Recruiter', email: 'priya_v@infosys.com', password: 'Infosys#Recruit2026!', phone: '+91 98666 77788', icon: FaBriefcase },
     { role: 'company', label: 'Enterprise Company', email: 'careers@tcs.com', password: 'TCS#Enterprise2026!', phone: '+91 98777 88899', icon: FaBuilding }
+=======
+    { role: 'super-admin', label: 'Super Admin', email: 'admin@roleready.ai', password: 'Super#Admin2026!', icon: FiShield, color: 'bg-blue-600' },
+    { role: 'school', label: 'School Admin', email: 'principal@dpsrkp.edu.in', password: 'School#DPS2026!', icon: FiBookOpen, color: 'bg-blue-600' },
+    { role: 'college', label: 'College Placement', email: 'placements@iitb.ac.in', password: 'IITB#College2026!', icon: FiAward, color: 'bg-blue-600' },
+    { role: 'mentor', label: 'Mentor Counselor', email: 'r.sharma@careerguider.org', password: 'Mentor#Sharma2026!', icon: FiUserCheck, color: 'bg-blue-600' },
+    { role: 'training', label: 'Training Institute', email: 'director@apexskill.org', password: 'Apex#Training2026!', icon: FiGrid, color: 'bg-blue-600' },
+    { role: 'recruiter', label: 'Talent Recruiter', email: 'priya_v@infosys.com', password: 'Infosys#Recruit2026!', icon: FiBriefcase, color: 'bg-blue-600' },
+    { role: 'company', label: 'Enterprise Company', email: 'careers@tcs.com', password: 'TCS#Enterprise2026!', icon: FiGrid, color: 'bg-blue-600' }
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
   ];
 
   const handleSelectDemo = (acc: typeof demoAccounts[0]) => {
     setSelectedRole(acc.role);
     setEmail(acc.email);
     setPassword(acc.password);
+<<<<<<< HEAD
     setPhoneNumber(acc.phone);
     setOtpCode('849201');
     setOtpSent(true);
     setToastMessage(`Auto-filled demo credentials for ${acc.label}`);
+=======
+    setToastMessage(`Auto-filled credentials for ${acc.label}`);
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
     setTimeout(() => setToastMessage(null), 3000);
   };
 
@@ -84,6 +117,7 @@ export default function LoginRoute() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+<<<<<<< HEAD
 
     if (authMethod === 'email' && !email) {
       setToastMessage('Please enter an official email address.');
@@ -96,6 +130,9 @@ export default function LoginRoute() {
       setTimeout(() => setToastMessage(null), 3000);
       return;
     }
+=======
+    if (!email || !password) return;
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
 
     setIsLoading(true);
     if (typeof window !== 'undefined') {
@@ -116,8 +153,13 @@ export default function LoginRoute() {
 
       {/* Toast Notification Banner */}
       {toastMessage && (
+<<<<<<< HEAD
         <div className="fixed top-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 animate-bounce max-w-md">
           <FaCircleCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+=======
+        <div className="fixed top-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 animate-bounce">
+          <FiCheckCircle className="w-4 h-4 text-emerald-400" />
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           <span>{toastMessage}</span>
         </div>
       )}
@@ -131,7 +173,7 @@ export default function LoginRoute() {
           <div>
             <div className="flex items-center gap-3 mb-8">
               <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white border border-white/20 shadow-lg">
-                <FaCompass className="w-7 h-7" />
+                <FiCompass className="w-7 h-7" />
               </div>
               <div>
                 <h1 className="font-extrabold text-2xl tracking-tight text-white">Role Ready</h1>
@@ -141,7 +183,11 @@ export default function LoginRoute() {
 
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-bold">
+<<<<<<< HEAD
                 <FaWandMagicSparkles className="w-3.5 h-3.5 text-blue-300" /> Authentication & Authorization
+=======
+                <FiZap className="w-3.5 h-3.5 text-blue-300" /> Multi-Role Enterprise Portal
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </div>
               <h2 className="text-2xl lg:text-3xl font-extrabold leading-tight tracking-tight text-white">
                 Multi-Channel Secure Access Portal
@@ -154,12 +200,17 @@ export default function LoginRoute() {
 
           <div className="mt-8 pt-6 border-t border-blue-500/20 text-xs text-blue-200/80 space-y-2">
             <div className="flex items-center gap-2">
-              <FaShieldHalved className="w-4 h-4 text-emerald-400" />
+              <FiShield className="w-4 h-4 text-emerald-400" />
               <span>Role-Based Access Control (RBAC) Active</span>
             </div>
             <div className="flex items-center gap-2">
+<<<<<<< HEAD
               <FaCircleCheck className="w-4 h-4 text-emerald-400" />
               <span>Multi-Factor Mobile OTP & SSL Encrypted</span>
+=======
+              <FiCheckCircle className="w-4 h-4 text-emerald-400" />
+              <span>TanStack Query State Sync Operational</span>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             </div>
           </div>
         </div>
@@ -228,7 +279,7 @@ export default function LoginRoute() {
                     >
                       <div className="flex items-center justify-between mb-1">
                         <Icon className={`w-4 h-4 ${isSelected ? 'text-blue-600' : 'text-slate-500'}`} />
-                        {isSelected && <FaCircleCheck className="w-3.5 h-3.5 text-blue-600" />}
+                        {isSelected && <FiCheckCircle className="w-3.5 h-3.5 text-blue-600" />}
                       </div>
                       <span className="text-[11px] font-bold truncate">{acc.label}</span>
                     </button>
@@ -239,6 +290,7 @@ export default function LoginRoute() {
 
             {/* Main Login Form */}
             <form onSubmit={handleLogin} className="space-y-4 text-xs">
+<<<<<<< HEAD
               {authMethod === 'email' ? (
                 /* EMAIL LOGIN METHOD */
                 <>
@@ -340,6 +392,57 @@ export default function LoginRoute() {
                   </div>
                 </>
               )}
+=======
+              <div>
+                <label className="block font-bold text-slate-700 mb-1.5">Official Admin Email Address</label>
+                <div className="relative">
+                  <FiMail className="w-4 h-4 text-blue-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="admin@roleready.ai"
+                    className="w-full pl-10 pr-4 py-2.5 bg-blue-50/40 border border-blue-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="font-bold text-slate-700">Account Password</label>
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      setToastMessage("Password reset link dispatched!");
+                      setTimeout(() => setToastMessage(null), 3000);
+                    }}
+                    className="text-blue-600 hover:underline text-[11px] font-semibold cursor-pointer"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+                <div className="relative">
+                  <FiLock className="w-4 h-4 text-blue-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••••••"
+                    className="w-full pl-10 pr-10 py-2.5 bg-blue-50/40 border border-blue-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+                  />
+                  <button
+                    type="button"
+                    aria-label="Toggle password visibility"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 cursor-pointer"
+                  >
+                    {showPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
 
               <div className="flex items-center justify-between pt-1">
                 <label className="flex items-center gap-2 cursor-pointer text-slate-600 font-medium">
@@ -363,7 +466,7 @@ export default function LoginRoute() {
                 ) : (
                   <>
                     <span>Sign In to {selectedRole.toUpperCase()} Workspace</span>
-                    <FaArrowRight className="w-4 h-4" />
+                    <FiArrowRight className="w-4 h-4" />
                   </>
                 )}
               </button>

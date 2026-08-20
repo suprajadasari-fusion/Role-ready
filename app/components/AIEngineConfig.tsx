@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Brain, Sliders, CheckCircle2 } from 'lucide-react';
-import { saveAIWeights } from '~/lib/api';
+import { FiCpu, FiSliders, FiCheckCircle } from 'react-icons/fi';
+import { saveAIWeights } from '../lib/api';
 
 interface AIEngineConfigProps {
   onSaveWeights: () => void;
@@ -11,9 +11,12 @@ export const AIEngineConfig: React.FC<AIEngineConfigProps> = ({ onSaveWeights, i
   const [aptitude, setAptitude] = useState(40);
   const [interest, setInterest] = useState(35);
   const [market, setMarket] = useState(25);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
+    setIsSaving(true);
     await saveAIWeights({ aptitude, interest, market });
+    setIsSaving(false);
     onSaveWeights();
   };
 
@@ -34,19 +37,33 @@ export const AIEngineConfig: React.FC<AIEngineConfigProps> = ({ onSaveWeights, i
       <div className={`rounded-2xl border p-6 transition-colors duration-200 ${cardClass}`}>
         <div className={`flex items-center justify-between mb-4 pb-3 border-b ${borderDivider}`}>
           <div className="flex items-center gap-2">
+<<<<<<< HEAD
             <Brain className="w-5 h-5 text-blue-500 animate-pulse" />
             <h2 className={`text-lg font-semibold ${textHeading}`}>AI Career Intelligence Engine Configuration</h2>
           </div>
           <span className="bg-emerald-500/20 text-emerald-400 text-xs font-medium px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Custom ML Models Operational
+=======
+            <FiCpu className="w-5 h-5 text-blue-500 animate-pulse" />
+            <h2 className={`text-lg font-bold ${textHeading}`}>AI Career Intelligence Engine Configuration</h2>
+          </div>
+          <span className="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5">
+            <FiCheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Custom ML Models Operational
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
           {/* Slider Tuning Form */}
+<<<<<<< HEAD
           <div className="space-y-5">
             <h3 className={`font-semibold text-base flex items-center gap-2 ${textHeading}`}>
               <Sliders className="w-4 h-4 text-blue-500" />
+=======
+          <div className="space-y-5 text-xs">
+            <h3 className={`font-bold text-sm flex items-center gap-2 ${textHeading}`}>
+              <FiSliders className="w-4 h-4 text-blue-500" />
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               Algorithm Weighting Parameters
             </h3>
 
@@ -97,9 +114,14 @@ export const AIEngineConfig: React.FC<AIEngineConfigProps> = ({ onSaveWeights, i
 
             <button
               onClick={handleSave}
+<<<<<<< HEAD
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm py-2.5 rounded-xl transition cursor-pointer shadow-md shadow-blue-500/20"
+=======
+              disabled={isSaving}
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-2.5 rounded-xl transition cursor-pointer"
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             >
-              Apply AI Recommendation Weights
+              {isSaving ? 'Applying AI Weights...' : 'Apply AI Recommendation Weights'}
             </button>
           </div>
 

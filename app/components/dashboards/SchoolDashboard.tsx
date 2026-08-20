@@ -1,31 +1,33 @@
 import React, { useState } from 'react';
 import { 
-  FaChartPie, 
-  FaUsers, 
-  FaChalkboardUser, 
-  FaListCheck, 
-  FaFileLines, 
-  FaCalendarDays, 
-  FaArrowTrendUp, 
-  FaBrain, 
-  FaBriefcase, 
-  FaBullhorn, 
-  FaSliders, 
-  FaPlus, 
-  FaMagnifyingGlass, 
-  FaFilter, 
-  FaDownload, 
-  FaEye, 
-  FaCheck, 
-  FaXmark, 
-  FaAward, 
-  FaGraduationCap, 
-  FaBookOpen, 
-  FaStar, 
-  FaCircleExclamation, 
-  FaUserCheck 
-} from 'react-icons/fa6';
+  FiPieChart, 
+  FiUsers, 
+  FiGrid, 
+  FiCheckSquare, 
+  FiFileText, 
+  FiCalendar, 
+  FiTrendingUp, 
+  FiCpu, 
+  FiBriefcase, 
+  FiBell, 
+  FiSliders, 
+  FiPlus, 
+  FiSearch, 
+  FiFilter, 
+  FiDownload, 
+  FiEye, 
+  FiCheck, 
+  FiX, 
+  FiAward, 
+  FiBookOpen, 
+  FiStar, 
+  FiAlertCircle, 
+  FiUserCheck,
+  FiEdit2,
+  FiVideo
+} from 'react-icons/fi';
 import { ActionModal } from '../ActionModal';
+import { VideoCallModal } from '../VideoCallModal';
 
 interface SchoolDashboardProps {
   activeSubView: string;
@@ -44,6 +46,28 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
   const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
   const [selectedTeacher, setSelectedTeacher] = useState<any | null>(null);
   const [studentDetailTab, setStudentDetailTab] = useState<string>('overview');
+
+  // Video Call Modal State
+  const [isVideoCallOpen, setIsVideoCallOpen] = useState(false);
+  const [videoSessionConfig, setVideoSessionConfig] = useState({
+    title: 'Global AI & STEM Career Guidance Workshop',
+    hostName: 'Dr. Rajesh Verma (IIT Delhi)'
+  });
+
+  // Edit Modal States
+  const [editingStudent, setEditingStudent] = useState<any | null>(null);
+  const [editingTeacher, setEditingTeacher] = useState<any | null>(null);
+  const [isEditingSchoolProfile, setIsEditingSchoolProfile] = useState(false);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+
+  const [schoolProfile, setSchoolProfile] = useState({
+    name: "St. Xavier's International School",
+    affiliation: "CBSE Affiliation #10301 Verified",
+    principal: "Dr. A. K. Sharma",
+    email: "principal@stxaviers.edu",
+    year: "2026-2027"
+  });
+
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
   const [actionModalConfig, setActionModalConfig] = useState<{ title: string; subtitle: string; fields: any[] }>({
     title: '',
@@ -332,6 +356,63 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
     setIsActionModalOpen(false);
   };
 
+  // Handle Save Student Changes
+  const handleSaveStudentEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingStudent) return;
+
+    if (!editingStudent.name || !editingStudent.email || !editingStudent.careerGoal) {
+      onShowToast("Please fill out all required student fields!");
+      return;
+    }
+
+    setIsSavingEdit(true);
+
+    setTimeout(() => {
+      setStudents(prev => prev.map(s => s.id === editingStudent.id ? { ...s, ...editingStudent } : s));
+      if (selectedStudent && selectedStudent.id === editingStudent.id) {
+        setSelectedStudent((prev: any) => (prev ? { ...prev, ...editingStudent } : null));
+      }
+      setIsSavingEdit(false);
+      onShowToast(`Successfully saved changes for ${editingStudent.name} (${editingStudent.id})!`);
+      setEditingStudent(null);
+    }, 450);
+  };
+
+  // Handle Save Teacher Changes
+  const handleSaveTeacherEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTeacher) return;
+
+    if (!editingTeacher.name || !editingTeacher.email || !editingTeacher.dept) {
+      onShowToast("Please fill out all required teacher fields!");
+      return;
+    }
+
+    setIsSavingEdit(true);
+
+    setTimeout(() => {
+      setTeachersList(prev => prev.map(t => t.id === editingTeacher.id ? { ...t, ...editingTeacher } : t));
+      if (selectedTeacher && selectedTeacher.id === editingTeacher.id) {
+        setSelectedTeacher((prev: any) => (prev ? { ...prev, ...editingTeacher } : null));
+      }
+      setIsSavingEdit(false);
+      onShowToast(`Updated faculty profile for ${editingTeacher.name} (${editingTeacher.id})!`);
+      setEditingTeacher(null);
+    }, 450);
+  };
+
+  // Handle Save School Profile
+  const handleSaveSchoolProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingEdit(true);
+    setTimeout(() => {
+      setIsSavingEdit(false);
+      setIsEditingSchoolProfile(false);
+      onShowToast("Successfully updated School Profile & Accreditation details!");
+    }, 450);
+  };
+
   const renderContent = () => {
     // 1. DASHBOARD OVERVIEW
     if (activeSubView === 'overview') {
@@ -430,8 +511,13 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
           <div className="p-6 rounded-[24px] bg-white border border-slate-200 shadow-xs space-y-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
+<<<<<<< HEAD
                 <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                   <FaUsers className="w-5 h-5 text-[#3665EE]" /> Student Roster (Grades 8 - 12)
+=======
+                <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+                  <FiUsers className="w-5 h-5 text-[#3665EE]" /> Student Roster (Grades 8 - 12)
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
                 </h2>
                 <p className="text-sm font-normal text-[#6B7280]">School admin management for registered student profiles</p>
               </div>
@@ -445,13 +531,17 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                   ])}
                   className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2.5 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
                 >
-                  <FaPlus className="w-3.5 h-3.5" /> Onboard Student Batch
+                  <FiPlus className="w-3.5 h-3.5" /> Onboard Student Batch
                 </button>
                 <button 
                   onClick={() => onShowToast("Exported Grade Roster to CSV")}
                   className="px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 bg-slate-50 text-[#12163A] hover:bg-slate-100 transition cursor-pointer flex items-center gap-2"
                 >
+<<<<<<< HEAD
                   <FaDownload className="w-3.5 h-3.5" /> Export CSV
+=======
+                  <FiDownload className="w-3.5 h-3.5" /> Export Roster
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
                 </button>
               </div>
             </div>
@@ -483,6 +573,10 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-9 pr-3 py-1.5 border border-slate-200 rounded-xl text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#3665EE] bg-slate-50 text-[#12163A]"
                 />
+<<<<<<< HEAD
+=======
+                <FiSearch className="w-3.5 h-3.5 absolute left-3 top-3 text-slate-400" />
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </div>
             </div>
 
@@ -527,12 +621,33 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                         </span>
                       </td>
                       <td className="p-3.5 text-right">
+<<<<<<< HEAD
                         <button
                           onClick={() => setSelectedStudent(s)}
                           className="bg-[#12163A] hover:bg-[#1A2050] text-white font-medium px-3 py-1.5 rounded-lg text-xs transition cursor-pointer flex items-center gap-1.5 ml-auto hover:scale-105 active:scale-95"
                         >
                           <FaEye className="w-3.5 h-3.5" /> View Profile
                         </button>
+=======
+                        <div className="flex items-center justify-end gap-1.5 ml-auto">
+                          <button 
+                            onClick={() => setEditingStudent({ ...s })}
+                            className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-2.5 py-1.5 rounded-lg text-[10px] transition cursor-pointer flex items-center gap-1 hover:scale-105 active:scale-95 shadow-xs"
+                            title={`Edit ${s.name}'s Profile`}
+                          >
+                            <FiEdit2 className="w-3 h-3" /> Edit
+                          </button>
+                          <button 
+                            onClick={() => {
+                              setSelectedStudent(s);
+                              setStudentDetailTab('overview');
+                            }}
+                            className="bg-[#12163A] hover:bg-[#1A2050] text-white font-bold px-2.5 py-1.5 rounded-lg text-[10px] transition cursor-pointer flex items-center gap-1 hover:scale-105 active:scale-95 shadow-xs"
+                          >
+                            <FiEye className="w-3 h-3" /> View
+                          </button>
+                        </div>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
                       </td>
                     </tr>
                   ))}
@@ -552,12 +667,29 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                     <h3 className="text-xl font-bold flex items-center gap-2">{selectedStudent.name}</h3>
                     <p className="text-xs text-slate-300 font-normal">{selectedStudent.grade} • {selectedStudent.section} • Roll ID: {selectedStudent.id}</p>
                   </div>
+<<<<<<< HEAD
                   <button 
                     onClick={() => setSelectedStudent(null)} 
                     className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition cursor-pointer text-white"
                   >
                     <FaXmark className="w-4 h-4" />
                   </button>
+=======
+                  <div className="flex items-center gap-3">
+                    <button 
+                      onClick={() => setEditingStudent({ ...selectedStudent })}
+                      className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 transition cursor-pointer shadow-md hover:scale-105 active:scale-95"
+                    >
+                      <FiEdit2 className="w-3.5 h-3.5" /> Edit Profile
+                    </button>
+                    <button 
+                      onClick={() => setSelectedStudent(null)}
+                      className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition cursor-pointer text-white"
+                    >
+                      <FiX className="w-4 h-4" />
+                    </button>
+                  </div>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
                 </div>
 
                 {/* Modal Navigation Tabs */}
@@ -683,8 +815,13 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
+<<<<<<< HEAD
               <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaChalkboardUser className="w-5 h-5 text-[#3665EE]" /> Teacher & Faculty Management
+=======
+              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+                <FiGrid className="w-5 h-5 text-[#3665EE]" /> Teacher & Faculty Management
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">142 Registered school teachers & career mentors across departments</p>
             </div>
@@ -698,7 +835,7 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
               ])}
               className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md"
             >
-              <FaPlus className="w-3.5 h-3.5" /> Add Teacher
+              <FiPlus className="w-3.5 h-3.5" /> Add Teacher
             </button>
           </div>
 
@@ -710,12 +847,30 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                   <span className="text-[#3665EE] font-medium text-xs">{t.dept} • {t.subject}</span>
                   <div className="text-xs text-[#4B5563] font-normal">{t.classes} • Assigned: {t.studentsCount}</div>
                 </div>
+<<<<<<< HEAD
                 <button 
                   onClick={() => setSelectedTeacher(t)}
                   className="bg-[#12163A] hover:bg-[#1A2050] text-white font-medium text-xs px-3.5 py-1.5 rounded-xl cursor-pointer transition hover:scale-105 active:scale-95 shadow-md flex items-center gap-1.5"
                 >
                   <FaEye className="w-3.5 h-3.5" /> View Teacher
                 </button>
+=======
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setEditingTeacher({ ...t })}
+                    className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-3 py-1.5 rounded-xl cursor-pointer transition hover:scale-105 active:scale-95 shadow-md flex items-center gap-1.5"
+                    title={`Edit ${t.name}'s Profile`}
+                  >
+                    <FiEdit2 className="w-3.5 h-3.5" /> Edit
+                  </button>
+                  <button 
+                    onClick={() => setSelectedTeacher(t)}
+                    className="bg-[#12163A] hover:bg-[#1A2050] text-white font-bold px-3.5 py-1.5 rounded-xl cursor-pointer transition hover:scale-105 active:scale-95 shadow-md flex items-center gap-1.5"
+                  >
+                    <FiEye className="w-3.5 h-3.5" /> View
+                  </button>
+                </div>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </div>
             ))}
           </div>
@@ -729,8 +884,13 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
+<<<<<<< HEAD
               <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaListCheck className="w-5 h-5 text-[#3665EE]" /> Assessments & Career Readiness Control
+=======
+              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+                <FiCheckSquare className="w-5 h-5 text-[#3665EE]" /> Assessments & Career Readiness Control
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Manage interest assessments, psychometric tests, and aptitude evaluations</p>
             </div>
@@ -741,7 +901,7 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
               ])}
               className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md"
             >
-              <FaPlus className="w-3.5 h-3.5" /> Assign Assessment
+              <FiPlus className="w-3.5 h-3.5" /> Assign Assessment
             </button>
           </div>
 
@@ -769,13 +929,23 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
+<<<<<<< HEAD
               <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaFileLines className="w-5 h-5 text-[#3665EE]" /> Institutional Career & AI Intelligence Reports
+=======
+              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+                <FiFileText className="w-5 h-5 text-[#3665EE]" /> Institutional Career & AI Intelligence Reports
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">School-wide intelligence summaries, skill gap matrices, and AI recommendation distribution</p>
             </div>
+<<<<<<< HEAD
             <button onClick={() => onShowToast("Generated full School Career Intelligence PDF Report")} className="bg-[#12163A] hover:bg-[#1A2050] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md">
               <FaDownload className="w-3.5 h-3.5" /> Download Full PDF Report
+=======
+            <button onClick={() => onShowToast("Generated full School Career Intelligence PDF Report")} className="bg-[#12163A] hover:bg-[#1A2050] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md">
+              <FiDownload className="w-3.5 h-3.5" /> Download Full PDF Report
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             </button>
           </div>
 
@@ -801,20 +971,32 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
+<<<<<<< HEAD
               <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaCalendarDays className="w-5 h-5 text-[#3665EE]" /> Career Events & Guidance Sessions
+=======
+              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+                <FiCalendar className="w-5 h-5 text-[#3665EE]" /> Career Events & Guidance Sessions
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Schedule and manage career workshops, college awareness, & parent guidance</p>
             </div>
             <button onClick={() => openTriggerModal("Schedule Event", "Create a new school guidance workshop", [
+<<<<<<< HEAD
               { label: "Event Title", name: "title", type: "text", placeholder: "IIT Admissions Workshop" },
               { label: "Date & Time", name: "date", type: "text", placeholder: "Tomorrow, 10:00 AM" }
             ])} className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md">
               <FaPlus className="w-3.5 h-3.5" /> Schedule Event
+=======
+              { label: "Event Title", name: "title", type: "text", placeholder: "IIT Admissions Workshop" }
+            ])} className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md">
+              <FiPlus className="w-3.5 h-3.5" /> Schedule Event
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             </button>
           </div>
 
           <div className="space-y-3">
+<<<<<<< HEAD
             {eventsList.map((ev, i) => (
               <div key={i} className={`p-4 rounded-[20px] border flex items-center justify-between ${ev.bg} ${ev.border} text-[#12163A]`}>
                 <div>
@@ -822,6 +1004,31 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                   <span className="text-[#3665EE] font-medium text-xs">{ev.date} • {ev.attendees}</span>
                 </div>
                 <span className="bg-[#12163A] text-white font-medium text-xs px-3 py-1 rounded-full">Upcoming</span>
+=======
+            {[
+              { title: "Global AI & STEM Career Workshop", date: "Live Now • 10:00 AM", attendees: "450 Students Enrolled", host: "Dr. Rajesh Verma (IIT Delhi)", bg: "bg-[#E4F4EC]", border: "border-[#C3E6D5]" },
+              { title: "Parent Career Guidance Seminar", date: "Live Now • 4:00 PM", attendees: "680 Parents Enrolled", host: "Prof. Sunita Rao (AIIMS)", bg: "bg-[#DEE9FF]", border: "border-[#C6D9FF]" },
+              { title: "IIT & BITS Admission Strategy Session", date: "Upcoming • Tomorrow, 11:00 AM", attendees: "320 Students Enrolled", host: "Ketan Mehta (ISI Kolkata)", bg: "bg-[#F6E6D8]", border: "border-[#EAD0BC]" }
+            ].map((ev, i) => (
+              <div key={i} className={`p-4 rounded-[20px] border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${ev.bg} ${ev.border} text-[#12163A] hover-card-lift`}>
+                <div>
+                  <h4 className="font-bold text-sm text-[#12163A]">{ev.title}</h4>
+                  <span className="text-[#3665EE] font-semibold block sm:inline">{ev.date} • {ev.attendees}</span>
+                  <div className="text-[11px] text-[#4B5563]">Host: <span className="font-bold text-[#12163A]">{ev.host}</span></div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setVideoSessionConfig({ title: ev.title, hostName: ev.host });
+                      setIsVideoCallOpen(true);
+                    }}
+                    className="bg-[#12163A] hover:bg-[#1A2050] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95 text-xs shrink-0"
+                  >
+                    <FiVideo className="w-4 h-4 text-emerald-400 animate-pulse" />
+                    <span>Join Video Call</span>
+                  </button>
+                </div>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </div>
             ))}
           </div>
@@ -834,8 +1041,13 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
       return (
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="pb-4 border-b border-slate-100">
+<<<<<<< HEAD
             <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
               <FaArrowTrendUp className="w-5 h-5 text-[#3665EE]" /> School-Wide Student Growth & Engagement Analytics
+=======
+            <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <FiTrendingUp className="w-5 h-5 text-[#3665EE]" /> School-Wide Student Growth & Engagement Analytics
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             </h2>
             <p className="text-sm font-normal text-[#6B7280]">Institutional analytics for career readiness growth, engagement index, and skill mastery</p>
           </div>
@@ -863,8 +1075,13 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
       return (
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="pb-4 border-b border-slate-100">
+<<<<<<< HEAD
             <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
               <FaBrain className="w-5 h-5 text-[#3665EE]" /> Academic & Career Performance Monitoring
+=======
+            <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <FiCpu className="w-5 h-5 text-[#3665EE]" /> Academic & Career Performance Monitoring
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             </h2>
             <p className="text-sm font-normal text-[#6B7280]">Grade performance, attendance tracking, and assessment score distributions</p>
           </div>
@@ -891,8 +1108,13 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
       return (
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="pb-4 border-b border-slate-100">
+<<<<<<< HEAD
             <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
               <FaBriefcase className="w-5 h-5 text-[#3665EE]" /> Placement & Internship Readiness Reports
+=======
+            <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <FiBriefcase className="w-5 h-5 text-[#3665EE]" /> Placement & Internship Readiness Reports
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             </h2>
             <p className="text-sm font-normal text-[#6B7280]">Higher-ed placement readiness, internship qualifiers, and ATS resume ratings</p>
           </div>
@@ -925,8 +1147,13 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
+<<<<<<< HEAD
               <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaBullhorn className="w-5 h-5 text-[#3665EE]" /> School Admin Notifications & Alerts
+=======
+              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+                <FiBell className="w-5 h-5 text-[#3665EE]" /> School Admin Notifications & Alerts
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Assessment reminders, student milestones, scholarship deadlines</p>
             </div>
@@ -956,22 +1183,50 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
 
     // 11. SETTINGS
     return (
+<<<<<<< HEAD
       <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
         <div className="pb-4 border-b border-slate-100">
           <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
             <FaSliders className="w-5 h-5 text-[#3665EE]" /> School Governance & System Settings
           </h2>
           <p className="text-sm font-normal text-[#6B7280]">Configure school profile, academic year, grade management, and teacher permissions</p>
+=======
+      <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+          <div>
+            <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <FiSliders className="w-5 h-5 text-[#3665EE]" /> School Governance & System Settings
+            </h2>
+            <p className="text-[#6B7280]">Configure school profile, academic year, grade management, and teacher permissions</p>
+          </div>
+          <button 
+            onClick={() => setIsEditingSchoolProfile(true)}
+            className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
+          >
+            <FiEdit2 className="w-3.5 h-3.5" /> Edit School Profile
+          </button>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-5 rounded-[24px] bg-[#DEE9FF] border border-[#C6D9FF] space-y-2 text-[#12163A]">
+<<<<<<< HEAD
             <h4 className="font-semibold text-base text-[#12163A]">School Profile & Accreditation</h4>
             <p className="text-sm font-normal text-[#4B5563]">St. Xavier's International School • Academic Year 2026-2027</p>
           </div>
           <div className="p-5 rounded-[24px] bg-[#F6E6D8] border border-[#EAD0BC] space-y-2 text-[#12163A]">
             <h4 className="font-semibold text-base text-[#12163A]">Teacher & Admin Permissions</h4>
             <p className="text-sm font-normal text-[#4B5563]">142 Teacher Accounts • Role-Based Access Enabled</p>
+=======
+            <h4 className="font-bold text-sm text-[#12163A]">{schoolProfile.name}</h4>
+            <p className="text-[#4B5563]">{schoolProfile.affiliation} • Principal: {schoolProfile.principal} • Academic Year {schoolProfile.year}</p>
+            <div className="text-[11px] font-mono text-[#3665EE] font-bold">Admin Email: {schoolProfile.email}</div>
+          </div>
+          <div className="p-5 rounded-[24px] bg-[#F6E6D8] border border-[#EAD0BC] space-y-2 text-[#12163A]">
+            <h4 className="font-bold text-sm text-[#12163A]">Teacher & Admin Permissions</h4>
+            <p className="text-[#4B5563]">142 Teacher Accounts • Role-Based Access Control Enabled</p>
+            <div className="text-[11px] font-bold text-emerald-700">RBAC Governance Active</div>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </div>
         </div>
       </div>
@@ -1000,19 +1255,27 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
             <div className="px-6 py-5 bg-[#12163A] text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-[#3665EE] flex items-center justify-center font-bold text-base text-white shadow-md">
-                  <FaChalkboardUser className="w-5 h-5" />
+                  <FiGrid className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-base text-white">{selectedTeacher.name}</h3>
                   <p className="text-xs text-slate-300 font-normal">{selectedTeacher.qualification}</p>
                 </div>
               </div>
-              <button 
-                onClick={() => setSelectedTeacher(null)} 
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition cursor-pointer text-white"
-              >
-                <FaXmark className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setEditingTeacher({ ...selectedTeacher })}
+                  className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 transition cursor-pointer shadow-md hover:scale-105 active:scale-95"
+                >
+                  <FiEdit2 className="w-3.5 h-3.5" /> Edit Profile
+                </button>
+                <button 
+                  onClick={() => setSelectedTeacher(null)} 
+                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition cursor-pointer text-white"
+                >
+                  <FiX className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             <div className="p-6 space-y-4 text-[#12163A]">
@@ -1048,7 +1311,7 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                   }} 
                   className="px-4 py-2.5 rounded-xl font-medium text-sm bg-[#3665EE] text-white hover:bg-[#2A54D5] transition cursor-pointer shadow-sm flex items-center gap-1.5"
                 >
-                  <FaDownload className="w-3.5 h-3.5" /> Download Dossier PDF
+                  <FiDownload className="w-3.5 h-3.5" /> Download Dossier PDF
                 </button>
                 <button 
                   onClick={() => setSelectedTeacher(null)} 
@@ -1061,6 +1324,353 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
           </div>
         </div>
       )}
+
+      {/* EDIT STUDENT MODAL */}
+      {editingStudent && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in font-sans">
+          <div className="rounded-3xl max-w-lg w-full border shadow-2xl overflow-hidden bg-white text-[#12163A]">
+            <div className="p-6 bg-[#12163A] text-white flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600/30 text-blue-400 border border-blue-500/40 flex items-center justify-center">
+                  <FiEdit2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-white">Edit Student Profile</h3>
+                  <p className="text-xs text-slate-300">ID: {editingStudent.id} • {editingStudent.name}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingStudent(null)}
+                aria-label="Close modal"
+                className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition cursor-pointer text-white"
+              >
+                <FiX className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveStudentEdit} className="p-6 space-y-4 text-xs">
+              <div>
+                <label className="block font-bold mb-1 text-slate-700">Full Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={editingStudent.name}
+                  onChange={(e) => setEditingStudent({ ...editingStudent, name: e.target.value })}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold mb-1 text-slate-700">Grade *</label>
+                  <select
+                    value={editingStudent.grade}
+                    onChange={(e) => setEditingStudent({ ...editingStudent, grade: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900 font-bold"
+                  >
+                    <option value="Grade 8">Grade 8</option>
+                    <option value="Grade 9">Grade 9</option>
+                    <option value="Grade 10">Grade 10</option>
+                    <option value="Grade 11">Grade 11</option>
+                    <option value="Grade 12">Grade 12</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold mb-1 text-slate-700">Section *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingStudent.section}
+                    onChange={(e) => setEditingStudent({ ...editingStudent, section: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1 text-slate-700">Contact Email *</label>
+                <input
+                  type="email"
+                  required
+                  value={editingStudent.email}
+                  onChange={(e) => setEditingStudent({ ...editingStudent, email: e.target.value })}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1 text-slate-700">Target Career Goal *</label>
+                <input
+                  type="text"
+                  required
+                  value={editingStudent.careerGoal}
+                  onChange={(e) => setEditingStudent({ ...editingStudent, careerGoal: e.target.value })}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900 font-bold text-blue-600"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1 text-slate-700">Placement Readiness Status *</label>
+                <select
+                  value={editingStudent.placementReadiness}
+                  onChange={(e) => setEditingStudent({ ...editingStudent, placementReadiness: e.target.value })}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900 font-bold"
+                >
+                  <option value="High Readiness">High Readiness</option>
+                  <option value="Developing">Developing</option>
+                  <option value="Needs Attention">Needs Attention</option>
+                </select>
+              </div>
+
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingStudent(null)}
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-700 font-bold hover:bg-slate-200 transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingEdit}
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold transition shadow-md cursor-pointer flex items-center gap-2"
+                >
+                  <FiCheck className="w-4 h-4" />
+                  <span>{isSavingEdit ? 'Saving Changes...' : 'Save Changes'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT TEACHER MODAL */}
+      {editingTeacher && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in font-sans">
+          <div className="rounded-3xl max-w-lg w-full border shadow-2xl overflow-hidden bg-white text-[#12163A]">
+            <div className="p-6 bg-[#12163A] text-white flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600/30 text-blue-400 border border-blue-500/40 flex items-center justify-center">
+                  <FiEdit2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-white">Edit Faculty Dossier</h3>
+                  <p className="text-xs text-slate-300">ID: {editingTeacher.id} • {editingTeacher.name}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingTeacher(null)}
+                aria-label="Close modal"
+                className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition cursor-pointer text-white"
+              >
+                <FiX className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveTeacherEdit} className="p-6 space-y-4 text-xs">
+              <div>
+                <label className="block font-bold mb-1 text-slate-700">Faculty Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={editingTeacher.name}
+                  onChange={(e) => setEditingTeacher({ ...editingTeacher, name: e.target.value })}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold mb-1 text-slate-700">Department *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingTeacher.dept}
+                    onChange={(e) => setEditingTeacher({ ...editingTeacher, dept: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold mb-1 text-slate-700">Subject Taught *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingTeacher.subject}
+                    onChange={(e) => setEditingTeacher({ ...editingTeacher, subject: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1 text-slate-700">Qualification & Degree *</label>
+                <input
+                  type="text"
+                  required
+                  value={editingTeacher.qualification}
+                  onChange={(e) => setEditingTeacher({ ...editingTeacher, qualification: e.target.value })}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1 text-slate-700">Email Address *</label>
+                <input
+                  type="email"
+                  required
+                  value={editingTeacher.email}
+                  onChange={(e) => setEditingTeacher({ ...editingTeacher, email: e.target.value })}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1 text-slate-700">Assigned Classes *</label>
+                <input
+                  type="text"
+                  required
+                  value={editingTeacher.classes}
+                  onChange={(e) => setEditingTeacher({ ...editingTeacher, classes: e.target.value })}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900 font-bold"
+                />
+              </div>
+
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingTeacher(null)}
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-700 font-bold hover:bg-slate-200 transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingEdit}
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold transition shadow-md cursor-pointer flex items-center gap-2"
+                >
+                  <FiCheck className="w-4 h-4" />
+                  <span>{isSavingEdit ? 'Updating Teacher...' : 'Save Changes'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT SCHOOL PROFILE MODAL */}
+      {isEditingSchoolProfile && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in font-sans">
+          <div className="rounded-3xl max-w-lg w-full border shadow-2xl overflow-hidden bg-white text-[#12163A]">
+            <div className="p-6 bg-[#12163A] text-white flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600/30 text-blue-400 border border-blue-500/40 flex items-center justify-center">
+                  <FiEdit2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-white">Edit School Profile & Settings</h3>
+                  <p className="text-xs text-slate-300">Institutional Governance & Accreditation Configuration</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsEditingSchoolProfile(false)}
+                aria-label="Close modal"
+                className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition cursor-pointer text-white"
+              >
+                <FiX className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveSchoolProfile} className="p-6 space-y-4 text-xs">
+              <div>
+                <label className="block font-bold mb-1 text-slate-700">School Institution Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={schoolProfile.name}
+                  onChange={(e) => setSchoolProfile({ ...schoolProfile, name: e.target.value })}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900 font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1 text-slate-700">Affiliation & Board Code *</label>
+                <input
+                  type="text"
+                  required
+                  value={schoolProfile.affiliation}
+                  onChange={(e) => setSchoolProfile({ ...schoolProfile, affiliation: e.target.value })}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold mb-1 text-slate-700">Principal Administrator *</label>
+                  <input
+                    type="text"
+                    required
+                    value={schoolProfile.principal}
+                    onChange={(e) => setSchoolProfile({ ...schoolProfile, principal: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold mb-1 text-slate-700">Academic Year *</label>
+                  <input
+                    type="text"
+                    required
+                    value={schoolProfile.year}
+                    onChange={(e) => setSchoolProfile({ ...schoolProfile, year: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900 font-bold"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold mb-1 text-slate-700">Official Admin Email Address *</label>
+                <input
+                  type="email"
+                  required
+                  value={schoolProfile.email}
+                  onChange={(e) => setSchoolProfile({ ...schoolProfile, email: e.target.value })}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-900"
+                />
+              </div>
+
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsEditingSchoolProfile(false)}
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-700 font-bold hover:bg-slate-200 transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingEdit}
+                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold transition shadow-md cursor-pointer flex items-center gap-2"
+                >
+                  <FiCheck className="w-4 h-4" />
+                  <span>{isSavingEdit ? 'Saving Profile...' : 'Save Changes'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* REAL-TIME WEBRTC VIDEO CALL MODAL */}
+      <VideoCallModal
+        isOpen={isVideoCallOpen}
+        sessionTitle={videoSessionConfig.title}
+        hostName={videoSessionConfig.hostName}
+        onClose={() => setIsVideoCallOpen(false)}
+        onShowToast={onShowToast}
+        isDarkMode={isDarkMode}
+      />
     </div>
   );
 };

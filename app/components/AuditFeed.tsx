@@ -1,6 +1,6 @@
 import React from 'react';
-import { AuditLog } from '~/lib/types';
-import { ShieldCheck, Download } from 'lucide-react';
+import { AuditLog } from '../lib/types';
+import { FiShield, FiDownload } from 'react-icons/fi';
 
 interface AuditFeedProps {
   logs: AuditLog[];
@@ -21,6 +21,28 @@ export const AuditFeed: React.FC<AuditFeedProps> = ({
   const textHeading = isDarkMode ? 'text-white' : 'text-slate-900';
   const borderDivider = isDarkMode ? 'border-slate-800' : 'border-slate-100';
 
+  const handleExportCSV = () => {
+    const headers = ["ID", "Timestamp", "Administrator", "Action Type", "Target Entity", "Role", "IP Address", "Status"];
+    const rows = logs.map(log => [
+      log.id,
+      `"${log.time}"`,
+      `"${log.admin}"`,
+      `"${log.action}"`,
+      `"${log.target}"`,
+      `"${log.role}"`,
+      `"${log.ip}"`,
+      `"${log.status}"`
+    ]);
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `audit-logs-${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (showFullTable) {
     return (
       <div className={`rounded-2xl border p-6 mb-8 font-sans transition-colors duration-200 ${cardClass}`}>
@@ -29,10 +51,21 @@ export const AuditFeed: React.FC<AuditFeedProps> = ({
             <h2 className={`text-lg font-semibold ${textHeading}`}>System Security Audit Logs</h2>
             <p className={`text-sm font-normal ${textMuted}`}>Immutable record of all Super Admin access grants and permission changes</p>
           </div>
+<<<<<<< HEAD
           <button className={`flex items-center gap-2 font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer ${
             isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
           }`}>
             <Download className="w-4 h-4" />
+=======
+          <button 
+            onClick={handleExportCSV}
+            aria-label="Export Log CSV"
+            className={`flex items-center gap-2 font-bold text-xs px-4 py-2 rounded-xl transition cursor-pointer hover:scale-105 active:scale-95 ${
+              isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+            }`}
+          >
+            <FiDownload className="w-4 h-4" />
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             <span>Export Log CSV</span>
           </button>
         </div>
@@ -83,8 +116,13 @@ export const AuditFeed: React.FC<AuditFeedProps> = ({
     <div className={`rounded-2xl border p-6 font-sans transition-colors duration-200 ${cardClass}`}>
       <div className={`flex items-center justify-between mb-4 pb-3 border-b ${borderDivider}`}>
         <div className="flex items-center gap-2">
+<<<<<<< HEAD
           <ShieldCheck className="w-5 h-5 text-blue-400" />
           <h3 className={`font-semibold text-base ${textHeading}`}>Live Governance Audit Feed</h3>
+=======
+          <FiShield className="w-5 h-5 text-blue-400" />
+          <h3 className={`font-bold text-sm ${textHeading}`}>Live Governance Audit Feed</h3>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
         </div>
         <span className="bg-blue-500/20 text-blue-300 text-xs font-medium px-2.5 py-1 rounded-full border border-blue-500/30">
           Real-Time Audit Active

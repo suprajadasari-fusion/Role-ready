@@ -1,5 +1,6 @@
 import React from 'react';
 import { 
+<<<<<<< HEAD
   FaCompass, 
   FaListCheck, 
   FaBrain, 
@@ -13,6 +14,20 @@ import {
   FaFire, 
   FaStar 
 } from 'react-icons/fa6';
+=======
+  FiCompass, 
+  FiCheckSquare, 
+  FiCpu, 
+  FiAward, 
+  FiBookOpen, 
+  FiTrendingUp, 
+  FiFileText, 
+  FiClock, 
+  FiDownload,
+  FiZap,
+  FiStar
+} from 'react-icons/fi';
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
 
 interface StudentToolsViewsProps {
   activeSubView: string;
@@ -32,8 +47,13 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
       <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-100 gap-4">
           <div>
+<<<<<<< HEAD
             <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
               <FaCompass className="w-5 h-5 text-[#3665EE]" /> Career Discovery Engine
+=======
+            <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <FiCompass className="w-5 h-5 text-[#3665EE]" /> Career Discovery Engine
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             </h2>
             <p className="text-sm font-normal text-[#6B7280]">Explore 500+ future-ready career paths curated by AI neural alignment</p>
           </div>
@@ -88,13 +108,23 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
       <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
         <div className="flex items-center justify-between pb-4 border-b border-slate-100">
           <div>
+<<<<<<< HEAD
             <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
               <FaListCheck className="w-5 h-5 text-[#3665EE]" /> Online Aptitude & Skill Assessment
+=======
+            <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <FiCheckSquare className="w-5 h-5 text-[#3665EE]" /> Online Aptitude & Skill Assessment
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             </h2>
             <p className="text-sm font-normal text-[#6B7280]">Timed cognitive & analytical reasoning test (Question 4 of 15)</p>
           </div>
+<<<<<<< HEAD
           <div className="flex items-center gap-2 text-[#12163A] font-mono font-medium text-xs bg-[#DEE9FF] border border-[#C6D9FF] px-3.5 py-1.5 rounded-xl">
             <FaClock className="w-3.5 h-3.5 text-[#3665EE]" /> 18:45 Remaining
+=======
+          <div className="flex items-center gap-2 text-[#12163A] font-mono font-bold bg-[#DEE9FF] border border-[#C6D9FF] px-3.5 py-1.5 rounded-xl">
+            <FiClock className="w-3.5 h-3.5 text-[#3665EE]" /> 18:45 Remaining
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </div>
         </div>
 
@@ -147,8 +177,13 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
     return (
       <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
         <div className="pb-4 border-b border-slate-100">
+<<<<<<< HEAD
           <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
             <FaBrain className="w-5 h-5 text-[#3665EE]" /> RIASEC Psychometric & Personality Assessment
+=======
+          <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+            <FiCpu className="w-5 h-5 text-[#3665EE]" /> RIASEC Psychometric & Personality Assessment
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </h2>
           <p className="text-sm font-normal text-[#6B7280]">Holland Code interest spectrum profiling (Rate your preference for each workplace scenario)</p>
         </div>
@@ -196,8 +231,13 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
       <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-4">
           <div>
+<<<<<<< HEAD
             <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
               <FaBrain className="w-5 h-5 text-[#3665EE]" /> Career DNA Genome Profile & Aptitude Tracker
+=======
+            <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <FiCpu className="w-5 h-5 text-[#3665EE]" /> Career DNA Genome Profile & Aptitude Tracker
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             </h2>
             <p className="text-sm font-normal text-[#6B7280]">Holland Code: RIE (Realistic • Investigative • Enterprising)</p>
           </div>
@@ -205,13 +245,14 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
             onClick={() => onShowToast("Downloading official Career DNA Passport PDF")}
             className="bg-[#12163A] hover:bg-[#1A2050] text-white font-medium text-sm px-4 py-2.5 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95 shrink-0"
           >
-            <FaDownload className="w-3.5 h-3.5 text-[#DEE9FF]" /> Download DNA Passport
+            <FiDownload className="w-3.5 h-3.5 text-[#DEE9FF]" /> Download DNA Passport
           </button>
         </div>
 
         {/* Warm Peach & Navy Insight Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-6 rounded-[24px] bg-[#F6E6D8] border border-[#EAD0BC] text-[#12163A] space-y-2 min-w-0 hover-card-lift">
+<<<<<<< HEAD
             <span className="font-medium text-[13px] block text-[#4B5563]">Aptitude Score</span>
             <div className="text-2xl lg:text-3xl font-bold text-[#3665EE] truncate">96th Percentile</div>
             <span className="text-xs font-medium text-[#12163A] bg-white/70 px-2 py-0.5 rounded-full inline-block">Top 4% Nationally</span>
@@ -227,6 +268,23 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
             <span className="font-medium text-[13px] block text-[#4B5563]">Stream Recommendation</span>
             <div className="text-2xl lg:text-3xl font-bold text-[#3665EE] truncate">Science (PCM + CS)</div>
             <span className="text-xs font-medium text-[#12163A]">98.2% Fit Index</span>
+=======
+            <span className="font-semibold block text-[#4B5563]">Aptitude Score</span>
+            <div className="text-3xl font-bold text-[#3665EE] truncate">96th Percentile</div>
+            <span className="text-[11px] font-bold text-[#12163A] bg-white/70 px-2 py-0.5 rounded-full inline-block">Top 4% Nationally</span>
+          </div>
+
+          <div className="p-6 rounded-[24px] bg-[#12163A] text-white border border-[#12163A] space-y-2 min-w-0 hover-card-lift">
+            <span className="font-semibold block text-slate-300">Primary Personality</span>
+            <div className="text-3xl font-bold text-[#E4F4EC] truncate">Investigative</div>
+            <span className="text-[11px] text-slate-300">Problem Solver & Analytical</span>
+          </div>
+
+          <div className="p-6 rounded-[24px] bg-[#DEE9FF] border border-[#C6D9FF] text-[#12163A] space-y-2 min-w-0 hover-card-lift">
+            <span className="font-semibold block text-[#4B5563]">Stream Recommendation</span>
+            <div className="text-3xl font-bold text-[#3665EE] truncate">Science (PCM + CS)</div>
+            <span className="text-[11px] font-bold text-[#12163A]">98.2% Fit Index</span>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </div>
         </div>
       </div>
@@ -238,8 +296,13 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
     return (
       <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
         <div className="pb-4 border-b border-slate-100">
+<<<<<<< HEAD
           <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
             <FaBrain className="w-5 h-5 text-[#3665EE]" /> AI Neural Recommendation Engine
+=======
+          <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+            <FiCpu className="w-5 h-5 text-[#3665EE]" /> AI Neural Recommendation Engine
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </h2>
           <p className="text-sm font-normal text-[#6B7280]">Predictive career alignment calculated from aptitude, interest, and industry demand</p>
         </div>
@@ -259,7 +322,11 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-[#3665EE]">{rec.match}</div>
+<<<<<<< HEAD
                 <span className="text-xs font-medium text-[#12163A]">Neural Match</span>
+=======
+                <span className="text-[10px] font-bold text-[#12163A]">Neural Match</span>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </div>
             </div>
           ))}
@@ -273,8 +340,13 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
     return (
       <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
         <div className="pb-4 border-b border-slate-100">
+<<<<<<< HEAD
           <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
             <FaAward className="w-5 h-5 text-[#3665EE]" /> Scholarship & Merit Aid Explorer
+=======
+          <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+            <FiAward className="w-5 h-5 text-[#3665EE]" /> Scholarship & Merit Aid Explorer
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </h2>
           <p className="text-sm font-normal text-[#6B7280]">₹12.5 Crores in active national, state, and corporate scholarships open for application</p>
         </div>
@@ -292,7 +364,11 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
                 <span className="font-medium text-xs text-[#3665EE]">{sch.provider} • {sch.deadline}</span>
               </div>
               <div className="text-right flex items-center gap-3">
+<<<<<<< HEAD
                 <div className="font-semibold text-sm text-[#12163A]">{sch.amount}</div>
+=======
+                <div className="font-bold text-sm text-[#12163A]">{sch.amount}</div>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
                 <button 
                   onClick={() => onShowToast(`Submitted application for ${sch.title}!`)}
                   className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer shadow-xs hover:scale-105 active:scale-95"
@@ -312,8 +388,13 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
     return (
       <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
         <div className="pb-4 border-b border-slate-100">
+<<<<<<< HEAD
           <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
             <FaGraduationCap className="w-5 h-5 text-[#3665EE]" /> University & College Explorer Directory
+=======
+          <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+            <FiBookOpen className="w-5 h-5 text-[#3665EE]" /> University & College Explorer Directory
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </h2>
           <p className="text-sm font-normal text-[#6B7280]">Compare NIRF ranks, admission cutoffs, course offerings, and campus placements</p>
         </div>
@@ -341,8 +422,13 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
     return (
       <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
         <div className="pb-4 border-b border-slate-100">
+<<<<<<< HEAD
           <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
             <FaArrowTrendUp className="w-5 h-5 text-[#3665EE]" /> Interactive Career Milestone Roadmap
+=======
+          <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+            <FiTrendingUp className="w-5 h-5 text-[#3665EE]" /> Interactive Career Milestone Roadmap
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </h2>
           <p className="text-sm font-normal text-[#6B7280]">Step-by-step guidance from Class 10 to AI Engineering Leader</p>
         </div>
@@ -380,8 +466,13 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
       <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
         <div className="flex items-center justify-between pb-4 border-b border-slate-100">
           <div>
+<<<<<<< HEAD
             <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
               <FaFileLines className="w-5 h-5 text-[#3665EE]" /> AI ATS Resume Score & Optimizer Dashboard
+=======
+            <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <FiFileText className="w-5 h-5 text-[#3665EE]" /> AI ATS Resume Score & Optimizer Dashboard
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             </h2>
             <p className="text-sm font-normal text-[#6B7280]">Automated ATS scanner compliance & keyword density optimization</p>
           </div>
@@ -389,13 +480,14 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
             onClick={() => onShowToast("Running AI Resume Optimizer scan...")}
             className="bg-[#12163A] hover:bg-[#1A2050] text-white font-medium text-sm px-4 py-2.5 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
           >
-            <FaStar className="w-3.5 h-3.5 text-[#DEE9FF]" /> Run AI Resume Scan
+            <FiStar className="w-3.5 h-3.5 text-[#DEE9FF]" /> Run AI Resume Scan
           </button>
         </div>
 
         {/* White Cards, Blue Progress, Navy Completion Badge, Peach Suggestions, Mint Achievements */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-6 rounded-[24px] bg-white border border-slate-200 shadow-xs text-center space-y-2 min-w-0 hover-card-lift">
+<<<<<<< HEAD
             <span className="font-medium text-[13px] block text-[#6B7280]">Overall ATS Score</span>
             <div className="text-3xl lg:text-4xl font-bold text-[#3665EE]">88 / 100</div>
             <span className="text-xs font-medium bg-[#12163A] text-white px-3 py-0.5 rounded-full inline-block">Completion Badge: Navy</span>
@@ -411,6 +503,23 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
             <span className="font-medium text-[13px] block text-[#12163A]">Achievements Grade</span>
             <div className="text-3xl lg:text-4xl font-bold text-[#12163A]">A+</div>
             <span className="text-xs text-[#4B5563] font-normal">100% Parser Compliant</span>
+=======
+            <span className="font-semibold block text-[#6B7280]">Overall ATS Score</span>
+            <div className="text-4xl font-bold text-[#3665EE]">88 / 100</div>
+            <span className="text-[10px] font-bold bg-[#12163A] text-white px-3 py-0.5 rounded-full inline-block">Completion Badge: Navy</span>
+          </div>
+
+          <div className="p-6 rounded-[24px] bg-[#F6E6D8] border border-[#EAD0BC] text-center space-y-2 min-w-0 hover-card-lift">
+            <span className="font-semibold block text-[#12163A]">AI Suggestions</span>
+            <div className="text-3xl font-bold text-[#12163A]">92% Keyword Fit</div>
+            <span className="text-[10px] text-[#4B5563]">14/15 Target Skills Added</span>
+          </div>
+
+          <div className="p-6 rounded-[24px] bg-[#E4F4EC] border border-[#C3E6D5] text-center space-y-2 min-w-0 hover-card-lift">
+            <span className="font-semibold block text-[#12163A]">Achievements Grade</span>
+            <div className="text-4xl font-bold text-[#12163A]">A+</div>
+            <span className="text-[10px] text-[#4B5563]">100% Parser Compliant</span>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </div>
         </div>
       </div>
@@ -422,13 +531,23 @@ export const StudentToolsViews: React.FC<StudentToolsViewsProps> = ({
     <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
       <div className="flex items-center justify-between pb-4 border-b border-slate-100">
         <div>
+<<<<<<< HEAD
           <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
             <FaBookOpen className="w-5 h-5 text-[#3665EE]" /> Skill Mastery & Learning Progress Tracker
+=======
+          <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+            <FiBookOpen className="w-5 h-5 text-[#3665EE]" /> Skill Mastery & Learning Progress Tracker
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </h2>
           <p className="text-sm font-normal text-[#6B7280]">Track active courses, earned certification badges, and daily study streaks</p>
         </div>
+<<<<<<< HEAD
         <div className="flex items-center gap-2 text-[#12163A] font-medium text-xs bg-[#E4F4EC] border border-[#C3E6D5] px-3.5 py-1.5 rounded-xl">
           <FaFire className="w-4 h-4 text-[#3665EE]" /> 14-Day Streak!
+=======
+        <div className="flex items-center gap-2 text-[#12163A] font-bold bg-[#E4F4EC] border border-[#C3E6D5] px-3.5 py-1.5 rounded-xl">
+          <FiZap className="w-4 h-4 text-[#3665EE]" /> 14-Day Streak!
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
         </div>
       </div>
 

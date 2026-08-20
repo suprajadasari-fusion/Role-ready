@@ -1,25 +1,24 @@
 import React, { useState } from 'react';
 import { 
-  FaUserCheck, 
-  FaBrain, 
-  FaCalendarDays, 
-  FaUsers, 
-  FaVideo, 
-  FaCompass, 
-  FaStar, 
-  FaWallet, 
-  FaBullhorn, 
-  FaSliders, 
-  FaPlus, 
-  FaMagnifyingGlass, 
-  FaDownload, 
-  FaCheck, 
-  FaClock, 
-  FaIndianRupeeSign, 
-  FaAward, 
-  FaLaptopCode,
-  FaFileLines
-} from 'react-icons/fa6';
+  FiUserCheck, 
+  FiCpu, 
+  FiCalendar, 
+  FiUsers, 
+  FiVideo, 
+  FiCompass, 
+  FiStar, 
+  FiCreditCard, 
+  FiBell, 
+  FiSliders, 
+  FiPlus, 
+  FiSearch, 
+  FiDownload, 
+  FiCheck, 
+  FiClock, 
+  FiDollarSign, 
+  FiAward, 
+  FiFileText 
+} from 'react-icons/fi';
 import { ActionModal } from '../ActionModal';
 import { LiveCallModal } from '../LiveCallModal';
 
@@ -200,6 +199,25 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
                 ✓ Verified Master Mentor
               </span>
             </div>
+<<<<<<< HEAD
+=======
+
+            <div className="p-4 rounded-[20px] bg-[#DEE9FF] border border-[#C6D9FF] flex items-center justify-between text-[#12163A]">
+              <div className="flex items-center gap-3">
+                <FiClock className="w-5 h-5 text-[#3665EE]" />
+                <div>
+                  <h4 className="font-bold text-sm text-[#12163A]">Next Video Counseling Session</h4>
+                  <p className="text-xs text-[#4B5563]">Aarav Sharma (Grade 12-A) • AI & Machine Learning Pathway Strategy</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => onShowToast("Joining live video counseling session...")}
+                className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md"
+              >
+                <FiVideo className="w-3.5 h-3.5" /> Start Video Session
+              </button>
+            </div>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </div>
         </div>
       );
@@ -211,8 +229,13 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
+<<<<<<< HEAD
               <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaUserCheck className="w-5 h-5 text-[#3665EE]" /> Mentor Profile & Verification Credentials
+=======
+              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+                <FiUserCheck className="w-5 h-5 text-[#3665EE]" /> Mentor Profile & Verification Credentials
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Verified mentor badge, academic degrees, and professional biography</p>
             </div>
@@ -257,8 +280,13 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
+<<<<<<< HEAD
               <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaBrain className="w-5 h-5 text-[#3665EE]" /> Mentorship Skill Matrix & Technical Domains
+=======
+              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+                <FiCpu className="w-5 h-5 text-[#3665EE]" /> Mentorship Skill Matrix & Technical Domains
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Expertise domains for AI-driven student matching</p>
             </div>
@@ -269,7 +297,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
               ])}
               className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
-              <FaPlus className="w-3.5 h-3.5" /> Add Mentorship Skill
+              <FiPlus className="w-3.5 h-3.5" /> Add Mentorship Skill
             </button>
           </div>
 
@@ -296,8 +324,13 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
+<<<<<<< HEAD
               <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaCalendarDays className="w-5 h-5 text-[#3665EE]" /> Slot Booking & Availability Calendar
+=======
+              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+                <FiCalendar className="w-5 h-5 text-[#3665EE]" /> Slot Booking & Availability Calendar
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Configure 1-on-1 counseling time slots and manage student bookings</p>
             </div>
@@ -309,7 +342,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
               ])}
               className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
-              <FaPlus className="w-3.5 h-3.5" /> Add Available Slot
+              <FiPlus className="w-3.5 h-3.5" /> Add Available Slot
             </button>
           </div>
 
@@ -343,8 +376,13 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
+<<<<<<< HEAD
               <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaUsers className="w-5 h-5 text-[#3665EE]" /> Student Counseling Booking Requests
+=======
+              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+                <FiUsers className="w-5 h-5 text-[#3665EE]" /> Student Counseling Booking Requests
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Review pending mentorship booking requests and neural alignment scores</p>
             </div>
@@ -385,8 +423,13 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
+<<<<<<< HEAD
               <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaVideo className="w-5 h-5 text-[#3665EE]" /> Live 1-on-1 Video Counseling Room
+=======
+              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+                <FiVideo className="w-5 h-5 text-[#3665EE]" /> Live 1-on-1 Video Counseling Room
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">HD encrypted video room with live screen share & action plan notes</p>
             </div>
@@ -396,13 +439,13 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
               ])}
               className="bg-[#12163A] hover:bg-[#1A2050] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md"
             >
-              <FaFileLines className="w-3.5 h-3.5" /> Save Session Notes
+              <FiFileText className="w-3.5 h-3.5" /> Save Session Notes
             </button>
           </div>
 
           <div className="p-8 rounded-[24px] bg-[#12163A] text-white text-center space-y-4">
             <div className="w-16 h-16 rounded-full bg-[#3665EE] flex items-center justify-center mx-auto shadow-lg">
-              <FaVideo className="w-8 h-8 text-white" />
+              <FiVideo className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-lg font-semibold text-white">Encrypted Video Counseling Room</h3>
             <p className="text-sm text-slate-300 font-normal max-w-md mx-auto">
@@ -430,8 +473,13 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
+<<<<<<< HEAD
               <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaCompass className="w-5 h-5 text-[#3665EE]" /> Student Assessment Review & Career Guidance
+=======
+              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+                <FiCompass className="w-5 h-5 text-[#3665EE]" /> Student Assessment Review & Career Guidance
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Review Holland Code DNA passports & issue customized career roadmaps</p>
             </div>
@@ -443,7 +491,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
               ])}
               className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
-              <FaPlus className="w-3.5 h-3.5" /> Issue Career Action Plan
+              <FiPlus className="w-3.5 h-3.5" /> Issue Career Action Plan
             </button>
           </div>
 
@@ -468,8 +516,13 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
       return (
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="pb-4 border-b border-slate-100">
+<<<<<<< HEAD
             <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
               <FaStar className="w-5 h-5 text-amber-500" /> Student Ratings & Counselor Reviews
+=======
+            <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <FiStar className="w-5 h-5 text-amber-500" /> Student Ratings & Counselor Reviews
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             </h2>
             <p className="text-sm font-normal text-[#6B7280]">Verified student feedback and rating breakdowns (4.9 / 5.0 Average Score)</p>
           </div>
@@ -501,8 +554,13 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
+<<<<<<< HEAD
               <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaWallet className="w-5 h-5 text-[#3665EE]" /> Mentor Wallet & Bank Payout Desk
+=======
+              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+                <FiCreditCard className="w-5 h-5 text-[#3665EE]" /> Mentor Wallet & Bank Payout Desk
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Track session earnings, wallet balance, & request direct bank transfers</p>
             </div>
@@ -512,7 +570,7 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
               ])}
               className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
-              <FaIndianRupeeSign className="w-3.5 h-3.5" /> Request Payout Withdrawal
+              <FiDollarSign className="w-3.5 h-3.5" /> Request Payout Withdrawal
             </button>
           </div>
 
@@ -543,8 +601,13 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
         <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
+<<<<<<< HEAD
               <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaBullhorn className="w-5 h-5 text-[#3665EE]" /> Mentor Notifications & Session Reminders
+=======
+              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+                <FiBell className="w-5 h-5 text-[#3665EE]" /> Mentor Notifications & Session Reminders
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
               <p className="text-sm font-normal text-[#6B7280]">Session alerts, booking requests, and payout confirmation receipts</p>
             </div>
@@ -576,8 +639,13 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
     return (
       <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
         <div className="pb-4 border-b border-slate-100">
+<<<<<<< HEAD
           <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
             <FaSliders className="w-5 h-5 text-[#3665EE]" /> Mentor Settings & Account Preferences
+=======
+          <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+            <FiSliders className="w-5 h-5 text-[#3665EE]" /> Mentor Settings & Account Preferences
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </h2>
           <p className="text-sm font-normal text-[#6B7280]">Configure session rates, camera/mic devices, & withdrawal bank details</p>
         </div>

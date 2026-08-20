@@ -1,6 +1,7 @@
 import React from 'react';
-import { EcosystemEntity, RoleType } from '~/lib/types';
+import { EcosystemEntity, RoleType } from '../lib/types';
 import { 
+<<<<<<< HEAD
   Building2, 
   ExternalLink, 
   Power, 
@@ -14,6 +15,21 @@ import {
   BookOpen, 
   Briefcase 
 } from 'lucide-react';
+=======
+  FiGrid, 
+  FiExternalLink, 
+  FiPower, 
+  FiTrash2, 
+  FiGlobe, 
+  FiCheckCircle, 
+  FiClock,
+  FiBookOpen,
+  FiBriefcase,
+  FiAward,
+  FiUserCheck,
+  FiChevronRight
+} from 'react-icons/fi';
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
 
 interface EntitiesTableProps {
   entities: EcosystemEntity[];
@@ -38,6 +54,10 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
   onDeleteEntity,
   isDarkMode = false
 }) => {
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [deleteConfirmEntity, setDeleteConfirmEntity] = React.useState<EcosystemEntity | null>(null);
+  const itemsPerPage = 5;
+
   const roleCounts: Record<string, number> = {
     all: entities.length,
     school: 0, college: 0, mentor: 0, training: 0, recruiter: 0, company: 0
@@ -56,6 +76,14 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
       e.domain.toLowerCase().includes(q);
     return matchesFilter && matchesSearch;
   });
+
+  // Reset to page 1 when filter or search changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [activeFilter, searchQuery]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredEntities.length / itemsPerPage));
+  const paginatedEntities = filteredEntities.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const roleLabels: Record<string, string> = {
     school: "School Admin",
@@ -76,12 +104,53 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
   const borderDivider = isDarkMode ? 'border-slate-800' : 'border-slate-100';
 
   return (
-    <div className={`rounded-2xl border p-6 mb-8 font-sans transition-colors duration-200 ${cardClass}`}>
+    <div className={`rounded-2xl border p-6 mb-8 font-sans transition-colors duration-200 relative ${cardClass}`}>
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmEntity && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+          <div className={`max-w-md w-full p-6 rounded-2xl border shadow-2xl space-y-4 ${
+            isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'
+          }`}>
+            <h3 className="font-extrabold text-base text-rose-500 flex items-center gap-2">
+              <FiTrash2 className="w-5 h-5" /> Revoke Partner Access?
+            </h3>
+            <p className="text-xs leading-relaxed text-slate-400">
+              Are you sure you want to revoke partner access for <strong className="text-white">{deleteConfirmEntity.name}</strong>? This will remove active portal privileges and delete credentials.
+            </p>
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmEntity(null)}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onDeleteEntity(deleteConfirmEntity.id);
+                  setDeleteConfirmEntity(null);
+                }}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white transition cursor-pointer shadow-md"
+              >
+                Confirm Revoke
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b ${borderDivider}`}>
         <div>
+<<<<<<< HEAD
           <h2 className={`text-lg font-semibold ${textHeading}`}>Partner Access & Ecosystem Governance</h2>
           <p className={`text-sm font-normal ${textMuted}`}>
             Super Admin authorization hub for schools, colleges, mentors, training academies, recruiters, and companies
+=======
+          <h2 className={`text-lg font-bold ${textHeading}`}>Partner Access & Governance Matrix</h2>
+          <p className={`text-xs ${textMuted}`}>
+            Super Admin authorization hub for Schools, Colleges, Mentors, Training Academies, Recruiters & Companies
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
           </p>
         </div>
       </div>
@@ -89,13 +158,13 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
       {/* Role Filter Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
         {[
-          { id: 'all', label: 'All Verticals', icon: Building2 },
-          { id: 'school', label: 'Schools', icon: School },
-          { id: 'college', label: 'Colleges', icon: GraduationCap },
-          { id: 'mentor', label: 'Mentors', icon: UserCheck },
-          { id: 'training', label: 'Training', icon: BookOpen },
-          { id: 'recruiter', label: 'Recruiters', icon: Briefcase },
-          { id: 'company', label: 'Companies', icon: Building2 }
+          { id: 'all', label: 'All Verticals', icon: FiGrid },
+          { id: 'school', label: 'Schools', icon: FiBookOpen },
+          { id: 'college', label: 'Colleges', icon: FiAward },
+          { id: 'mentor', label: 'Mentors', icon: FiUserCheck },
+          { id: 'training', label: 'Training', icon: FiBookOpen },
+          { id: 'recruiter', label: 'Recruiters', icon: FiBriefcase },
+          { id: 'company', label: 'Companies', icon: FiGrid }
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeFilter === tab.id;
@@ -141,16 +210,24 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
               <th className="py-3.5 px-4 rounded-r-xl text-right">Actions</th>
             </tr>
           </thead>
+<<<<<<< HEAD
           <tbody className={`divide-y text-sm ${borderDivider}`}>
             {filteredEntities.length === 0 ? (
               <tr>
                 <td colSpan={7} className={`py-12 text-center text-sm font-normal ${textMuted}`}>
                   <Building2 className="w-10 h-10 mx-auto text-blue-400 mb-2 opacity-60" />
+=======
+          <tbody className={`divide-y text-xs ${borderDivider}`}>
+            {paginatedEntities.length === 0 ? (
+              <tr>
+                <td colSpan={7} className={`py-12 text-center ${textMuted}`}>
+                  <FiGrid className="w-10 h-10 mx-auto text-blue-400 mb-2 opacity-60" />
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
                   No partner entities match the selected filter or search term.
                 </td>
               </tr>
             ) : (
-              filteredEntities.map((e) => {
+              paginatedEntities.map((e) => {
                 const stage = e.approvalStage || (e.status === 'active' ? 'Live Portal' : 'Document Verification');
                 const stageNum = 
                   stage === 'Live Portal' ? 7 :
@@ -176,6 +253,7 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
                     <td className={`py-4 px-4 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                       <button 
                         onClick={() => onSimulateWorkspace(e.role)}
+<<<<<<< HEAD
                         title={`Click email to open ${e.role.toUpperCase()} Workspace Dashboard`}
                         className="text-sm font-medium text-[#3665EE] hover:underline cursor-pointer text-left block"
                       >
@@ -183,6 +261,15 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
                       </button>
                       <span className="text-xs font-normal text-blue-400 flex items-center gap-1">
                         <Globe className="w-3 h-3" /> {e.domain}
+=======
+                        title={`Click email to open ${e.role} Workspace Dashboard`}
+                        className="font-bold text-[#3665EE] hover:underline cursor-pointer text-left block"
+                      >
+                        {e.contactEmail}
+                      </button>
+                      <span className="text-[10px] text-blue-400 flex items-center gap-1">
+                        <FiGlobe className="w-3 h-3" /> {e.domain}
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
                       </span>
                     </td>
                     <td className="py-4 px-4 min-w-[220px]">
@@ -191,13 +278,13 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
                           <span className="text-blue-500">Stage {stageNum} of 7: {stage}</span>
                           <span className="text-slate-400 font-normal">{Math.round((stageNum / 7) * 100)}%</span>
                         </div>
-                        {/* 7-Step Progress Bar */}
                         <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden flex">
                           <div 
                             className={`h-full transition-all duration-300 ${stage === 'Live Portal' ? 'bg-emerald-500' : 'bg-blue-600'}`} 
                             style={{ width: `${(stageNum / 7) * 100}%` }}
                           />
                         </div>
+<<<<<<< HEAD
                         <div className="text-[11px] text-slate-400 font-mono flex flex-wrap gap-1 pt-0.5">
                           <span>1. Register</span> → 
                           <span>2. Pending</span> → 
@@ -206,16 +293,35 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
                           <span>5. Admin</span> → 
                           <span>6. Sub</span> → 
                           <span className="text-emerald-500 font-medium">7. Live</span>
+=======
+                        <div className="text-[9px] text-slate-400 font-mono flex items-center gap-1 pt-0.5">
+                          <span>Register</span> <FiChevronRight className="w-2.5 h-2.5 inline" /> 
+                          <span>Review</span> <FiChevronRight className="w-2.5 h-2.5 inline" /> 
+                          <span>Docs</span> <FiChevronRight className="w-2.5 h-2.5 inline" /> 
+                          <span>BG</span> <FiChevronRight className="w-2.5 h-2.5 inline" /> 
+                          <span>Admin</span> <FiChevronRight className="w-2.5 h-2.5 inline" /> 
+                          <span>Sub</span> <FiChevronRight className="w-2.5 h-2.5 inline" /> 
+                          <span className="text-emerald-500 font-bold">Live</span>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
                         </div>
                       </div>
                     </td>
                     <td className="py-4 px-4 max-w-xs space-y-1">
+<<<<<<< HEAD
                       <div className="text-xs font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1">
                         <CheckCircle2 className="w-3 h-3 text-emerald-500" />
                         <span>{e.docsStatus || 'Document Verification Pending'}</span>
                       </div>
                       <div className="text-xs font-normal text-slate-500 flex items-center gap-1">
                         <Clock className="w-3 h-3 text-blue-400" />
+=======
+                      <div className="text-[10px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                        <FiCheckCircle className="w-3 h-3 text-emerald-500" />
+                        <span>{e.docsStatus || 'Document Verification Pending'}</span>
+                      </div>
+                      <div className="text-[10px] text-slate-500 flex items-center gap-1">
+                        <FiClock className="w-3 h-3 text-blue-400" />
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
                         <span>{e.bgCheckStatus || 'Passed Clear'}</span>
                       </div>
                     </td>
@@ -227,6 +333,7 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
                         {e.usedSeats.toLocaleString()} / {e.seats.toLocaleString()} Seats
                       </div>
                     </td>
+<<<<<<< HEAD
                     <td className="py-4 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
@@ -266,14 +373,82 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
                   </tr>
                 );
               })
+=======
+                  <td className="py-4 px-4 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => onEditEntity(e)}
+                        title="Approve Next Workflow Stage / Edit Details"
+                        className="px-2.5 py-1 rounded-lg bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold text-[10px] transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shadow-xs flex items-center gap-1"
+                      >
+                        <FiCheckCircle className="w-3 h-3" /> Approve
+                      </button>
+                      <button
+                        onClick={() => onSimulateWorkspace(e.role)}
+                        aria-label={`Launch ${e.role} Live Portal`}
+                        title={`Launch ${e.role} Live Portal`}
+                        className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer shadow-xs"
+                      >
+                        <FiExternalLink className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => onToggleStatus(e.id)}
+                        aria-label={e.status === 'active' ? 'Suspend Access' : 'Activate Access'}
+                        title={e.status === 'active' ? 'Suspend Access' : 'Activate Access'}
+                        className={`p-1.5 rounded-lg border transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer ${
+                          e.status === 'active' 
+                            ? 'bg-amber-500/20 border-amber-500/30 text-amber-400 hover:bg-amber-500/30' 
+                            : 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30'
+                        }`}
+                      >
+                        <FiPower className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirmEntity(e)}
+                        aria-label="Revoke and Delete Access"
+                        title="Revoke & Delete Access"
+                        className="p-1.5 rounded-lg bg-rose-500/20 border border-rose-500/30 text-rose-400 hover:bg-rose-500/30 transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer"
+                      >
+                        <FiTrash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
             )}
           </tbody>
         </table>
       </div>
 
       <div className={`mt-4 pt-4 border-t flex items-center justify-between text-xs ${borderDivider} ${textMuted}`}>
+<<<<<<< HEAD
         <div>Showing <strong>{filteredEntities.length}</strong> of <strong>{entities.length}</strong> registered ecosystem entities</div>
         <div className="font-medium text-blue-400">All entity state managed via TanStack Query</div>
+=======
+        <div>
+          Showing <strong>{paginatedEntities.length}</strong> of <strong>{filteredEntities.length}</strong> partner entities (Page {currentPage} of {totalPages})
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            className="px-3 py-1 rounded-lg border border-slate-700 bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-700 font-bold transition cursor-pointer"
+          >
+            Prev Page
+          </button>
+          <button
+            type="button"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            className="px-3 py-1 rounded-lg border border-slate-700 bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-700 font-bold transition cursor-pointer"
+          >
+            Next Page
+          </button>
+        </div>
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
       </div>
     </div>
   );

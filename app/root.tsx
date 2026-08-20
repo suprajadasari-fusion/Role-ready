@@ -7,11 +7,15 @@ import {
   ScrollRestoration,
 } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+<<<<<<< HEAD
 import { Provider } from "react-redux";
 import { store, useAppDispatch, useAppSelector } from "~/store/store";
 import { setOnlineStatus } from "~/store/slices/offlineSlice";
 import { offlineCache } from "~/lib/offlineCache";
 import stylesheet from "~/app.css?url";
+=======
+import stylesheet from "./app.css?url";
+>>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
 
 export function links() {
   return [
