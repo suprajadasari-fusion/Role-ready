@@ -1,4 +1,5 @@
 export type RoleType = 
+  | 'student'
   | 'super-admin'
   | 'school'
   | 'college'

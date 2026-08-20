@@ -22,8 +22,6 @@ import {
 } from 'react-icons/fa6';
 import { ActionModal } from '../ActionModal';
 
-
-
 interface CollegeDashboardProps {
   activeSubView: string;
   onShowToast: (msg: string) => void;
@@ -50,6 +48,19 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
     { code: "MBA-301", title: "MBA Fintech & Analytics", degree: "Postgraduate (2 Yrs)", seats: 240, enrolled: 235, avgCtc: "₹24.0 LPA" },
     { code: "DS-401", title: "M.Tech Data Science & MLOps", degree: "Postgraduate (2 Yrs)", seats: 180, enrolled: 175, avgCtc: "₹26.5 LPA" },
     { code: "BIO-501", title: "B.Sc Biotech & Bioinformatics", degree: "Undergraduate (3 Yrs)", seats: 200, enrolled: 190, avgCtc: "₹18.0 LPA" }
+  ]);
+
+  const [admissionsList, setAdmissionsList] = useState([
+    { title: "JEE Advanced Engineering Drive", cutoff: "JEE Adv Rank < 500", seats: "480 Seats", applied: "14,200 Applicants", bg: "bg-[#F6E6D8]", border: "border-[#EAD0BC]" },
+    { title: "BITSAT Merit Admission Drive", cutoff: "BITSAT Score > 320", seats: "360 Seats", applied: "8,900 Applicants", bg: "bg-[#DEE9FF]", border: "border-[#C6D9FF]" },
+    { title: "GATE Post-Graduate Drive", cutoff: "GATE Score > 750", seats: "180 Seats", applied: "4,100 Applicants", bg: "bg-[#E4F4EC]", border: "border-[#C3E6D5]" },
+    { title: "CAT MBA Admission Drive", cutoff: "CAT Percentile > 98.5%", seats: "240 Seats", applied: "6,800 Applicants", bg: "bg-white", border: "border-slate-200" }
+  ]);
+
+  const [scholarshipsList, setScholarshipsList] = useState([
+    { title: "National STEM Merit Fellowship", pool: "₹3.5 Crores", applicants: "420 Applicants", disbursed: "₹2.8 Crores Disbursed", bg: "bg-[#E4F4EC]", border: "border-[#C3E6D5]" },
+    { title: "Global AI & Innovation Merit Grant", pool: "₹2.5 Crores", applicants: "290 Applicants", disbursed: "₹2.0 Crores Disbursed", bg: "bg-[#DEE9FF]", border: "border-[#C6D9FF]" },
+    { title: "Higher Education Equity Aid", pool: "₹1.5 Crores", applicants: "180 Applicants", disbursed: "₹1.2 Crores Disbursed", bg: "bg-[#F6E6D8]", border: "border-[#EAD0BC]" }
   ]);
 
   const [drivesList, setDrivesList] = useState([
@@ -90,6 +101,28 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
       };
       setProgramsList([newProg, ...programsList]);
       onShowToast(`Added new academic program: ${newProg.title}!`);
+    } else if (actionModalConfig.title === "Launch Admission Drive") {
+      const newDrive = {
+        title: data.title || "Entrance Admission Drive 2026",
+        cutoff: data.cutoff || "JEE Adv Rank < 1000",
+        seats: data.seats ? (data.seats.toLowerCase().includes("seat") ? data.seats : `${data.seats} Seats`) : "300 Seats",
+        applied: "0 Applicants",
+        bg: "bg-[#DEE9FF]",
+        border: "border-[#C6D9FF]"
+      };
+      setAdmissionsList([newDrive, ...admissionsList]);
+      onShowToast(`Launched new admission drive: ${newDrive.title}!`);
+    } else if (actionModalConfig.title === "Create Scholarship Fund") {
+      const newScholarship = {
+        title: data.title || "Alumni STEM Merit Aid",
+        pool: data.amount || "₹1.0 Crore",
+        applicants: "0 Applicants",
+        disbursed: "₹0 Disbursed",
+        bg: "bg-[#DEE9FF]",
+        border: "border-[#C6D9FF]"
+      };
+      setScholarshipsList([newScholarship, ...scholarshipsList]);
+      onShowToast(`Created scholarship fund: ${newScholarship.title}!`);
     } else if (actionModalConfig.title === "Schedule Placement Drive") {
       const newDrive = {
         company: data.company || "Corporate Recruiter",
@@ -121,29 +154,29 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
       return (
         <div className="space-y-6 font-sans">
           {/* Overview KPI Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="p-6 rounded-[24px] bg-[#12163A] text-white shadow-md border border-[#12163A] space-y-2 hover-card-lift">
-              <span className="font-semibold block text-slate-300">Total Enrolled Undergrads</span>
-              <div className="text-3xl font-extrabold text-white">11,450</div>
-              <span className="text-[11px] font-bold text-[#E4F4EC] bg-[#E4F4EC]/10 px-2 py-0.5 rounded-full inline-block">9 Active Batches</span>
+              <span className="font-medium text-[13px] block text-slate-300">Total Enrolled Undergrads</span>
+              <div className="text-2xl lg:text-3xl font-bold tracking-tight text-white">11,450</div>
+              <span className="text-xs font-medium text-[#E4F4EC] bg-[#E4F4EC]/10 px-2 py-0.5 rounded-full inline-block">9 Active Batches</span>
             </div>
 
             <div className="p-6 rounded-[24px] bg-[#E4F4EC] text-[#12163A] shadow-sm border border-[#C3E6D5] space-y-2 hover-card-lift">
-              <span className="font-semibold block text-[#4B5563]">Placement Rate</span>
-              <div className="text-3xl font-extrabold text-[#12163A]">94.2%</div>
-              <span className="text-[11px] font-bold text-[#3665EE]">+5.1% YoY Increase</span>
+              <span className="font-medium text-[13px] block text-[#4B5563]">Placement Rate</span>
+              <div className="text-2xl lg:text-3xl font-bold tracking-tight text-[#12163A]">94.2%</div>
+              <span className="text-xs font-medium text-[#3665EE]">+5.1% YoY Increase</span>
             </div>
 
             <div className="p-6 rounded-[24px] bg-[#DEE9FF] text-[#12163A] shadow-sm border border-[#C6D9FF] space-y-2 hover-card-lift">
-              <span className="font-semibold block text-[#4B5563]">Corporate Placement Drives</span>
-              <div className="text-3xl font-extrabold text-[#3665EE]">148 Drives</div>
-              <span className="text-[11px] font-bold text-[#12163A]">18 Drives Open Now</span>
+              <span className="font-medium text-[13px] block text-[#4B5563]">Corporate Placement Drives</span>
+              <div className="text-2xl lg:text-3xl font-bold tracking-tight text-[#3665EE]">148 Drives</div>
+              <span className="text-xs font-medium text-[#12163A]">18 Drives Open Now</span>
             </div>
 
             <div className="p-6 rounded-[24px] bg-[#F6E6D8] text-[#12163A] shadow-sm border border-[#EAD0BC] space-y-2 hover-card-lift">
-              <span className="font-semibold block text-[#4B5563]">Average CTC Package</span>
-              <div className="text-3xl font-extrabold text-[#12163A]">₹24.5 LPA</div>
-              <span className="text-[11px] font-bold text-[#3665EE]">Max Package: ₹110 LPA</span>
+              <span className="font-medium text-[13px] block text-[#4B5563]">Average CTC Package</span>
+              <div className="text-2xl lg:text-3xl font-bold tracking-tight text-[#12163A]">₹24.5 LPA</div>
+              <span className="text-xs font-medium text-[#3665EE]">Max Package: ₹110 LPA</span>
             </div>
           </div>
 
@@ -151,31 +184,31 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
           <div className="p-6 rounded-[24px] bg-white border border-slate-200 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-base text-[#12163A]">College Registration & Institutional Accreditation</h3>
-                <p className="text-xs text-[#6B7280]">Verified University Portal • NIRF Rank #1 • NAAC A++ Grade</p>
+                <h3 className="font-semibold text-base text-[#12163A]">College Registration & Institutional Accreditation</h3>
+                <p className="text-sm font-normal text-[#6B7280]">Verified University Portal • NIRF Rank #1 • NAAC A++ Grade</p>
               </div>
-              <span className="bg-[#E4F4EC] text-[#12163A] font-bold text-xs px-3.5 py-1 rounded-full border border-[#C3E6D5]">
+              <span className="bg-[#E4F4EC] text-[#12163A] font-medium text-xs px-3.5 py-1 rounded-full border border-[#C3E6D5]">
                 ✓ Verification Completed
               </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs pt-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
               <div className="p-4 rounded-[20px] bg-[#DEE9FF] border border-[#C6D9FF] text-[#12163A] space-y-1">
-                <span className="font-semibold text-[#4B5563]">Admissions Pipeline</span>
-                <div className="text-xl font-extrabold text-[#3665EE]">1,470 Seats Filled</div>
-                <span className="text-[10px] text-[#4B5563]">98.2% Capacity Enrolled</span>
+                <span className="font-medium text-[13px] text-[#4B5563]">Admissions Pipeline</span>
+                <div className="text-2xl font-bold text-[#3665EE]">1,470 Seats Filled</div>
+                <span className="text-xs font-normal text-[#4B5563]">98.2% Capacity Enrolled</span>
               </div>
 
               <div className="p-4 rounded-[20px] bg-[#F6E6D8] border border-[#EAD0BC] text-[#12163A] space-y-1">
-                <span className="font-semibold text-[#4B5563]">Scholarships Disbursed</span>
-                <div className="text-xl font-extrabold text-[#12163A]">₹6.3 Crores</div>
-                <span className="text-[10px] text-[#4B5563]">890 Merit Recipients</span>
+                <span className="font-medium text-[13px] text-[#4B5563]">Scholarships Disbursed</span>
+                <div className="text-2xl font-bold text-[#12163A]">₹6.3 Crores</div>
+                <span className="text-xs font-normal text-[#4B5563]">890 Merit Recipients</span>
               </div>
 
               <div className="p-4 rounded-[20px] bg-[#E4F4EC] border border-[#C3E6D5] text-[#12163A] space-y-1">
-                <span className="font-semibold text-[#4B5563]">Industry MoUs Active</span>
-                <div className="text-xl font-extrabold text-[#12163A]">42 Active MoUs</div>
-                <span className="text-[10px] text-[#3665EE]">Top Global Enterprise Partners</span>
+                <span className="font-medium text-[13px] text-[#4B5563]">Industry MoUs Active</span>
+                <div className="text-2xl font-bold text-[#12163A]">42 Active MoUs</div>
+                <span className="text-xs font-medium text-[#3665EE]">Top Global Enterprise Partners</span>
               </div>
             </div>
           </div>
@@ -186,13 +219,13 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
     // 2. PROGRAMS
     if (activeSubView === 'programs') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaBookOpen className="w-5 h-5 text-[#3665EE]" /> Academic Programs & Degree Tracks
               </h2>
-              <p className="text-[#6B7280]">Manage undergraduate, postgraduate, and doctoral degree programs</p>
+              <p className="text-sm font-normal text-[#6B7280]">Manage undergraduate, postgraduate, and doctoral degree programs</p>
             </div>
             <button 
               onClick={() => openTriggerModal("Add Academic Program", "Register a new degree track or specialized program", [
@@ -201,7 +234,7 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
                 { label: "Seat Capacity", name: "seats", type: "number", placeholder: "480" },
                 { label: "Expected Avg CTC", name: "avgCtc", type: "text", placeholder: "₹25.0 LPA" }
               ])}
-              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
+              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
               <FaPlus className="w-3.5 h-3.5" /> Add Academic Program
             </button>
@@ -212,14 +245,14 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
               <div key={i} className="p-5 rounded-[24px] border bg-[#DEE9FF] border-[#C6D9FF] flex items-center justify-between text-[#12163A] hover-card-lift">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] bg-[#12163A] text-white px-2 py-0.5 rounded-md font-bold">{p.code}</span>
-                    <h4 className="font-bold text-sm text-[#12163A]">{p.title}</h4>
+                    <span className="text-xs bg-[#12163A] text-white px-2 py-0.5 rounded-md font-medium">{p.code}</span>
+                    <h4 className="font-semibold text-base text-[#12163A]">{p.title}</h4>
                   </div>
-                  <p className="text-xs text-[#4B5563] mt-1">{p.degree} • Enrolled: {p.enrolled} / {p.seats} Seats</p>
+                  <p className="text-sm text-[#4B5563] font-normal mt-1">{p.degree} • Enrolled: {p.enrolled} / {p.seats} Seats</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-[#3665EE] font-extrabold text-sm">Avg CTC: {p.avgCtc}</div>
-                  <span className="text-[10px] bg-white text-[#12163A] border border-slate-200 px-2.5 py-0.5 rounded-full font-bold">Active Track</span>
+                  <div className="text-[#3665EE] font-semibold text-sm">Avg CTC: {p.avgCtc}</div>
+                  <span className="text-xs bg-white text-[#12163A] border border-slate-200 px-2.5 py-0.5 rounded-full font-medium">Active Track</span>
                 </div>
               </div>
             ))}
@@ -231,38 +264,34 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
     // 3. ADMISSIONS
     if (activeSubView === 'admissions') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaUserCheck className="w-5 h-5 text-[#3665EE]" /> College Admissions & Entrance Cutoff Hub
               </h2>
-              <p className="text-[#6B7280]">Configure admission drives, entrance examination ranks, & seat quotas</p>
+              <p className="text-sm font-normal text-[#6B7280]">Configure admission drives, entrance examination ranks, & seat quotas</p>
             </div>
             <button 
               onClick={() => openTriggerModal("Launch Admission Drive", "Open a new admission cycle for target entrance exams", [
                 { label: "Drive Title", name: "title", type: "text", placeholder: "JEE Advanced Engineering Drive 2026" },
-                { label: "Target Cutoff Rank", name: "cutoff", type: "text", placeholder: "JEE Adv < 500" }
+                { label: "Target Cutoff Rank", name: "cutoff", type: "text", placeholder: "JEE Adv Rank < 500" },
+                { label: "Seat Capacity", name: "seats", type: "text", placeholder: "480 Seats" }
               ])}
-              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
+              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
               <FaPlus className="w-3.5 h-3.5" /> Launch Admission Drive
             </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              { title: "JEE Advanced Engineering Drive", cutoff: "JEE Adv Rank < 500", seats: "480 Seats", applied: "14,200 Applicants", bg: "bg-[#F6E6D8]", border: "border-[#EAD0BC]" },
-              { title: "BITSAT Merit Admission Drive", cutoff: "BITSAT Score > 320", seats: "360 Seats", applied: "8,900 Applicants", bg: "bg-[#DEE9FF]", border: "border-[#C6D9FF]" },
-              { title: "GATE Post-Graduate Drive", cutoff: "GATE Score > 750", seats: "180 Seats", applied: "4,100 Applicants", bg: "bg-[#E4F4EC]", border: "border-[#C3E6D5]" },
-              { title: "CAT MBA Admission Drive", cutoff: "CAT Percentile > 98.5%", seats: "240 Seats", applied: "6,800 Applicants", bg: "bg-white", border: "border-slate-200" }
-            ].map((ad, i) => (
+            {admissionsList.map((ad, i) => (
               <div key={i} className={`p-5 rounded-[24px] border space-y-2 ${ad.bg} ${ad.border} text-[#12163A] hover-card-lift`}>
-                <span className="text-[10px] bg-[#12163A] text-white px-2.5 py-0.5 rounded-full font-bold">{ad.cutoff}</span>
-                <h4 className="font-bold text-sm text-[#12163A]">{ad.title}</h4>
-                <div className="flex items-center justify-between text-xs pt-1">
-                  <span className="font-bold text-[#3665EE]">{ad.seats}</span>
-                  <span className="text-[#4B5563]">{ad.applied}</span>
+                <span className="text-xs bg-[#12163A] text-white px-2.5 py-0.5 rounded-full font-medium">{ad.cutoff}</span>
+                <h4 className="font-semibold text-base text-[#12163A]">{ad.title}</h4>
+                <div className="flex items-center justify-between text-sm pt-1">
+                  <span className="font-semibold text-[#3665EE]">{ad.seats}</span>
+                  <span className="text-[#4B5563] font-normal">{ad.applied}</span>
                 </div>
               </div>
             ))}
@@ -274,17 +303,17 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
     // 4. APPLICATIONS
     if (activeSubView === 'applications') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaFileLines className="w-5 h-5 text-[#3665EE]" /> Student Application & Enrollment Pipeline
               </h2>
-              <p className="text-[#6B7280]">Review student application forms, entrance rankings, and document verification</p>
+              <p className="text-sm font-normal text-[#6B7280]">Review student application forms, entrance rankings, and document verification</p>
             </div>
             <button 
               onClick={() => onShowToast("Exported Applications Pipeline CSV")}
-              className="px-4 py-2 rounded-xl font-bold border border-slate-200 bg-slate-50 text-[#12163A] hover:bg-slate-100 transition cursor-pointer flex items-center gap-2"
+              className="px-4 py-2.5 rounded-xl font-medium text-sm border border-slate-200 bg-slate-50 text-[#12163A] hover:bg-slate-100 transition cursor-pointer flex items-center gap-2"
             >
               <FaDownload className="w-3.5 h-3.5" /> Export Applications
             </button>
@@ -293,7 +322,7 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
           <div className="rounded-[24px] border border-slate-200 overflow-hidden">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b text-[11px] font-bold uppercase bg-[#DEE9FF]/50 text-[#12163A] border-[#C6D9FF]">
+                <tr className="border-b text-xs font-semibold uppercase tracking-wider bg-[#DEE9FF]/50 text-[#12163A] border-[#C6D9FF]">
                   <th className="p-3.5">Application ID</th>
                   <th className="p-3.5">Student Name</th>
                   <th className="p-3.5">Program Applied</th>
@@ -303,23 +332,23 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
                   <th className="p-3.5 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 text-sm font-normal">
                 {applicationsList.map((app) => (
                   <tr key={app.id} className="hover:bg-[#DEE9FF]/20 transition-colors">
-                    <td className="p-3.5 font-mono text-[#3665EE] font-bold">{app.id}</td>
-                    <td className="p-3.5 font-bold text-[#12163A]">{app.name}</td>
+                    <td className="p-3.5 font-mono text-[#3665EE] font-medium text-xs">{app.id}</td>
+                    <td className="p-3.5 font-semibold text-[#12163A]">{app.name}</td>
                     <td className="p-3.5 text-[#4B5563]">{app.program}</td>
-                    <td className="p-3.5 font-semibold text-[#12163A]">{app.score}</td>
-                    <td className="p-3.5 font-semibold text-emerald-600">{app.docs}</td>
+                    <td className="p-3.5 font-medium text-[#12163A]">{app.score}</td>
+                    <td className="p-3.5 font-medium text-emerald-600">{app.docs}</td>
                     <td className="p-3.5">
-                      <span className="bg-[#E4F4EC] text-[#12163A] border border-[#C3E6D5] px-2.5 py-0.5 rounded-full font-bold text-[10px]">
+                      <span className="bg-[#E4F4EC] text-[#12163A] border border-[#C3E6D5] px-2.5 py-0.5 rounded-full font-medium text-xs">
                         {app.status}
                       </span>
                     </td>
                     <td className="p-3.5 text-right">
                       <button 
                         onClick={() => onShowToast(`Reviewed application for ${app.name}`)}
-                        className="bg-[#12163A] hover:bg-[#1A2050] text-white font-bold px-3 py-1.5 rounded-lg text-[10px] transition cursor-pointer"
+                        className="bg-[#12163A] hover:bg-[#1A2050] text-white font-medium px-3 py-1.5 rounded-lg text-xs transition cursor-pointer"
                       >
                         Review
                       </button>
@@ -336,39 +365,35 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
     // 5. SCHOLARSHIPS
     if (activeSubView === 'scholarships') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaAward className="w-5 h-5 text-[#3665EE]" /> Institutional Scholarship & Aid Cell
               </h2>
-              <p className="text-[#6B7280]">₹8.5 Crores in institutional merit aid and corporate scholarship grants</p>
+              <p className="text-sm font-normal text-[#6B7280]">₹8.5 Crores in institutional merit aid and corporate scholarship grants</p>
             </div>
             <button 
               onClick={() => openTriggerModal("Create Scholarship Fund", "Establish a new merit or need-based aid fund", [
                 { label: "Scholarship Name", name: "title", type: "text", placeholder: "Alumni STEM Merit Aid" },
                 { label: "Annual Fund Pool", name: "amount", type: "text", placeholder: "₹1.5 Crores" }
               ])}
-              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
+              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
               <FaPlus className="w-3.5 h-3.5" /> Create Scholarship Fund
             </button>
           </div>
 
           <div className="space-y-3">
-            {[
-              { title: "National STEM Merit Fellowship", pool: "₹3.5 Crores", applicants: "420 Applicants", disbursed: "₹2.8 Crores Disbursed", bg: "bg-[#E4F4EC]", border: "border-[#C3E6D5]" },
-              { title: "Global AI & Innovation Merit Grant", pool: "₹2.5 Crores", applicants: "290 Applicants", disbursed: "₹2.0 Crores Disbursed", bg: "bg-[#DEE9FF]", border: "border-[#C6D9FF]" },
-              { title: "Higher Education Equity Aid", pool: "₹1.5 Crores", applicants: "180 Applicants", disbursed: "₹1.2 Crores Disbursed", bg: "bg-[#F6E6D8]", border: "border-[#EAD0BC]" }
-            ].map((sch, i) => (
+            {scholarshipsList.map((sch, i) => (
               <div key={i} className={`p-5 rounded-[24px] border flex items-center justify-between ${sch.bg} ${sch.border} text-[#12163A] hover-card-lift`}>
                 <div>
-                  <h4 className="font-bold text-sm text-[#12163A]">{sch.title}</h4>
-                  <span className="text-[#3665EE] font-semibold">Pool: {sch.pool} • {sch.applicants}</span>
+                  <h4 className="font-semibold text-base text-[#12163A]">{sch.title}</h4>
+                  <span className="text-[#3665EE] font-medium text-xs">Pool: {sch.pool} • {sch.applicants}</span>
                 </div>
                 <div className="text-right">
-                  <div className="font-extrabold text-sm text-[#12163A]">{sch.disbursed}</div>
-                  <span className="text-[10px] bg-white border border-slate-200 text-[#12163A] px-2.5 py-0.5 rounded-full font-bold">Active Fund</span>
+                  <div className="font-semibold text-sm text-[#12163A]">{sch.disbursed}</div>
+                  <span className="text-xs bg-white border border-slate-200 text-[#12163A] px-2.5 py-0.5 rounded-full font-medium">Active Fund</span>
                 </div>
               </div>
             ))}
@@ -380,13 +405,13 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
     // 6. PLACEMENT CELL
     if (activeSubView === 'placement-cell' || activeSubView === 'drives') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaBriefcase className="w-5 h-5 text-[#3665EE]" /> Campus Placement Cell & Recruitment Hub
               </h2>
-              <p className="text-[#6B7280]">Manage corporate placement drives, CTC packages, & interview schedules</p>
+              <p className="text-sm font-normal text-[#6B7280]">Manage corporate placement drives, CTC packages, & interview schedules</p>
             </div>
             <button 
               onClick={() => openTriggerModal("Schedule Placement Drive", "Publish a new corporate recruiting drive", [
@@ -394,7 +419,7 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
                 { label: "Job Role Title", name: "role", type: "text", placeholder: "Software Development Engineer" },
                 { label: "Annual CTC Package", name: "ctc", type: "text", placeholder: "₹24.0 LPA" }
               ])}
-              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
+              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
               <FaPlus className="w-3.5 h-3.5" /> Schedule Placement Drive
             </button>
@@ -404,13 +429,13 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
             {drivesList.map((d, i) => (
               <div key={i} className="p-5 rounded-[24px] border bg-[#DEE9FF] border-[#C6D9FF] flex items-center justify-between text-[#12163A] hover-card-lift">
                 <div>
-                  <h4 className="font-bold text-sm text-[#12163A]">{d.company}</h4>
-                  <span className="text-[#3665EE] font-semibold">{d.role}</span>
-                  <div className="text-[11px] text-[#4B5563]">{d.applicants}</div>
+                  <h4 className="font-semibold text-base text-[#12163A]">{d.company}</h4>
+                  <span className="text-[#3665EE] font-medium text-xs">{d.role}</span>
+                  <div className="text-xs text-[#4B5563] font-normal">{d.applicants}</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-[#12163A] font-extrabold text-sm">{d.ctc}</div>
-                  <span className="text-[10px] bg-white border border-slate-200 text-[#12163A] px-2.5 py-0.5 rounded-full font-bold">{d.status}</span>
+                  <div className="text-[#12163A] font-semibold text-sm">{d.ctc}</div>
+                  <span className="text-xs bg-white border border-slate-200 text-[#12163A] px-2.5 py-0.5 rounded-full font-medium">{d.status}</span>
                 </div>
               </div>
             ))}
@@ -422,20 +447,20 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
     // 7. INDUSTRY CONNECT
     if (activeSubView === 'industry-connect') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaHandshake className="w-5 h-5 text-[#3665EE]" /> Industry Connect & Enterprise MoUs
               </h2>
-              <p className="text-[#6B7280]">Corporate partnerships, R&D labs, and summer/winter internship tracks</p>
+              <p className="text-sm font-normal text-[#6B7280]">Corporate partnerships, R&D labs, and summer/winter internship tracks</p>
             </div>
             <button 
               onClick={() => openTriggerModal("Register Corporate Partner", "Sign a new campus recruiting MoU", [
                 { label: "Company Name", name: "company", type: "text", placeholder: "NVIDIA Graphics India" },
                 { label: "Internship / MoU Track", name: "track", type: "text", placeholder: "AI Hardware & CUDA Labs" }
               ])}
-              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
+              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
             >
               <FaPlus className="w-3.5 h-3.5" /> Register Corporate Partner
             </button>
@@ -444,10 +469,10 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {partnersList.map((pr, i) => (
               <div key={i} className="p-5 rounded-[24px] border bg-[#F6E6D8] border-[#EAD0BC] space-y-2 text-[#12163A] hover-card-lift">
-                <span className="text-[10px] bg-[#12163A] text-white px-2.5 py-0.5 rounded-full font-bold">{pr.status}</span>
-                <h4 className="font-bold text-sm text-[#12163A]">{pr.company}</h4>
-                <p className="text-xs text-[#3665EE] font-semibold">{pr.track}</p>
-                <div className="text-[11px] text-[#4B5563]">{pr.mou}</div>
+                <span className="text-xs bg-[#12163A] text-white px-2.5 py-0.5 rounded-full font-medium">{pr.status}</span>
+                <h4 className="font-semibold text-base text-[#12163A]">{pr.company}</h4>
+                <p className="text-xs text-[#3665EE] font-medium">{pr.track}</p>
+                <div className="text-xs text-[#4B5563] font-normal">{pr.mou}</div>
               </div>
             ))}
           </div>
@@ -458,26 +483,26 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
     // 8. ANALYTICS
     if (activeSubView === 'analytics') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="pb-4 border-b border-slate-100">
-            <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+            <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
               <FaArrowTrendUp className="w-5 h-5 text-[#3665EE]" /> Institutional Performance & Placement Analytics
             </h2>
-            <p className="text-[#6B7280]">Placement trends, NIRF benchmarks, and corporate compensation distributions</p>
+            <p className="text-sm font-normal text-[#6B7280]">Placement trends, NIRF benchmarks, and corporate compensation distributions</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-6 rounded-[24px] bg-[#E4F4EC] border border-[#C3E6D5] text-center text-[#12163A]">
-              <span className="font-semibold text-[#4B5563]">YoY Placement Growth</span>
-              <div className="text-3xl font-extrabold text-[#12163A] mt-1">+5.1% YoY</div>
+              <span className="font-medium text-[13px] text-[#4B5563]">YoY Placement Growth</span>
+              <div className="text-2xl lg:text-3xl font-bold text-[#12163A] mt-1">+5.1% YoY</div>
             </div>
             <div className="p-6 rounded-[24px] bg-[#DEE9FF] border border-[#C6D9FF] text-center text-[#12163A]">
-              <span className="font-semibold text-[#4B5563]">Software & AI Hiring Share</span>
-              <div className="text-3xl font-extrabold text-[#3665EE] mt-1">62.0%</div>
+              <span className="font-medium text-[13px] text-[#4B5563]">Software & AI Hiring Share</span>
+              <div className="text-2xl lg:text-3xl font-bold text-[#3665EE] mt-1">62.0%</div>
             </div>
             <div className="p-6 rounded-[24px] bg-[#F6E6D8] border border-[#EAD0BC] text-center text-[#12163A]">
-              <span className="font-semibold text-[#4B5563]">Highest Package Recorded</span>
-              <div className="text-3xl font-extrabold text-[#12163A] mt-1">₹110 LPA</div>
+              <span className="font-medium text-[13px] text-[#4B5563]">Highest Package Recorded</span>
+              <div className="text-2xl lg:text-3xl font-bold text-[#12163A] mt-1">₹110 LPA</div>
             </div>
           </div>
         </div>
@@ -487,15 +512,15 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
     // 9. NOTIFICATIONS
     if (activeSubView === 'notifications') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaBullhorn className="w-5 h-5 text-[#3665EE]" /> College Admin Notifications & Announcements
               </h2>
-              <p className="text-[#6B7280]">Placement deadlines, MoU updates, and institutional accreditation alerts</p>
+              <p className="text-sm font-normal text-[#6B7280]">Placement deadlines, MoU updates, and institutional accreditation alerts</p>
             </div>
-            <button onClick={() => onShowToast("Marked all notifications as read")} className="text-[#3665EE] font-bold hover:underline cursor-pointer">
+            <button onClick={() => onShowToast("Marked all notifications as read")} className="text-[#3665EE] font-medium text-sm hover:underline cursor-pointer">
               Mark All as Read
             </button>
           </div>
@@ -508,10 +533,10 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
             ].map((nt, i) => (
               <div key={i} className={`p-4 rounded-[20px] border flex items-center justify-between ${nt.bg} ${nt.border} text-[#12163A]`}>
                 <div>
-                  <h4 className="font-bold text-[#12163A]">{nt.title}</h4>
-                  <span className="text-[#3665EE] font-semibold">{nt.type} • {nt.time}</span>
+                  <h4 className="font-semibold text-base text-[#12163A]">{nt.title}</h4>
+                  <span className="text-[#3665EE] font-medium text-xs">{nt.type} • {nt.time}</span>
                 </div>
-                <span className="text-[10px] bg-[#12163A] text-white px-2.5 py-0.5 rounded-full font-bold">New</span>
+                <span className="text-xs bg-[#12163A] text-white px-2.5 py-0.5 rounded-full font-medium">New</span>
               </div>
             ))}
           </div>
@@ -521,22 +546,22 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
 
     // 10. SETTINGS
     return (
-      <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+      <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
         <div className="pb-4 border-b border-slate-100">
-          <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+          <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
             <FaSliders className="w-5 h-5 text-[#3665EE]" /> College Governance & System Settings
           </h2>
-          <p className="text-[#6B7280]">Configure institutional profile, academic year, campus settings, & user permissions</p>
+          <p className="text-sm font-normal text-[#6B7280]">Configure institutional profile, academic year, campus settings, & user permissions</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-5 rounded-[24px] bg-[#DEE9FF] border border-[#C6D9FF] space-y-2 text-[#12163A]">
-            <h4 className="font-bold text-sm text-[#12163A]">University Profile & NAAC Grade</h4>
-            <p className="text-[#4B5563]">Indian Institute of Technology / University Desk • NIRF Rank #1 • NAAC A++</p>
+            <h4 className="font-semibold text-base text-[#12163A]">University Profile & NAAC Grade</h4>
+            <p className="text-sm font-normal text-[#4B5563]">Indian Institute of Technology / University Desk • NIRF Rank #1 • NAAC A++</p>
           </div>
           <div className="p-5 rounded-[24px] bg-[#F6E6D8] border border-[#EAD0BC] space-y-2 text-[#12163A]">
-            <h4 className="font-bold text-sm text-[#12163A]">Faculty & Placement Cell Permissions</h4>
-            <p className="text-[#4B5563]">85 Placement Officers & Faculty Accounts • RBAC Access Enabled</p>
+            <h4 className="font-semibold text-base text-[#12163A]">Faculty & Placement Cell Permissions</h4>
+            <p className="text-sm font-normal text-[#4B5563]">85 Placement Officers & Faculty Accounts • RBAC Access Enabled</p>
           </div>
         </div>
       </div>

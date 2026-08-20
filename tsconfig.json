@@ -20,6 +20,7 @@
     "paths": {
       "~/*": ["./app/*"]
     },
-    "rootDirs": [".", "./.react-router/types"]
+    "rootDirs": [".", "./.react-router/types"],
+    "noEmit": true
   }
 }

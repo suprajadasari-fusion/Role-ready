@@ -237,6 +237,17 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
     return matchesGrade && matchesSearch;
   });
 
+  const [assessmentsList, setAssessmentsList] = useState([
+    { name: "Holland Code Psychometric Test", grade: "Grades 9 & 10", assigned: 1830, completed: 1720, score: "88/100" },
+    { name: "STEM Cognitive Aptitude Test", grade: "Grades 11 & 12", assigned: 1770, completed: 1690, score: "92/100" },
+    { name: "Emotional Intelligence & Work Style", grade: "Grades 8 & 9", assigned: 1400, completed: 1250, score: "85/100" }
+  ]);
+
+  const [eventsList, setEventsList] = useState([
+    { title: "Global AI & STEM Career Workshop", date: "Tomorrow, 10:00 AM", attendees: "450 Students Enrolled", bg: "bg-[#E4F4EC]", border: "border-[#C3E6D5]" },
+    { title: "Parent Career Guidance Seminar", date: "15th August, 4:00 PM", attendees: "680 Parents Enrolled", bg: "bg-[#DEE9FF]", border: "border-[#C6D9FF]" }
+  ]);
+
   const openTriggerModal = (title: string, subtitle: string, fields: any[]) => {
     setActionModalConfig({ title, subtitle, fields });
     setIsActionModalOpen(true);
@@ -272,6 +283,49 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
 
       setStudents(prev => [newStudent, ...prev]);
       onShowToast(`Successfully onboarded student: ${newStudent.name} (${newStudent.grade})!`);
+    } else if (actionModalConfig.title === "Add Teacher") {
+      const teacherName = data.name || "New Faculty Member";
+      const teacherDept = data.department || "Computer Science & Tech";
+      const teacherSubject = data.subject || "STEM & AI Fundamentals";
+      const teacherClasses = data.classes || "Grade 11, Grade 12";
+      const teacherQual = data.qualification || "M.Tech / M.Sc Faculty";
+
+      const newTeacher = {
+        id: `TCH-${Math.floor(200 + Math.random() * 800)}`,
+        name: teacherName,
+        qualification: teacherQual,
+        dept: teacherDept,
+        subject: teacherSubject,
+        classes: teacherClasses,
+        studentsCount: "0 Students Assigned",
+        experience: "Joined Recently",
+        email: `${teacherName.toLowerCase().replace(/\s+/g, '.')}@school.edu`,
+        rating: "5.0 / 5.0 (New Faculty)",
+        projects: "0 Cohorts Supervised"
+      };
+
+      setTeachersList(prev => [newTeacher, ...prev]);
+      onShowToast(`Successfully added teacher: ${newTeacher.name} (${newTeacher.dept})!`);
+    } else if (actionModalConfig.title === "Assign Assessment") {
+      const newAs = {
+        name: data.name || "Career Aptitude & Skill Evaluation",
+        grade: data.grade || "All Grades",
+        assigned: 500,
+        completed: 0,
+        score: "Pending"
+      };
+      setAssessmentsList(prev => [newAs, ...prev]);
+      onShowToast(`Assigned new assessment: ${newAs.name}!`);
+    } else if (actionModalConfig.title === "Schedule Event") {
+      const newEv = {
+        title: data.title || "Career Guidance Workshop",
+        date: data.date || "Upcoming",
+        attendees: "100 Students Enrolled",
+        bg: "bg-[#DEE9FF]",
+        border: "border-[#C6D9FF]"
+      };
+      setEventsList(prev => [newEv, ...prev]);
+      onShowToast(`Scheduled new event: ${newEv.title}!`);
     } else {
       onShowToast(`Action completed: ${actionModalConfig.title}`);
     }
@@ -283,34 +337,34 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
     if (activeSubView === 'overview') {
       return (
         <div className="space-y-6 font-sans">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="p-6 rounded-[24px] bg-[#12163A] text-white shadow-md border border-[#12163A] space-y-2 hover-card-lift">
-              <span className="font-semibold block text-slate-300">Total Students (Grades 8-12)</span>
-              <div className="text-3xl font-extrabold text-white">{students.length + 3814}</div>
-              <span className="text-[11px] font-bold text-[#E4F4EC] bg-[#E4F4EC]/10 px-2 py-0.5 rounded-full inline-block">100% Active Profiles</span>
+              <span className="font-medium text-[13px] block text-slate-300">Total Students (Grades 8-12)</span>
+              <div className="text-2xl lg:text-3xl font-bold tracking-tight text-white">{students.length + 3814}</div>
+              <span className="text-xs font-medium text-[#E4F4EC] bg-[#E4F4EC]/10 px-2 py-0.5 rounded-full inline-block">100% Active Profiles</span>
             </div>
 
             <div className="p-6 rounded-[24px] bg-[#F6E6D8] text-[#12163A] shadow-sm border border-[#EAD0BC] space-y-2 hover-card-lift">
-              <span className="font-semibold block text-[#4B5563]">Total Teachers & Mentors</span>
-              <div className="text-3xl font-extrabold text-[#12163A]">142</div>
-              <span className="text-[11px] font-bold text-[#12163A]/70">Across 12 Departments</span>
+              <span className="font-medium text-[13px] block text-[#4B5563]">Total Teachers & Mentors</span>
+              <div className="text-2xl lg:text-3xl font-bold tracking-tight text-[#12163A]">142</div>
+              <span className="text-xs font-medium text-[#12163A]/70">Across 12 Departments</span>
             </div>
 
             <div className="p-6 rounded-[24px] bg-[#DEE9FF] text-[#12163A] shadow-sm border border-[#C6D9FF] space-y-2 hover-card-lift">
-              <span className="font-semibold block text-[#4B5563]">Assessment Completion</span>
-              <div className="text-3xl font-extrabold text-[#3665EE]">91.4%</div>
-              <span className="text-[11px] font-bold text-[#12163A]">3,490 / 3,820 Tested</span>
+              <span className="font-medium text-[13px] block text-[#4B5563]">Assessment Completion</span>
+              <div className="text-2xl lg:text-3xl font-bold tracking-tight text-[#3665EE]">91.4%</div>
+              <span className="text-xs font-medium text-[#12163A]">3,490 / 3,820 Tested</span>
             </div>
 
             <div className="p-6 rounded-[24px] bg-[#E4F4EC] text-[#12163A] shadow-sm border border-[#C3E6D5] space-y-2 hover-card-lift">
-              <span className="font-semibold block text-[#4B5563]">Avg Career Readiness Score</span>
-              <div className="text-3xl font-extrabold text-[#12163A]">88.2 / 100</div>
-              <span className="text-[11px] font-bold text-[#3665EE]">Top 5% Regionally</span>
+              <span className="font-medium text-[13px] block text-[#4B5563]">Avg Career Readiness Score</span>
+              <div className="text-2xl lg:text-3xl font-bold tracking-tight text-[#12163A]">88.2 / 100</div>
+              <span className="text-xs font-medium text-[#3665EE]">Top 5% Regionally</span>
             </div>
           </div>
 
           <div className="p-6 rounded-[24px] bg-white border border-slate-200 shadow-xs space-y-4">
-            <h3 className="font-bold text-sm text-[#12163A]">Grade Enrolment & Career DNA Status</h3>
+            <h3 className="font-semibold text-base text-[#12163A]">Grade Enrolment & Career DNA Status</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {[
                 { grade: "Grade 8", count: 620, readiness: "76% Ready", bg: "bg-[#DEE9FF]", border: "border-[#C6D9FF]" },
@@ -320,21 +374,21 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                 { grade: "Grade 12", count: 850, readiness: "96% Ready", bg: "bg-[#12163A]", border: "border-[#12163A]", dark: true }
               ].map((g, i) => (
                 <div key={i} className={`p-4 rounded-[20px] border text-center ${g.bg} ${g.border} ${g.dark ? 'text-white' : 'text-[#12163A]'} hover-card-lift`}>
-                  <span className="font-bold block text-xs">{g.grade}</span>
-                  <div className="text-2xl font-extrabold my-1">{g.count}</div>
-                  <span className={`text-[10px] font-bold ${g.dark ? 'text-[#E4F4EC]' : 'text-[#3665EE]'}`}>{g.readiness}</span>
+                  <span className="font-medium block text-xs">{g.grade}</span>
+                  <div className="text-2xl font-bold my-1">{g.count}</div>
+                  <span className={`text-xs font-medium ${g.dark ? 'text-[#E4F4EC]' : 'text-[#3665EE]'}`}>{g.readiness}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-xs">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-sm">
             <div className="p-6 rounded-[24px] bg-[#DEE9FF] text-[#12163A] border border-[#C6D9FF] shadow-xs space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-sm text-[#12163A]">Learning Progress</h4>
-                <span className="font-bold text-[#3665EE]">86.4% Avg</span>
+                <h4 className="font-semibold text-base text-[#12163A]">Learning Progress</h4>
+                <span className="font-semibold text-sm text-[#3665EE]">86.4% Avg</span>
               </div>
-              <p className="text-[#4B5563]">Course completion rates across AI, STEM, & Skill tracks</p>
+              <p className="text-sm font-normal text-[#4B5563]">Course completion rates across AI, STEM, & Skill tracks</p>
               <div className="w-full h-2.5 bg-white/80 rounded-full overflow-hidden">
                 <div className="h-full bg-[#3665EE] rounded-full" style={{ width: '86%' }} />
               </div>
@@ -342,13 +396,13 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
 
             <div className="p-6 rounded-[24px] bg-[#F6E6D8] text-[#12163A] border border-[#EAD0BC] shadow-xs space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-sm text-[#12163A]">Students Requiring Attention</h4>
-                <span className="font-bold text-[#12163A] bg-[#12163A]/10 px-2.5 py-0.5 rounded-full">42 Students</span>
+                <h4 className="font-semibold text-base text-[#12163A]">Students Requiring Attention</h4>
+                <span className="font-medium text-xs text-[#12163A] bg-[#12163A]/10 px-2.5 py-0.5 rounded-full">42 Students</span>
               </div>
-              <p className="text-[#4B5563]">Incomplete assessments or low career readiness score</p>
+              <p className="text-sm font-normal text-[#4B5563]">Incomplete assessments or low career readiness score</p>
               <button 
                 onClick={() => onShowToast("Navigating to filtered Student Attention list")}
-                className="text-[#3665EE] font-bold hover:underline cursor-pointer"
+                className="text-[#3665EE] font-medium text-sm hover:underline cursor-pointer"
               >
                 View Needs Attention Roster &rarr;
               </button>
@@ -356,10 +410,10 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
 
             <div className="p-6 rounded-[24px] bg-[#E4F4EC] text-[#12163A] border border-[#C3E6D5] shadow-xs space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-sm text-[#12163A]">Placement Readiness</h4>
-                <span className="font-bold text-[#12163A]">78% Placement Ready</span>
+                <h4 className="font-semibold text-base text-[#12163A]">Placement Readiness</h4>
+                <span className="font-semibold text-sm text-[#12163A]">78% Placement Ready</span>
               </div>
-              <p className="text-[#4B5563]">Grade 11 & 12 students qualified for internships & admissions</p>
+              <p className="text-sm font-normal text-[#4B5563]">Grade 11 & 12 students qualified for internships & admissions</p>
               <div className="w-full h-2.5 bg-white/80 rounded-full overflow-hidden">
                 <div className="h-full bg-[#3665EE] rounded-full" style={{ width: '78%' }} />
               </div>
@@ -372,14 +426,14 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
     // 2. STUDENTS (ROSTER & DETAILS)
     if (activeSubView === 'students') {
       return (
-        <div className="space-y-6 font-sans text-xs">
+        <div className="space-y-6 font-sans">
           <div className="p-6 rounded-[24px] bg-white border border-slate-200 shadow-xs space-y-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+                <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                   <FaUsers className="w-5 h-5 text-[#3665EE]" /> Student Roster (Grades 8 - 12)
                 </h2>
-                <p className="text-[#6B7280]">School admin management for registered student profiles</p>
+                <p className="text-sm font-normal text-[#6B7280]">School admin management for registered student profiles</p>
               </div>
               <div className="flex items-center gap-3">
                 <button 
@@ -389,100 +443,95 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                     { label: "Section", name: "section", type: "text", placeholder: "Section A" },
                     { label: "Target Career Goal", name: "careerGoal", type: "text", placeholder: "AI & Software Engineer" }
                   ])}
-                  className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2.5 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
+                  className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2.5 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
                 >
                   <FaPlus className="w-3.5 h-3.5" /> Onboard Student Batch
                 </button>
                 <button 
-                  onClick={() => onShowToast("Exported Student Roster CSV")}
-                  className="px-4 py-2.5 rounded-xl font-bold border border-slate-200 bg-slate-50 text-[#12163A] hover:bg-slate-100 transition cursor-pointer flex items-center gap-2"
+                  onClick={() => onShowToast("Exported Grade Roster to CSV")}
+                  className="px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 bg-slate-50 text-[#12163A] hover:bg-slate-100 transition cursor-pointer flex items-center gap-2"
                 >
-                  <FaDownload className="w-3.5 h-3.5" /> Export Roster
+                  <FaDownload className="w-3.5 h-3.5" /> Export CSV
                 </button>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
-                {['All', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'].map((gr) => (
+            {/* Filters Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+              <div className="flex items-center gap-2">
+                {['All', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'].map(g => (
                   <button
-                    key={gr}
-                    onClick={() => setSelectedGrade(gr)}
-                    className={`px-3.5 py-1.5 rounded-xl font-bold transition cursor-pointer ${
-                      selectedGrade === gr
-                        ? 'bg-[#12163A] text-white shadow-md'
-                        : 'bg-[#DEE9FF] text-[#12163A] hover:bg-[#CBDDFF]'
+                    key={g}
+                    onClick={() => setSelectedGrade(g)}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition cursor-pointer ${
+                      selectedGrade === g 
+                        ? 'bg-[#12163A] text-white' 
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                     }`}
                   >
-                    {gr}
+                    {g}
                   </button>
                 ))}
               </div>
 
-              <div className="relative">
-                <input
+              <div className="relative w-64">
+                <FaMagnifyingGlass className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input 
                   type="text"
+                  placeholder="Search students..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search by student name or ID..."
-                  className="w-full sm:w-64 pl-9 pr-3.5 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3665EE] bg-slate-50 text-[#12163A]"
+                  className="w-full pl-9 pr-3 py-1.5 border border-slate-200 rounded-xl text-sm font-normal focus:outline-none focus:ring-2 focus:ring-[#3665EE] bg-slate-50 text-[#12163A]"
                 />
-                <FaMagnifyingGlass className="w-3.5 h-3.5 absolute left-3 top-3 text-slate-400" />
               </div>
             </div>
-          </div>
 
-          <div className="rounded-[24px] bg-white border border-slate-200 shadow-xs overflow-hidden">
-            <div className="overflow-x-auto">
+            {/* Students Table */}
+            <div className="overflow-x-auto rounded-2xl border border-[#C6D9FF]">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b text-[11px] font-bold uppercase bg-[#DEE9FF]/50 text-[#12163A] border-[#C6D9FF]">
+                  <tr className="border-b text-xs font-semibold uppercase tracking-wider bg-[#DEE9FF]/50 text-[#12163A] border-[#C6D9FF]">
                     <th className="p-3.5">Student Name</th>
-                    <th className="p-3.5">Student ID</th>
-                    <th className="p-3.5">Grade & Section</th>
+                    <th className="p-3.5">Roll No / ID</th>
                     <th className="p-3.5">Career Score</th>
                     <th className="p-3.5">Assessment Status</th>
                     <th className="p-3.5">Career DNA</th>
-                    <th className="p-3.5">Learning</th>
-                    <th className="p-3.5">ATS Resume</th>
+                    <th className="p-3.5">Learning Progress</th>
+                    <th className="p-3.5">Resume Score</th>
                     <th className="p-3.5">Placement Readiness</th>
-                    <th className="p-3.5 text-right">School Action</th>
+                    <th className="p-3.5 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-[#C6D9FF]/60 text-sm font-normal">
                   {filteredStudents.map((s) => (
-                    <tr key={s.id} className="hover:bg-[#DEE9FF]/20 transition-colors">
-                      <td className="p-3.5 font-bold text-[#12163A]">
-                        <div>{s.name}</div>
-                        <div className="text-[10px] font-normal text-[#6B7280]">{s.email}</div>
+                    <tr key={s.id} className="hover:bg-[#DEE9FF]/30 transition-colors">
+                      <td className="p-3.5 font-medium text-[#12163A]">
+                        <div>{s.name} ({s.grade} - {s.section})</div>
+                        <div className="text-xs font-normal text-[#6B7280]">{s.email}</div>
                       </td>
-                      <td className="p-3.5 font-mono text-[11px] text-[#3665EE]">{s.id}</td>
-                      <td className="p-3.5 text-[#4B5563]">{s.grade} - {s.section}</td>
-                      <td className="p-3.5 font-bold text-[#3665EE]">{s.careerScore} / 100</td>
-                      <td className="p-3.5 font-semibold text-emerald-600">{s.assessmentStatus}</td>
-                      <td className="p-3.5"><span className="bg-white border border-slate-200 text-[#12163A] px-2.5 py-1 rounded-lg font-bold text-[10px] whitespace-nowrap shadow-2xs">{s.careerDnaStatus}</span></td>
-                      <td className="p-3.5 font-bold text-[#12163A]">{s.learningProgress}</td>
-                      <td className="p-3.5 font-bold text-[#3665EE]">{s.resumeScore}</td>
+                      <td className="p-3.5 font-mono text-xs text-[#3665EE]">{s.id}</td>
+                      <td className="p-3.5 font-semibold text-[#3665EE]">{s.careerScore} / 100</td>
+                      <td className="p-3.5 font-medium text-emerald-600">{s.assessmentStatus}</td>
+                      <td className="p-3.5"><span className="bg-white border border-slate-200 text-[#12163A] px-2.5 py-1 rounded-lg font-medium text-xs whitespace-nowrap shadow-2xs">{s.careerDnaStatus}</span></td>
+                      <td className="p-3.5 font-medium text-[#12163A]">{s.learningProgress}</td>
+                      <td className="p-3.5 font-semibold text-[#3665EE]">{s.resumeScore}</td>
                       <td className="p-3.5">
-                        <span className={`px-2.5 py-0.5 rounded-full font-bold text-[10px] border ${
+                        <span className={`px-2.5 py-0.5 rounded-full font-medium text-xs border ${
                           s.placementReadiness.includes('High')
-                            ? 'bg-[#E4F4EC] text-[#12163A] border-[#C3E6D5]'
-                            : s.placementReadiness.includes('Needs')
-                              ? 'bg-rose-50 text-rose-700 border-rose-200'
-                              : 'bg-[#DEE9FF] text-[#12163A] border-[#C6D9FF]'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : s.placementReadiness.includes('Moderate')
+                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            : 'bg-rose-50 text-rose-700 border-rose-200'
                         }`}>
                           {s.placementReadiness}
                         </span>
                       </td>
                       <td className="p-3.5 text-right">
-                        <button 
-                          onClick={() => {
-                            setSelectedStudent(s);
-                            setStudentDetailTab('overview');
-                          }}
-                          className="bg-[#12163A] hover:bg-[#1A2050] text-white font-bold px-3 py-1.5 rounded-lg text-[10px] transition cursor-pointer flex items-center gap-1.5 ml-auto hover:scale-105 active:scale-95"
+                        <button
+                          onClick={() => setSelectedStudent(s)}
+                          className="bg-[#12163A] hover:bg-[#1A2050] text-white font-medium px-3 py-1.5 rounded-lg text-xs transition cursor-pointer flex items-center gap-1.5 ml-auto hover:scale-105 active:scale-95"
                         >
-                          <FaEye className="w-3 h-3" /> View Student
+                          <FaEye className="w-3.5 h-3.5" /> View Profile
                         </button>
                       </td>
                     </tr>
@@ -492,63 +541,66 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
             </div>
           </div>
 
-          {/* SCHOOL ADMIN VIEW: STUDENT DETAILS MODAL */}
+          {/* STUDENT DETAILS POPUP MODAL */}
           {selectedStudent && (
-            <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-              <div className="rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col border shadow-2xl overflow-hidden bg-white text-[#12163A]">
-                <div className="p-6 bg-[#12163A] text-white flex items-center justify-between">
+            <div className="fixed inset-0 z-50 backdrop-blur-md bg-[#12163A]/70 flex items-center justify-center p-4 animate-fade-in font-sans">
+              <div className="bg-white rounded-[28px] max-w-3xl w-full border border-slate-200 shadow-2xl overflow-hidden animate-scale-up text-sm font-sans">
+                {/* Modal Header */}
+                <div className="px-6 py-5 bg-[#12163A] text-white flex items-center justify-between">
                   <div>
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-[#DEE9FF]">SCHOOL ADMIN STUDENT VIEW</div>
-                    <h3 className="text-xl font-extrabold flex items-center gap-2">{selectedStudent.name}</h3>
-                    <p className="text-xs text-slate-300">{selectedStudent.id} • {selectedStudent.grade} ({selectedStudent.section}) • Goal: {selectedStudent.careerGoal}</p>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#DEE9FF]">School Admin Student View</div>
+                    <h3 className="text-xl font-bold flex items-center gap-2">{selectedStudent.name}</h3>
+                    <p className="text-xs text-slate-300 font-normal">{selectedStudent.grade} • {selectedStudent.section} • Roll ID: {selectedStudent.id}</p>
                   </div>
                   <button 
-                    onClick={() => setSelectedStudent(null)}
-                    className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition cursor-pointer text-white"
+                    onClick={() => setSelectedStudent(null)} 
+                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition cursor-pointer text-white"
                   >
                     <FaXmark className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="flex border-b border-slate-200 bg-[#DEE9FF]/40 overflow-x-auto px-4">
+                {/* Modal Navigation Tabs */}
+                <div className="px-6 border-b border-slate-200 flex gap-2 overflow-x-auto bg-slate-50">
                   {[
-                    { id: 'overview', label: 'Overview' },
-                    { id: 'intelligence', label: 'Career Intelligence' },
-                    { id: 'assessments', label: 'Assessments' },
-                    { id: 'learning', label: 'Learning & Skills' },
-                    { id: 'opportunities', label: 'Opportunities' },
-                    { id: 'placement', label: 'Resume & Placement' },
-                    { id: 'academic', label: 'Academic Performance' }
-                  ].map((tab) => (
+                    { id: 'overview', label: '1. Overview' },
+                    { id: 'intelligence', label: '2. Career DNA & Intelligence' },
+                    { id: 'assessments', label: '3. Assessments' },
+                    { id: 'learning', label: '4. Skills & Learning' },
+                    { id: 'opportunities', label: '5. Colleges & Scholarships' },
+                    { id: 'placement', label: '6. Placement Readiness' },
+                    { id: 'academic', label: '7. Academic Summary' }
+                  ].map((t) => (
                     <button
-                      key={tab.id}
-                      onClick={() => setStudentDetailTab(tab.id)}
-                      className={`px-4 py-3 text-xs font-bold transition whitespace-nowrap cursor-pointer border-b-2 ${
-                        studentDetailTab === tab.id
-                          ? 'border-[#3665EE] text-[#3665EE] bg-white'
+                      key={t.id}
+                      onClick={() => setStudentDetailTab(t.id)}
+                      className={`px-4 py-3 text-xs font-medium transition whitespace-nowrap cursor-pointer border-b-2 ${
+                        studentDetailTab === t.id 
+                          ? 'border-[#3665EE] text-[#3665EE] font-semibold' 
                           : 'border-transparent text-[#6B7280] hover:text-[#12163A]'
                       }`}
                     >
-                      {tab.label}
+                      {t.label}
                     </button>
                   ))}
                 </div>
 
-                <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
+                {/* Modal Content Bodies */}
+                <div className="p-6 max-h-[60vh] overflow-y-auto space-y-4">
                   {studentDetailTab === 'overview' && (
                     <div className="space-y-4">
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-3 gap-3 text-center">
                         <div className="p-4 rounded-xl border bg-[#DEE9FF] border-[#C6D9FF]">
-                          <span className="font-semibold text-[#6B7280]">Career Score</span>
-                          <div className="text-2xl font-extrabold text-[#3665EE] mt-1">{selectedStudent.careerScore} / 100</div>
+                          <span className="font-medium text-xs text-[#6B7280]">Career Score</span>
+                          <div className="text-2xl font-bold text-[#3665EE] mt-1">{selectedStudent.careerScore} / 100</div>
                         </div>
                         <div className="p-4 rounded-xl border bg-[#E4F4EC] border-[#C3E6D5]">
-                          <span className="font-semibold text-[#6B7280]">Learning Progress</span>
-                          <div className="text-2xl font-extrabold text-[#12163A] mt-1">{selectedStudent.learningProgress}</div>
+                          <span className="font-medium text-xs text-[#6B7280]">Learning Progress</span>
+                          <div className="text-2xl font-bold text-[#12163A] mt-1">{selectedStudent.learningProgress}</div>
                         </div>
                         <div className="p-4 rounded-xl border bg-[#F6E6D8] border-[#EAD0BC]">
-                          <span className="font-semibold text-[#6B7280]">Placement Readiness</span>
-                          <div className="text-2xl font-extrabold text-[#12163A] mt-1">{selectedStudent.placementReadiness}</div>
+                          <span className="font-medium text-xs text-[#6B7280]">Placement Readiness</span>
+                          <div className="text-2xl font-bold text-[#12163A] mt-1">{selectedStudent.placementReadiness}</div>
                         </div>
                       </div>
                     </div>
@@ -557,12 +609,12 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                   {studentDetailTab === 'intelligence' && (
                     <div className="space-y-4">
                       <div className="p-4 rounded-xl border bg-[#F6E6D8] border-[#EAD0BC] space-y-2">
-                        <h4 className="font-bold text-sm text-[#12163A]">Career DNA & Personality Profile</h4>
-                        <p className="text-[#3665EE] font-bold">{selectedStudent.hollandCode}</p>
+                        <h4 className="font-semibold text-base text-[#12163A]">Career DNA & Personality Profile</h4>
+                        <p className="text-[#3665EE] font-semibold text-sm">{selectedStudent.hollandCode}</p>
                       </div>
                       <div className="p-4 rounded-xl border bg-[#E4F4EC] border-[#C3E6D5] space-y-2">
-                        <h4 className="font-bold text-sm text-[#12163A]">AI Recommended Career Goal</h4>
-                        <p className="text-[#12163A] font-bold">{selectedStudent.careerGoal}</p>
+                        <h4 className="font-semibold text-base text-[#12163A]">AI Recommended Career Goal</h4>
+                        <p className="text-[#12163A] font-semibold text-sm">{selectedStudent.careerGoal}</p>
                       </div>
                     </div>
                   )}
@@ -571,8 +623,8 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                     <div className="space-y-3">
                       {["Aptitude Assessment (Score: 94%)", "Psychometric Holland Code Test (Score: Completed)", "Emotional Intelligence (EQ Score: 88%)"].map((a, i) => (
                         <div key={i} className="p-3.5 rounded-xl border bg-slate-50 border-slate-200 flex items-center justify-between">
-                          <span className="font-bold text-[#12163A]">{a}</span>
-                          <span className="text-[#3665EE] font-bold">Verified</span>
+                          <span className="font-medium text-sm text-[#12163A]">{a}</span>
+                          <span className="text-[#3665EE] font-semibold text-xs">Verified</span>
                         </div>
                       ))}
                     </div>
@@ -581,10 +633,10 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                   {studentDetailTab === 'learning' && (
                     <div className="space-y-4">
                       <div className="p-4 rounded-xl border bg-[#DEE9FF] border-[#C6D9FF] space-y-2">
-                        <h4 className="font-bold text-[#12163A]">Key Acquired Skills</h4>
+                        <h4 className="font-semibold text-base text-[#12163A]">Key Acquired Skills</h4>
                         <div className="flex flex-wrap gap-2">
                           {selectedStudent.topSkills.map((sk: string) => (
-                            <span key={sk} className="bg-[#12163A] text-white px-3 py-1 rounded-lg font-bold">{sk}</span>
+                            <span key={sk} className="bg-[#12163A] text-white px-3 py-1 rounded-lg font-medium text-xs">{sk}</span>
                           ))}
                         </div>
                       </div>
@@ -594,27 +646,27 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                   {studentDetailTab === 'opportunities' && (
                     <div className="space-y-4">
                       <div className="p-4 rounded-xl border bg-white border-slate-200 space-y-1">
-                        <h4 className="font-bold text-[#12163A]">Recommended College</h4>
-                        <p className="text-[#3665EE] font-bold">{selectedStudent.topCollege}</p>
+                        <h4 className="font-semibold text-base text-[#12163A]">Recommended College</h4>
+                        <p className="text-[#3665EE] font-semibold text-sm">{selectedStudent.topCollege}</p>
                       </div>
                       <div className="p-4 rounded-xl border bg-[#E4F4EC] border-[#C3E6D5] space-y-1">
-                        <h4 className="font-bold text-[#12163A]">Scholarship Eligibility</h4>
-                        <p className="text-[#12163A] font-bold">{selectedStudent.topScholarship}</p>
+                        <h4 className="font-semibold text-base text-[#12163A]">Scholarship Eligibility</h4>
+                        <p className="text-[#12163A] font-semibold text-sm">{selectedStudent.topScholarship}</p>
                       </div>
                     </div>
                   )}
 
                   {studentDetailTab === 'placement' && (
                     <div className="p-4 rounded-xl border bg-white border-slate-200 space-y-2">
-                      <h4 className="font-bold text-[#12163A]">ATS Resume Score</h4>
-                      <div className="text-2xl font-extrabold text-[#3665EE]">{selectedStudent.resumeScore}</div>
+                      <h4 className="font-semibold text-base text-[#12163A]">ATS Resume Score</h4>
+                      <div className="text-2xl font-bold text-[#3665EE]">{selectedStudent.resumeScore}</div>
                     </div>
                   )}
 
                   {studentDetailTab === 'academic' && (
                     <div className="p-4 rounded-xl border bg-slate-50 border-slate-200 space-y-2">
-                      <h4 className="font-bold text-[#12163A]">Academic Performance Summary</h4>
-                      <p className="text-[#6B7280]">Term 1 Average: 89.4% • Attendance: 96.2%</p>
+                      <h4 className="font-semibold text-base text-[#12163A]">Academic Performance Summary</h4>
+                      <p className="text-[#6B7280] text-sm font-normal">Term 1 Average: 89.4% • Attendance: 96.2%</p>
                     </div>
                   )}
                 </div>
@@ -628,20 +680,23 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
     // 3. TEACHERS
     if (activeSubView === 'teachers') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaChalkboardUser className="w-5 h-5 text-[#3665EE]" /> Teacher & Faculty Management
               </h2>
-              <p className="text-[#6B7280]">142 Registered school teachers & career mentors across departments</p>
+              <p className="text-sm font-normal text-[#6B7280]">142 Registered school teachers & career mentors across departments</p>
             </div>
             <button 
               onClick={() => openTriggerModal("Add Teacher", "Register a new teacher or mentor", [
                 { label: "Teacher Name", name: "name", type: "text", placeholder: "Dr. Rajesh Verma" },
-                { label: "Department", name: "department", type: "text", placeholder: "Computer Science" }
+                { label: "Department", name: "department", type: "text", placeholder: "Computer Science & AI" },
+                { label: "Primary Subject", name: "subject", type: "text", placeholder: "Artificial Intelligence & ML" },
+                { label: "Qualification", name: "qualification", type: "text", placeholder: "Ph.D. Computer Science (IIT Delhi)" },
+                { label: "Assigned Classes", name: "classes", type: "text", placeholder: "Grade 11-A, 12-A" }
               ])}
-              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md"
+              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md"
             >
               <FaPlus className="w-3.5 h-3.5" /> Add Teacher
             </button>
@@ -651,13 +706,13 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
             {teachersList.map((t, i) => (
               <div key={i} className="p-4 rounded-[20px] border bg-[#DEE9FF] border-[#C6D9FF] flex items-center justify-between text-[#12163A] transition-all hover:shadow-md">
                 <div>
-                  <h4 className="font-bold text-sm text-[#12163A]">{t.name}</h4>
-                  <span className="text-[#3665EE] font-semibold">{t.dept} • {t.subject}</span>
-                  <div className="text-[11px] text-[#4B5563]">{t.classes} • Assigned: {t.studentsCount}</div>
+                  <h4 className="font-semibold text-base text-[#12163A]">{t.name}</h4>
+                  <span className="text-[#3665EE] font-medium text-xs">{t.dept} • {t.subject}</span>
+                  <div className="text-xs text-[#4B5563] font-normal">{t.classes} • Assigned: {t.studentsCount}</div>
                 </div>
                 <button 
                   onClick={() => setSelectedTeacher(t)}
-                  className="bg-[#12163A] hover:bg-[#1A2050] text-white font-bold px-3.5 py-1.5 rounded-xl cursor-pointer transition hover:scale-105 active:scale-95 shadow-md flex items-center gap-1.5"
+                  className="bg-[#12163A] hover:bg-[#1A2050] text-white font-medium text-xs px-3.5 py-1.5 rounded-xl cursor-pointer transition hover:scale-105 active:scale-95 shadow-md flex items-center gap-1.5"
                 >
                   <FaEye className="w-3.5 h-3.5" /> View Teacher
                 </button>
@@ -671,39 +726,35 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
     // 4. ASSESSMENTS
     if (activeSubView === 'assessments') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaListCheck className="w-5 h-5 text-[#3665EE]" /> Assessments & Career Readiness Control
               </h2>
-              <p className="text-[#6B7280]">Manage interest assessments, psychometric tests, and aptitude evaluations</p>
+              <p className="text-sm font-normal text-[#6B7280]">Manage interest assessments, psychometric tests, and aptitude evaluations</p>
             </div>
             <button 
               onClick={() => openTriggerModal("Assign Assessment", "Publish assessment to Grade batches", [
                 { label: "Assessment Name", name: "name", type: "text", placeholder: "Grade 10 Aptitude Test" },
                 { label: "Target Grade", name: "grade", type: "text", placeholder: "Grade 10" }
               ])}
-              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md"
+              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md"
             >
               <FaPlus className="w-3.5 h-3.5" /> Assign Assessment
             </button>
           </div>
 
           <div className="space-y-3">
-            {[
-              { name: "Holland Code Psychometric Test", grade: "Grades 9 & 10", assigned: 1830, completed: 1720, score: "88/100" },
-              { name: "STEM Cognitive Aptitude Test", grade: "Grades 11 & 12", assigned: 1770, completed: 1690, score: "92/100" },
-              { name: "Emotional Intelligence & Work Style", grade: "Grades 8 & 9", assigned: 1400, completed: 1250, score: "85/100" }
-            ].map((as, i) => (
+            {assessmentsList.map((as, i) => (
               <div key={i} className="p-4 rounded-[20px] border bg-[#F6E6D8] border-[#EAD0BC] flex items-center justify-between text-[#12163A]">
                 <div>
-                  <h4 className="font-bold text-sm text-[#12163A]">{as.name}</h4>
-                  <span className="text-[#3665EE] font-semibold">{as.grade} • Completed: {as.completed}/{as.assigned}</span>
+                  <h4 className="font-semibold text-base text-[#12163A]">{as.name}</h4>
+                  <span className="text-[#3665EE] font-medium text-xs">{as.grade} • Completed: {as.completed}/{as.assigned}</span>
                 </div>
                 <div className="text-right">
-                  <div className="text-[#12163A] font-bold">Avg Score: {as.score}</div>
-                  <button onClick={() => onShowToast(`Analyzing results for ${as.name}`)} className="text-[#3665EE] font-bold hover:underline">View Results</button>
+                  <div className="text-[#12163A] font-semibold text-sm">Avg Score: {as.score}</div>
+                  <button onClick={() => onShowToast(`Analyzing results for ${as.name}`)} className="text-[#3665EE] font-medium text-xs hover:underline">View Results</button>
                 </div>
               </div>
             ))}
@@ -715,15 +766,15 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
     // 5. CAREER REPORTS
     if (activeSubView === 'reports') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaFileLines className="w-5 h-5 text-[#3665EE]" /> Institutional Career & AI Intelligence Reports
               </h2>
-              <p className="text-[#6B7280]">School-wide intelligence summaries, skill gap matrices, and AI recommendation distribution</p>
+              <p className="text-sm font-normal text-[#6B7280]">School-wide intelligence summaries, skill gap matrices, and AI recommendation distribution</p>
             </div>
-            <button onClick={() => onShowToast("Generated full School Career Intelligence PDF Report")} className="bg-[#12163A] hover:bg-[#1A2050] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md">
+            <button onClick={() => onShowToast("Generated full School Career Intelligence PDF Report")} className="bg-[#12163A] hover:bg-[#1A2050] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md">
               <FaDownload className="w-3.5 h-3.5" /> Download Full PDF Report
             </button>
           </div>
@@ -735,8 +786,8 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
               { title: "Skill Gap & AI Recommendation Report", desc: "Top Need: Advanced Data Structures & PyTorch", bg: "bg-[#E4F4EC]", border: "border-[#C3E6D5]" }
             ].map((rp, i) => (
               <div key={i} className={`p-5 rounded-[24px] border space-y-2 cursor-pointer ${rp.bg} ${rp.border} text-[#12163A] hover-card-lift`} onClick={() => onShowToast(`Opening ${rp.title}`)}>
-                <h4 className="font-bold text-sm text-[#12163A]">{rp.title}</h4>
-                <p className="text-[#4B5563]">{rp.desc}</p>
+                <h4 className="font-semibold text-base text-[#12163A]">{rp.title}</h4>
+                <p className="text-xs text-[#4B5563] font-normal">{rp.desc}</p>
               </div>
             ))}
           </div>
@@ -747,32 +798,30 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
     // 6. EVENTS
     if (activeSubView === 'events') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaCalendarDays className="w-5 h-5 text-[#3665EE]" /> Career Events & Guidance Sessions
               </h2>
-              <p className="text-[#6B7280]">Schedule and manage career workshops, college awareness, & parent guidance</p>
+              <p className="text-sm font-normal text-[#6B7280]">Schedule and manage career workshops, college awareness, & parent guidance</p>
             </div>
             <button onClick={() => openTriggerModal("Schedule Event", "Create a new school guidance workshop", [
-              { label: "Event Title", name: "title", type: "text", placeholder: "IIT Admissions Workshop" }
-            ])} className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md">
+              { label: "Event Title", name: "title", type: "text", placeholder: "IIT Admissions Workshop" },
+              { label: "Date & Time", name: "date", type: "text", placeholder: "Tomorrow, 10:00 AM" }
+            ])} className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-sm px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md">
               <FaPlus className="w-3.5 h-3.5" /> Schedule Event
             </button>
           </div>
 
           <div className="space-y-3">
-            {[
-              { title: "Global AI & STEM Career Workshop", date: "Tomorrow, 10:00 AM", attendees: "450 Students Enrolled", bg: "bg-[#E4F4EC]", border: "border-[#C3E6D5]" },
-              { title: "Parent Career Guidance Seminar", date: "15th August, 4:00 PM", attendees: "680 Parents Enrolled", bg: "bg-[#DEE9FF]", border: "border-[#C6D9FF]" }
-            ].map((ev, i) => (
+            {eventsList.map((ev, i) => (
               <div key={i} className={`p-4 rounded-[20px] border flex items-center justify-between ${ev.bg} ${ev.border} text-[#12163A]`}>
                 <div>
-                  <h4 className="font-bold text-sm text-[#12163A]">{ev.title}</h4>
-                  <span className="text-[#3665EE] font-semibold">{ev.date} • {ev.attendees}</span>
+                  <h4 className="font-semibold text-base text-[#12163A]">{ev.title}</h4>
+                  <span className="text-[#3665EE] font-medium text-xs">{ev.date} • {ev.attendees}</span>
                 </div>
-                <span className="bg-[#12163A] text-white font-bold px-3 py-1 rounded-full">Upcoming</span>
+                <span className="bg-[#12163A] text-white font-medium text-xs px-3 py-1 rounded-full">Upcoming</span>
               </div>
             ))}
           </div>
@@ -783,26 +832,26 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
     // 7. STUDENT ANALYTICS
     if (activeSubView === 'analytics') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="pb-4 border-b border-slate-100">
-            <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+            <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
               <FaArrowTrendUp className="w-5 h-5 text-[#3665EE]" /> School-Wide Student Growth & Engagement Analytics
             </h2>
-            <p className="text-[#6B7280]">Institutional analytics for career readiness growth, engagement index, and skill mastery</p>
+            <p className="text-sm font-normal text-[#6B7280]">Institutional analytics for career readiness growth, engagement index, and skill mastery</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-6 rounded-[24px] bg-[#E4F4EC] border border-[#C3E6D5] text-center text-[#12163A]">
-              <span className="font-semibold text-[#4B5563]">Student Growth Rate</span>
-              <div className="text-3xl font-extrabold text-[#12163A] mt-1">+14.2% YoY</div>
+              <span className="font-medium text-[13px] text-[#4B5563]">Student Growth Rate</span>
+              <div className="text-2xl lg:text-3xl font-bold text-[#12163A] mt-1">+14.2% YoY</div>
             </div>
             <div className="p-6 rounded-[24px] bg-[#DEE9FF] border border-[#C6D9FF] text-center text-[#12163A]">
-              <span className="font-semibold text-[#4B5563]">Overall Engagement Index</span>
-              <div className="text-3xl font-extrabold text-[#3665EE] mt-1">94.8%</div>
+              <span className="font-medium text-[13px] text-[#4B5563]">Overall Engagement Index</span>
+              <div className="text-2xl lg:text-3xl font-bold text-[#3665EE] mt-1">94.8%</div>
             </div>
             <div className="p-6 rounded-[24px] bg-[#F6E6D8] border border-[#EAD0BC] text-center text-[#12163A]">
-              <span className="font-semibold text-[#4B5563]">Skill Mastery Benchmark</span>
-              <div className="text-3xl font-extrabold text-[#12163A] mt-1">89% Advanced</div>
+              <span className="font-medium text-[13px] text-[#4B5563]">Skill Mastery Benchmark</span>
+              <div className="text-2xl lg:text-3xl font-bold text-[#12163A] mt-1">89% Advanced</div>
             </div>
           </div>
         </div>
@@ -812,12 +861,12 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
     // 8. PERFORMANCE DASHBOARD
     if (activeSubView === 'performance') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="pb-4 border-b border-slate-100">
-            <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+            <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
               <FaBrain className="w-5 h-5 text-[#3665EE]" /> Academic & Career Performance Monitoring
             </h2>
-            <p className="text-[#6B7280]">Grade performance, attendance tracking, and assessment score distributions</p>
+            <p className="text-sm font-normal text-[#6B7280]">Grade performance, attendance tracking, and assessment score distributions</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -827,9 +876,9 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
               { title: "Skill Development", val: "92.4%", sub: "Top Benchmark", bg: "bg-[#E4F4EC]", border: "border-[#C3E6D5]" }
             ].map((pf, i) => (
               <div key={i} className={`p-6 rounded-[24px] border space-y-1 ${pf.bg} ${pf.border} text-[#12163A]`}>
-                <span className="font-semibold text-[#4B5563]">{pf.title}</span>
-                <div className="text-3xl font-extrabold text-[#12163A]">{pf.val}</div>
-                <span className="text-[10px] text-[#4B5563]">{pf.sub}</span>
+                <span className="font-medium text-[13px] text-[#4B5563]">{pf.title}</span>
+                <div className="text-2xl lg:text-3xl font-bold text-[#12163A]">{pf.val}</div>
+                <span className="text-xs font-normal text-[#4B5563]">{pf.sub}</span>
               </div>
             ))}
           </div>
@@ -840,30 +889,30 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
     // 9. PLACEMENT REPORTS
     if (activeSubView === 'placement') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="pb-4 border-b border-slate-100">
-            <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+            <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
               <FaBriefcase className="w-5 h-5 text-[#3665EE]" /> Placement & Internship Readiness Reports
             </h2>
-            <p className="text-[#6B7280]">Higher-ed placement readiness, internship qualifiers, and ATS resume ratings</p>
+            <p className="text-sm font-normal text-[#6B7280]">Higher-ed placement readiness, internship qualifiers, and ATS resume ratings</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="p-5 rounded-[24px] bg-[#E4F4EC] border border-[#C3E6D5] text-[#12163A]">
-              <span className="font-semibold text-[#4B5563]">Placement Ready</span>
-              <div className="text-2xl font-extrabold text-[#12163A] mt-1">3,420 Students</div>
+              <span className="font-medium text-[13px] text-[#4B5563]">Placement Ready</span>
+              <div className="text-2xl font-bold text-[#12163A] mt-1">3,420 Students</div>
             </div>
             <div className="p-5 rounded-[24px] bg-[#DEE9FF] border border-[#C6D9FF] text-[#12163A]">
-              <span className="font-semibold text-[#4B5563]">Internship Ready</span>
-              <div className="text-2xl font-extrabold text-[#3665EE] mt-1">2,980 Students</div>
+              <span className="font-medium text-[13px] text-[#4B5563]">Internship Ready</span>
+              <div className="text-2xl font-bold text-[#3665EE] mt-1">2,980 Students</div>
             </div>
             <div className="p-5 rounded-[24px] bg-[#F6E6D8] border border-[#EAD0BC] text-[#12163A]">
-              <span className="font-semibold text-[#4B5563]">Resume ATS Verified</span>
-              <div className="text-2xl font-extrabold text-[#12163A] mt-1">3,120 Verified</div>
+              <span className="font-medium text-[13px] text-[#4B5563]">Resume ATS Verified</span>
+              <div className="text-2xl font-bold text-[#12163A] mt-1">3,120 Verified</div>
             </div>
             <div className="p-5 rounded-[24px] bg-rose-50 border border-rose-200 text-rose-800">
-              <span className="font-semibold text-rose-600">Requiring Guidance</span>
-              <div className="text-2xl font-extrabold text-rose-700 mt-1">180 Students</div>
+              <span className="font-medium text-[13px] text-rose-600">Requiring Guidance</span>
+              <div className="text-2xl font-bold text-rose-700 mt-1">180 Students</div>
             </div>
           </div>
         </div>
@@ -873,15 +922,15 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
     // 10. NOTIFICATIONS
     if (activeSubView === 'notifications') {
       return (
-        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+        <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
                 <FaBullhorn className="w-5 h-5 text-[#3665EE]" /> School Admin Notifications & Alerts
               </h2>
-              <p className="text-[#6B7280]">Assessment reminders, student milestones, scholarship deadlines</p>
+              <p className="text-sm font-normal text-[#6B7280]">Assessment reminders, student milestones, scholarship deadlines</p>
             </div>
-            <button onClick={() => onShowToast("Marked all notifications as read")} className="text-[#3665EE] font-bold hover:underline cursor-pointer">
+            <button onClick={() => onShowToast("Marked all notifications as read")} className="text-[#3665EE] font-medium text-sm hover:underline cursor-pointer">
               Mark All as Read
             </button>
           </div>
@@ -894,10 +943,10 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
             ].map((nt, i) => (
               <div key={i} className={`p-4 rounded-[20px] border flex items-center justify-between ${nt.bg} ${nt.border} text-[#12163A]`}>
                 <div>
-                  <h4 className="font-bold text-[#12163A]">{nt.title}</h4>
-                  <span className="text-[#3665EE] font-semibold">{nt.type} • {nt.time}</span>
+                  <h4 className="font-semibold text-base text-[#12163A]">{nt.title}</h4>
+                  <span className="text-[#3665EE] font-medium text-xs">{nt.type} • {nt.time}</span>
                 </div>
-                <span className="text-[10px] bg-[#12163A] text-white px-2.5 py-0.5 rounded-full font-bold">New</span>
+                <span className="text-xs bg-[#12163A] text-white px-2.5 py-0.5 rounded-full font-medium">New</span>
               </div>
             ))}
           </div>
@@ -907,22 +956,22 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
 
     // 11. SETTINGS
     return (
-      <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs">
+      <div className="rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 font-sans shadow-xs">
         <div className="pb-4 border-b border-slate-100">
-          <h2 className="text-lg font-bold flex items-center gap-2 text-[#12163A]">
+          <h2 className="text-xl font-semibold flex items-center gap-2 text-[#12163A]">
             <FaSliders className="w-5 h-5 text-[#3665EE]" /> School Governance & System Settings
           </h2>
-          <p className="text-[#6B7280]">Configure school profile, academic year, grade management, and teacher permissions</p>
+          <p className="text-sm font-normal text-[#6B7280]">Configure school profile, academic year, grade management, and teacher permissions</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-5 rounded-[24px] bg-[#DEE9FF] border border-[#C6D9FF] space-y-2 text-[#12163A]">
-            <h4 className="font-bold text-sm text-[#12163A]">School Profile & Accreditation</h4>
-            <p className="text-[#4B5563]">St. Xavier's International School • Academic Year 2026-2027</p>
+            <h4 className="font-semibold text-base text-[#12163A]">School Profile & Accreditation</h4>
+            <p className="text-sm font-normal text-[#4B5563]">St. Xavier's International School • Academic Year 2026-2027</p>
           </div>
           <div className="p-5 rounded-[24px] bg-[#F6E6D8] border border-[#EAD0BC] space-y-2 text-[#12163A]">
-            <h4 className="font-bold text-sm text-[#12163A]">Teacher & Admin Permissions</h4>
-            <p className="text-[#4B5563]">142 Teacher Accounts • Role-Based Access Enabled</p>
+            <h4 className="font-semibold text-base text-[#12163A]">Teacher & Admin Permissions</h4>
+            <p className="text-sm font-normal text-[#4B5563]">142 Teacher Accounts • Role-Based Access Enabled</p>
           </div>
         </div>
       </div>
@@ -947,15 +996,15 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
       {/* TEACHER DETAILS POPUP MODAL */}
       {selectedTeacher && (
         <div className="fixed inset-0 z-50 backdrop-blur-md bg-[#12163A]/70 flex items-center justify-center p-4 animate-fade-in font-sans">
-          <div className="bg-white rounded-[28px] max-w-xl w-full border border-slate-200 shadow-2xl overflow-hidden animate-scale-up text-xs font-sans">
+          <div className="bg-white rounded-[28px] max-w-xl w-full border border-slate-200 shadow-2xl overflow-hidden animate-scale-up text-sm font-sans">
             <div className="px-6 py-5 bg-[#12163A] text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-[#3665EE] flex items-center justify-center font-bold text-base text-white shadow-md">
                   <FaChalkboardUser className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-base text-white">{selectedTeacher.name}</h3>
-                  <p className="text-[11px] text-slate-300">{selectedTeacher.qualification}</p>
+                  <h3 className="font-semibold text-base text-white">{selectedTeacher.name}</h3>
+                  <p className="text-xs text-slate-300 font-normal">{selectedTeacher.qualification}</p>
                 </div>
               </div>
               <button 
@@ -969,26 +1018,26 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
             <div className="p-6 space-y-4 text-[#12163A]">
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3.5 rounded-2xl bg-[#DEE9FF] border border-[#C6D9FF]">
-                  <span className="font-semibold text-[#4B5563] block">Department & Subject</span>
-                  <div className="font-bold text-sm text-[#12163A] mt-0.5">{selectedTeacher.dept}</div>
-                  <div className="text-[11px] text-[#3665EE] font-semibold">{selectedTeacher.subject}</div>
+                  <span className="font-medium text-xs text-[#4B5563] block">Department & Subject</span>
+                  <div className="font-semibold text-sm text-[#12163A] mt-0.5">{selectedTeacher.dept}</div>
+                  <div className="text-xs text-[#3665EE] font-medium">{selectedTeacher.subject}</div>
                 </div>
                 <div className="p-3.5 rounded-2xl bg-[#E4F4EC] border border-[#C3E6D5]">
-                  <span className="font-semibold text-[#4B5563] block">Faculty Rating & Status</span>
-                  <div className="font-bold text-sm text-[#12163A] mt-0.5">{selectedTeacher.rating}</div>
-                  <div className="text-[11px] text-emerald-700 font-semibold">{selectedTeacher.experience}</div>
+                  <span className="font-medium text-xs text-[#4B5563] block">Faculty Rating & Status</span>
+                  <div className="font-semibold text-sm text-[#12163A] mt-0.5">{selectedTeacher.rating}</div>
+                  <div className="text-xs text-emerald-700 font-medium">{selectedTeacher.experience}</div>
                 </div>
               </div>
 
               <div className="p-4 rounded-2xl bg-[#F6E6D8] border border-[#EAD0BC] space-y-2">
-                <h4 className="font-bold text-sm text-[#12163A]">Assigned Classes & Batches</h4>
-                <div className="text-xs font-semibold text-[#12163A]">{selectedTeacher.classes} • {selectedTeacher.studentsCount}</div>
-                <p className="text-[11px] text-[#4B5563]">Official Email: <span className="font-mono text-[#3665EE] font-bold">{selectedTeacher.email}</span></p>
+                <h4 className="font-semibold text-base text-[#12163A]">Assigned Classes & Batches</h4>
+                <div className="text-sm font-normal text-[#12163A]">{selectedTeacher.classes} • {selectedTeacher.studentsCount}</div>
+                <p className="text-xs text-[#4B5563] font-normal">Official Email: <span className="font-mono text-[#3665EE] font-medium">{selectedTeacher.email}</span></p>
               </div>
 
               <div className="p-4 rounded-2xl bg-white border border-slate-200 space-y-1">
-                <h4 className="font-bold text-sm text-[#12163A]">Supervised Student Science & Career Projects</h4>
-                <p className="text-xs text-[#4B5563]">{selectedTeacher.projects}</p>
+                <h4 className="font-semibold text-base text-[#12163A]">Supervised Student Science & Career Projects</h4>
+                <p className="text-sm font-normal text-[#4B5563]">{selectedTeacher.projects}</p>
               </div>
 
               <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
@@ -997,13 +1046,13 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                     onShowToast(`Downloaded faculty dossier PDF for ${selectedTeacher.name}`);
                     setSelectedTeacher(null);
                   }} 
-                  className="px-4 py-2 rounded-xl font-bold bg-[#3665EE] text-white hover:bg-[#2A54D5] transition cursor-pointer shadow-sm flex items-center gap-1.5"
+                  className="px-4 py-2.5 rounded-xl font-medium text-sm bg-[#3665EE] text-white hover:bg-[#2A54D5] transition cursor-pointer shadow-sm flex items-center gap-1.5"
                 >
                   <FaDownload className="w-3.5 h-3.5" /> Download Dossier PDF
                 </button>
                 <button 
                   onClick={() => setSelectedTeacher(null)} 
-                  className="px-4 py-2 rounded-xl font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl font-medium text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 transition cursor-pointer"
                 >
                   Close
                 </button>

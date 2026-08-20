@@ -72,8 +72,8 @@ export const EditModal: React.FC<EditModalProps> = ({
           <div className="flex items-center gap-2.5">
             <Edit3 className="w-5 h-5" />
             <div>
-              <h3 className="font-extrabold text-sm">Approval Pipeline: {entity.name}</h3>
-              <p className="text-[11px] text-blue-100">Super Admin authorization & verification pipeline</p>
+              <h3 className="font-semibold text-base">Approval Pipeline: {entity.name}</h3>
+              <p className="text-xs text-blue-100 font-normal">Super Admin authorization & verification pipeline</p>
             </div>
           </div>
           <button onClick={onClose} className="p-1 rounded-lg bg-white/10 hover:bg-white/20 transition cursor-pointer">
@@ -81,13 +81,13 @@ export const EditModal: React.FC<EditModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className={`block font-bold mb-1 ${labelColor}`}>Approval Pipeline Stage</label>
+            <label className={`block text-[13px] font-medium mb-1.5 ${labelColor}`}>Approval Pipeline Stage</label>
             <select
               value={approvalStage}
               onChange={(e) => setApprovalStage(e.target.value as any)}
-              className={`w-full px-3.5 py-2.5 border rounded-xl focus:outline-none focus:ring-2 cursor-pointer font-bold ${inputBg}`}
+              className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-normal focus:outline-none focus:ring-2 cursor-pointer ${inputBg}`}
             >
               <option value="Pending Review" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>1. Pending Review</option>
               <option value="Document Verification" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>2. Document Verification</option>
@@ -99,34 +99,34 @@ export const EditModal: React.FC<EditModalProps> = ({
           </div>
 
           <div>
-            <label className={`block font-bold mb-1 ${labelColor}`}>Document Verification Notes</label>
+            <label className={`block text-[13px] font-medium mb-1.5 ${labelColor}`}>Document Verification Notes</label>
             <input 
               type="text"
               value={docsStatus}
               onChange={(e) => setDocsStatus(e.target.value)}
               placeholder="e.g. CBSE Affiliation #10301 Verified"
-              className={`w-full px-3.5 py-2.5 border rounded-xl focus:outline-none focus:ring-2 transition ${inputBg}`}
+              className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-normal focus:outline-none focus:ring-2 transition ${inputBg}`}
             />
           </div>
 
           <div>
-            <label className={`block font-bold mb-1 ${labelColor}`}>Background Check Status</label>
+            <label className={`block text-[13px] font-medium mb-1.5 ${labelColor}`}>Background Check Status</label>
             <input 
               type="text"
               value={bgCheckStatus}
               onChange={(e) => setBgCheckStatus(e.target.value)}
               placeholder="e.g. Passed - Clear Background Check"
-              className={`w-full px-3.5 py-2.5 border rounded-xl focus:outline-none focus:ring-2 transition ${inputBg}`}
+              className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-normal focus:outline-none focus:ring-2 transition ${inputBg}`}
             />
           </div>
 
           <div>
-            <label className={`block font-bold mb-1 ${labelColor}`}>Allocated Seat Quota</label>
+            <label className={`block text-[13px] font-medium mb-1.5 ${labelColor}`}>Allocated Seat Quota</label>
             <input 
               type="number"
               value={seats}
               onChange={(e) => setSeats(Number(e.target.value))}
-              className={`w-full px-3.5 py-2.5 border rounded-xl focus:outline-none focus:ring-2 transition ${inputBg}`}
+              className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-normal focus:outline-none focus:ring-2 transition ${inputBg}`}
             />
           </div>
 
@@ -134,13 +134,13 @@ export const EditModal: React.FC<EditModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className={`px-4 py-2 rounded-xl font-bold transition cursor-pointer ${cancelBtnClass}`}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer ${cancelBtnClass}`}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md transition cursor-pointer flex items-center gap-1.5 hover:scale-105 active:scale-95"
+              className="px-4 py-2 rounded-xl text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white shadow-md transition cursor-pointer flex items-center gap-1.5 hover:scale-105 active:scale-95"
             >
               <Save className="w-3.5 h-3.5" />
               <span>Save Changes</span>

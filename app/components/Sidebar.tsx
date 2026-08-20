@@ -9,7 +9,6 @@ import {
   FaChalkboardUser, 
   FaBriefcase, 
   FaBuilding, 
-  FaLandmark, 
   FaSliders, 
   FaBrain, 
   FaListCheck, 
@@ -21,14 +20,17 @@ import {
   FaVideo, 
   FaBullhorn, 
   FaHandshake, 
-  FaDollarSign,
   FaArrowTrendUp,
   FaBookOpen,
   FaRightFromBracket,
   FaStar,
   FaWallet,
-  FaMagnifyingGlass
+  FaMagnifyingGlass,
+  FaFileCode,
+  FaUser,
+  FaXmark
 } from 'react-icons/fa6';
+import { useAppSelector } from '~/store/store';
 
 interface SidebarProps {
   currentWorkspace: RoleType;
@@ -38,6 +40,8 @@ interface SidebarProps {
   onRoleFilter: (role: string) => void;
   totalEntities: number;
   isDarkMode: boolean;
+  isMobileOpen?: boolean;
+  onCloseMobile?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -47,11 +51,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onViewChange,
   onRoleFilter,
   totalEntities,
-  isDarkMode
+  isDarkMode,
+  isMobileOpen = false,
+  onCloseMobile = () => {}
 }) => {
+  const unreadCount = useAppSelector(state => state.notifications.unreadCount);
 
-
-  const roleNavItems: Record<RoleType, Array<{ id: string; label: string; icon: any }>> = {
+  const roleNavItems: Record<string, Array<{ id: string; label: string; icon: any }>> = {
+    'student': [
+      { id: 'overview', label: 'Dashboard', icon: FaChartPie },
+      { id: 'discover', label: 'Career Discovery', icon: FaCompass },
+      { id: 'schools', label: 'Schools Hub', icon: FaSchool },
+      { id: 'colleges', label: 'College Explorer', icon: FaGraduationCap },
+      { id: 'scholarships', label: 'Scholarships', icon: FaAward },
+      { id: 'learning-center', label: 'Learning Center', icon: FaBookOpen },
+      { id: 'resume-builder', label: 'Resume Builder', icon: FaFileCode },
+      { id: 'interview-ai', label: 'Interview AI', icon: FaBrain },
+      { id: 'jobs', label: 'Jobs & Internships', icon: FaBriefcase },
+      { id: 'notifications', label: 'Notifications', icon: FaBullhorn },
+      { id: 'profile', label: 'User Profile', icon: FaUser }
+    ],
     'super-admin': [
       { id: 'overview', label: 'Dashboard Overview', icon: FaChartPie },
       { id: 'access', label: 'Access Provisioning', icon: FaShieldHalved },
@@ -61,103 +80,99 @@ export const Sidebar: React.FC<SidebarProps> = ({
     ],
     'school': [
       { id: 'overview', label: 'Dashboard', icon: FaChartPie },
-      { id: 'students', label: 'Students', icon: FaUsers },
+      { id: 'students', label: 'Students Roster', icon: FaUsers },
       { id: 'teachers', label: 'Teachers', icon: FaChalkboardUser },
-      { id: 'assessments', label: 'Assessments & Career Readiness', icon: FaListCheck },
+      { id: 'assessments', label: 'Assessments', icon: FaListCheck },
       { id: 'reports', label: 'Career Reports', icon: FaFileLines },
       { id: 'events', label: 'Events', icon: FaCalendarDays },
-      { id: 'analytics', label: 'Student Analytics', icon: FaArrowTrendUp },
-      { id: 'performance', label: 'Performance Dashboard', icon: FaBrain },
-      { id: 'placement', label: 'Placement Reports', icon: FaBriefcase },
+      { id: 'analytics', label: 'Analytics', icon: FaArrowTrendUp },
       { id: 'notifications', label: 'Notifications', icon: FaBullhorn },
       { id: 'settings', label: 'Settings', icon: FaSliders }
     ],
     'college': [
       { id: 'overview', label: 'Dashboard', icon: FaGraduationCap },
-      { id: 'programs', label: 'Programs', icon: FaBookOpen },
-      { id: 'admissions', label: 'Admissions', icon: FaUserCheck },
-      { id: 'applications', label: 'Applications', icon: FaFileLines },
-      { id: 'scholarships', label: 'Scholarships', icon: FaAward },
+      { id: 'programs', label: 'Degree Programs', icon: FaBookOpen },
+      { id: 'admissions', label: 'Admissions Desk', icon: FaUserCheck },
+      { id: 'scholarships', label: 'Scholarships Cell', icon: FaAward },
       { id: 'placement-cell', label: 'Placement Cell', icon: FaBriefcase },
-      { id: 'industry-connect', label: 'Industry Connect', icon: FaHandshake },
-      { id: 'analytics', label: 'Analytics', icon: FaArrowTrendUp },
+      { id: 'industry-connect', label: 'Industry MoUs', icon: FaHandshake },
       { id: 'notifications', label: 'Notifications', icon: FaBullhorn },
       { id: 'settings', label: 'Settings', icon: FaSliders }
     ],
     'mentor': [
       { id: 'overview', label: 'Dashboard', icon: FaUserCheck },
-      { id: 'profile', label: 'Profile & Verification', icon: FaUserCheck },
-      { id: 'skills', label: 'Skills & Expertise', icon: FaBrain },
-      { id: 'availability', label: 'Availability & Calendar', icon: FaCalendarDays },
-      { id: 'student-requests', label: 'Student Requests', icon: FaUsers },
-      { id: 'video-sessions', label: 'Video Sessions', icon: FaVideo },
-      { id: 'guidance', label: 'Assessments & Guidance', icon: FaCompass },
-      { id: 'ratings', label: 'Ratings & Reviews', icon: FaStar },
-      { id: 'wallet', label: 'Wallet & Payouts', icon: FaWallet },
-      { id: 'notifications', label: 'Notifications', icon: FaBullhorn },
-      { id: 'settings', label: 'Settings', icon: FaSliders }
+      { id: 'profile', label: 'Profile Verification', icon: FaUserCheck },
+      { id: 'skills', label: 'Expertise Matrix', icon: FaBrain },
+      { id: 'availability', label: 'Availability Calendar', icon: FaCalendarDays },
+      { id: 'student-requests', label: 'Counseling Requests', icon: FaUsers },
+      { id: 'video-sessions', label: 'Live Video Sessions', icon: FaVideo },
+      { id: 'wallet', label: 'Earnings Wallet', icon: FaWallet },
+      { id: 'notifications', label: 'Notifications', icon: FaBullhorn }
     ],
     'training': [
       { id: 'overview', label: 'Institute Overview', icon: FaChalkboardUser },
-      { id: 'courses', label: 'Skill Courses Track', icon: FaChalkboardUser },
-      { id: 'certs', label: 'Certifications Registry', icon: FaAward },
+      { id: 'courses', label: 'Skill Courses', icon: FaBookOpen },
+      { id: 'certs', label: 'Certifications', icon: FaAward },
       { id: 'hiring', label: 'Hiring Partners', icon: FaHandshake }
     ],
     'recruiter': [
-      { id: 'overview', label: 'Dashboard', icon: FaBriefcase },
-      { id: 'verification', label: 'Company & Verification', icon: FaBuilding },
+      { id: 'overview', label: 'Talent Desk', icon: FaBriefcase },
+      { id: 'verification', label: 'Company Verification', icon: FaBuilding },
       { id: 'jobs', label: 'Job Postings', icon: FaFileLines },
-      { id: 'campus-hiring', label: 'Campus Hiring', icon: FaGraduationCap },
+      { id: 'campus-hiring', label: 'Campus Drives', icon: FaGraduationCap },
       { id: 'student-search', label: 'Student Search', icon: FaMagnifyingGlass },
       { id: 'ai-match', label: 'AI Matcher', icon: FaBrain },
       { id: 'interviews', label: 'Interviews', icon: FaCalendarDays },
       { id: 'offers', label: 'Offer Letters', icon: FaAward },
-      { id: 'hiring-analytics', label: 'Hiring Analytics', icon: FaArrowTrendUp },
-      { id: 'notifications', label: 'Notifications', icon: FaBullhorn },
-      { id: 'settings', label: 'Settings', icon: FaSliders }
+      { id: 'notifications', label: 'Notifications', icon: FaBullhorn }
     ],
     'company': [
       { id: 'overview', label: 'Company Overview', icon: FaBuilding },
       { id: 'internships', label: 'Internship Programs', icon: FaBriefcase },
-      { id: 'partnerships', label: 'Campus Partnerships', icon: FaGraduationCap },
+      { id: 'partnerships', label: 'Campus MoUs', icon: FaGraduationCap },
       { id: 'pipeline', label: 'Talent Pipeline', icon: FaChartPie }
     ]
   };
 
   const navItems = roleNavItems[currentWorkspace] || roleNavItems['super-admin'];
 
-  return (
-    <aside className={`w-72 min-h-screen flex flex-col fixed top-0 bottom-0 left-0 z-40 shadow-xl border-r font-sans transition-colors duration-200 ${
-      isDarkMode 
-        ? 'bg-slate-900 border-slate-800 text-white' 
-        : 'bg-white border-blue-100 text-slate-900'
-    }`}>
+  const sidebarContent = (
+    <>
       {/* Brand Header */}
-      <div className={`p-5 flex items-center gap-3.5 border-b ${
+      <div className={`p-4 sm:p-5 flex items-center justify-between border-b shrink-0 ${
         isDarkMode ? 'border-slate-800 bg-slate-950/60' : 'border-blue-100 bg-blue-50/40'
       }`}>
-        <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-          <FaCompass className="w-6 h-6 animate-pulse-glow" />
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 shrink-0">
+            <FaCompass className="w-5 h-5 animate-pulse-glow" />
+          </div>
+          <div>
+            <h2 className={`font-bold text-lg tracking-tight font-sans ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+              Role Ready
+            </h2>
+            <span className="inline-block text-[11px] font-medium bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-md border border-blue-400/20">
+              {currentWorkspace === 'super-admin' ? 'Super Admin' : `${currentWorkspace.charAt(0).toUpperCase() + currentWorkspace.slice(1)} Portal`}
+            </span>
+          </div>
         </div>
-        <div>
-          <h2 className={`font-extrabold text-xl tracking-tight font-sans ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-            Role Ready
-          </h2>
-          <span className="inline-block text-[11px] font-semibold bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-md border border-blue-400/20">
-            {currentWorkspace === 'super-admin' ? 'Super Admin Portal' : `${currentWorkspace.toUpperCase()} Workspace`}
-          </span>
-        </div>
+
+        {/* Close Button for Mobile Drawer */}
+        <button
+          onClick={onCloseMobile}
+          className="lg:hidden text-slate-400 hover:text-white p-1 cursor-pointer"
+          aria-label="Close Mobile Sidebar"
+        >
+          <FaXmark className="w-5 h-5" />
+        </button>
       </div>
-
-
 
       {/* Dynamic Nav Items */}
       <nav className="flex-1 overflow-y-auto p-4 space-y-6">
         <div>
-          <div className={`text-[10px] font-bold tracking-wider uppercase px-2 mb-2 ${
+          <div className={`text-[11px] font-semibold tracking-wider uppercase px-2 mb-2 ${
             isDarkMode ? 'text-slate-400' : 'text-slate-500'
           }`}>
-            {currentWorkspace.toUpperCase()} NAVIGATION
+            {currentWorkspace.charAt(0).toUpperCase() + currentWorkspace.slice(1)} Navigation
           </div>
           <div className="space-y-1">
             {navItems.map((item) => {
@@ -166,58 +181,64 @@ export const Sidebar: React.FC<SidebarProps> = ({
               return (
                 <button
                   key={item.id}
-                  onClick={() => onViewChange(item.id)}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
+                  onClick={() => {
+                    onViewChange(item.id);
+                    onCloseMobile();
+                  }}
+                  aria-current={isActive ? "page" : undefined}
+                  aria-label={item.label}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer ${
                     isActive 
-                      ? 'bg-[#12163A] text-white shadow-md border border-[#3665EE]/40 scale-[1.01]' 
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 scale-[1.01]' 
                       : isDarkMode
-                        ? 'text-slate-300 hover:bg-[#12163A]/60 hover:text-white hover:translate-x-1'
-                        : 'text-[#4B5563] hover:bg-[#DEE9FF]/60 hover:text-[#12163A] hover:translate-x-1'
+                        ? 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                        : 'text-slate-700 hover:bg-blue-50 hover:text-blue-700'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-[#3665EE]' : 'text-[#94A3B8]'}`} />
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                     <span>{item.label}</span>
                   </div>
-                  {item.id === 'access' && (
-                    <span className="bg-[#3665EE]/20 text-[#3665EE] text-[10px] px-2 py-0.5 rounded-full font-bold">
-                      {totalEntities}
+                  {item.id === 'notifications' && unreadCount > 0 && (
+                    <span className="bg-rose-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                      {unreadCount}
                     </span>
                   )}
-                  {item.id === 'ai' && (
-                    <span className="bg-[#E4F4EC] text-[#12163A] text-[10px] px-2 py-0.5 rounded-full font-bold">Live</span>
+                  {item.id === 'access' && (
+                    <span className="bg-blue-500/20 text-blue-400 text-xs px-2 py-0.5 rounded-full font-medium">
+                      {totalEntities}
+                    </span>
                   )}
                 </button>
               );
             })}
           </div>
         </div>
-
-
       </nav>
 
       {/* System Status & Log Out Footer */}
-      <div className={`p-4 border-t space-y-3 ${
+      <div className={`p-4 border-t space-y-3 shrink-0 ${
         isDarkMode ? 'border-slate-800 bg-slate-950/60' : 'border-blue-100 bg-blue-50/40'
       }`}>
         <div className="flex items-center gap-3">
           <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-          <div className="text-xs">
-            <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>AI Engine v2.4</div>
-            <div className={`text-[10px] ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+          <div>
+            <div className={`text-xs font-medium ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>AI Engine v2.4</div>
+            <div className={`text-xs font-normal ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
               All Microservices Operational
             </div>
           </div>
         </div>
 
-        {/* Prominent Log Out Button */}
+        {/* Log Out Button */}
         <button
           onClick={() => {
             if (typeof window !== 'undefined') {
               window.location.href = '/login';
             }
           }}
-          className={`w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer border ${
+          aria-label="Log Out of System"
+          className={`w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer border ${
             isDarkMode
               ? 'bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 shadow-xs'
               : 'bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100 hover:border-rose-300 shadow-xs'
@@ -227,6 +248,45 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <span>Log Out</span>
         </button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile Slide-Over Drawer Modal */}
+      {isMobileOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div 
+            onClick={onCloseMobile}
+            className="fixed inset-0 bg-slate-950/80 backdrop-blur-xs"
+            aria-hidden="true"
+          />
+          <aside 
+            role="navigation" 
+            aria-label="Mobile Navigation Sidebar"
+            className={`w-72 h-full flex flex-col fixed top-0 bottom-0 left-0 z-50 shadow-2xl border-r font-sans ${
+              isDarkMode 
+                ? 'bg-slate-900 border-slate-800 text-white' 
+                : 'bg-white border-blue-100 text-slate-900'
+            }`}
+          >
+            {sidebarContent}
+          </aside>
+        </div>
+      )}
+
+      {/* Desktop Sticky Flex-Sibling Sidebar (Zero Overlap Guaranteed) */}
+      <aside 
+        role="navigation" 
+        aria-label="Main Navigation Sidebar"
+        className={`hidden lg:flex w-72 shrink-0 h-screen sticky top-0 left-0 z-30 flex-col border-r font-sans transition-colors duration-200 ${
+          isDarkMode 
+            ? 'bg-slate-900 border-slate-800 text-white' 
+            : 'bg-white border-blue-100 text-slate-900'
+        }`}
+      >
+        {sidebarContent}
+      </aside>
+    </>
   );
 };

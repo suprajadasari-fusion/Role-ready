@@ -15,17 +15,28 @@ import {
   FaChalkboardUser, 
   FaBriefcase, 
   FaBuilding, 
-  FaLandmark, 
   FaCircleCheck,
-  FaWandMagicSparkles
+  FaWandMagicSparkles,
+  FaMobileScreen,
+  FaKey
 } from 'react-icons/fa6';
 
 export default function LoginRoute() {
   const navigate = useNavigate();
 
+  // Auth Mode State: 'email' | 'otp'
+  const [authMethod, setAuthMethod] = useState<'email' | 'otp'>('email');
+
+  // Email Login Form State
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  // Mobile OTP Form State
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+
   const [rememberMe, setRememberMe] = useState(true);
   const [selectedRole, setSelectedRole] = useState<RoleType>('super-admin');
   const [isLoading, setIsLoading] = useState(false);
@@ -36,29 +47,55 @@ export default function LoginRoute() {
     label: string;
     email: string;
     password: string;
+    phone: string;
     icon: any;
-    color: string;
   }> = [
-    { role: 'super-admin', label: 'Super Admin', email: 'admin@roleready.ai', password: 'Super#Admin2026!', icon: FaShieldHalved, color: 'bg-blue-600' },
-    { role: 'school', label: 'School Admin', email: 'principal@dpsrkp.edu.in', password: 'School#DPS2026!', icon: FaSchool, color: 'bg-blue-600' },
-    { role: 'college', label: 'College Placement', email: 'placements@iitb.ac.in', password: 'IITB#College2026!', icon: FaGraduationCap, color: 'bg-blue-600' },
-    { role: 'mentor', label: 'Mentor Counselor', email: 'r.sharma@careerguider.org', password: 'Mentor#Sharma2026!', icon: FaUserCheck, color: 'bg-blue-600' },
-    { role: 'training', label: 'Training Institute', email: 'director@apexskill.org', password: 'Apex#Training2026!', icon: FaChalkboardUser, color: 'bg-blue-600' },
-    { role: 'recruiter', label: 'Talent Recruiter', email: 'priya_v@infosys.com', password: 'Infosys#Recruit2026!', icon: FaBriefcase, color: 'bg-blue-600' },
-    { role: 'company', label: 'Enterprise Company', email: 'careers@tcs.com', password: 'TCS#Enterprise2026!', icon: FaBuilding, color: 'bg-blue-600' }
+    { role: 'super-admin', label: 'Super Admin', email: 'admin@roleready.ai', password: 'Super#Admin2026!', phone: '+91 98111 22233', icon: FaShieldHalved },
+    { role: 'school', label: 'School Admin', email: 'principal@dpsrkp.edu.in', password: 'School#DPS2026!', phone: '+91 98222 33344', icon: FaSchool },
+    { role: 'college', label: 'College Placement', email: 'placements@iitb.ac.in', password: 'IITB#College2026!', phone: '+91 98333 44455', icon: FaGraduationCap },
+    { role: 'mentor', label: 'Mentor Counselor', email: 'r.sharma@careerguider.org', password: 'Mentor#Sharma2026!', phone: '+91 98444 55566', icon: FaUserCheck },
+    { role: 'training', label: 'Training Institute', email: 'director@apexskill.org', password: 'Apex#Training2026!', phone: '+91 98555 66677', icon: FaChalkboardUser },
+    { role: 'recruiter', label: 'Talent Recruiter', email: 'priya_v@infosys.com', password: 'Infosys#Recruit2026!', phone: '+91 98666 77788', icon: FaBriefcase },
+    { role: 'company', label: 'Enterprise Company', email: 'careers@tcs.com', password: 'TCS#Enterprise2026!', phone: '+91 98777 88899', icon: FaBuilding }
   ];
 
   const handleSelectDemo = (acc: typeof demoAccounts[0]) => {
     setSelectedRole(acc.role);
     setEmail(acc.email);
     setPassword(acc.password);
-    setToastMessage(`Auto-filled unique credentials for ${acc.label}`);
+    setPhoneNumber(acc.phone);
+    setOtpCode('849201');
+    setOtpSent(true);
+    setToastMessage(`Auto-filled demo credentials for ${acc.label}`);
     setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleSendOtp = () => {
+    if (!phoneNumber) {
+      setToastMessage('Please enter a mobile phone number.');
+      setTimeout(() => setToastMessage(null), 3000);
+      return;
+    }
+    setOtpSent(true);
+    setOtpCode('849201');
+    setToastMessage(`SMS Verification OTP dispatched to ${phoneNumber}! (Demo OTP: 849201)`);
+    setTimeout(() => setToastMessage(null), 4000);
   };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+
+    if (authMethod === 'email' && !email) {
+      setToastMessage('Please enter an official email address.');
+      setTimeout(() => setToastMessage(null), 3000);
+      return;
+    }
+
+    if (authMethod === 'otp' && (!phoneNumber || !otpCode)) {
+      setToastMessage('Please enter phone number and 6-digit OTP code.');
+      setTimeout(() => setToastMessage(null), 3000);
+      return;
+    }
 
     setIsLoading(true);
     if (typeof window !== 'undefined') {
@@ -79,8 +116,8 @@ export default function LoginRoute() {
 
       {/* Toast Notification Banner */}
       {toastMessage && (
-        <div className="fixed top-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 animate-bounce">
-          <FaCircleCheck className="w-4 h-4 text-emerald-400" />
+        <div className="fixed top-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 animate-bounce max-w-md">
+          <FaCircleCheck className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -104,13 +141,13 @@ export default function LoginRoute() {
 
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-bold">
-                <FaWandMagicSparkles className="w-3.5 h-3.5 text-blue-300" /> Multi-Role Enterprise Portal
+                <FaWandMagicSparkles className="w-3.5 h-3.5 text-blue-300" /> Authentication & Authorization
               </div>
               <h2 className="text-2xl lg:text-3xl font-extrabold leading-tight tracking-tight text-white">
-                Empowering Ecosystem Career Governance
+                Multi-Channel Secure Access Portal
               </h2>
               <p className="text-xs text-blue-100/80 leading-relaxed">
-                Unified workspace access for Schools, Universities, Career Counselors, Skill Academies, Recruiters & Government Bodies.
+                Log in seamlessly via Email Password or Mobile OTP verification.
               </p>
             </div>
           </div>
@@ -122,28 +159,57 @@ export default function LoginRoute() {
             </div>
             <div className="flex items-center gap-2">
               <FaCircleCheck className="w-4 h-4 text-emerald-400" />
-              <span>TanStack Query State Sync Operational</span>
+              <span>Multi-Factor Mobile OTP & SSL Encrypted</span>
             </div>
           </div>
         </div>
 
-        {/* Right Form & Quick Access Panel (7 Cols) */}
+        {/* Right Form & Authentication Panel (7 Cols) */}
         <div className="lg:col-span-7 p-8 lg:p-10 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-xl font-extrabold text-slate-900">Sign In to Your Workspace</h2>
-                <p className="text-xs text-slate-500 mt-1">Select a demo role or enter your credentials to proceed</p>
+                <p className="text-xs text-slate-500 mt-1">Select authentication method & workspace role to proceed</p>
               </div>
               <span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
                 v2.4 Secure Login
               </span>
             </div>
 
+            {/* Authentication Method Selector Tabs */}
+            <div className="mb-5 p-1 bg-slate-100 rounded-2xl flex gap-1 border border-slate-200">
+              <button
+                type="button"
+                onClick={() => setAuthMethod('email')}
+                className={`flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
+                  authMethod === 'email' 
+                    ? 'bg-white text-blue-600 shadow-sm' 
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <FaEnvelope className="w-3.5 h-3.5" />
+                <span>Email Login</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setAuthMethod('otp')}
+                className={`flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
+                  authMethod === 'otp' 
+                    ? 'bg-white text-blue-600 shadow-sm' 
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <FaMobileScreen className="w-3.5 h-3.5" />
+                <span>Mobile OTP</span>
+              </button>
+            </div>
+
             {/* Quick Demo Role Selector Grid */}
-            <div className="mb-6">
+            <div className="mb-5">
               <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
-                Quick Demo Role Login
+                Quick Demo Role Selector
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {demoAccounts.map((acc) => {
@@ -173,54 +239,107 @@ export default function LoginRoute() {
 
             {/* Main Login Form */}
             <form onSubmit={handleLogin} className="space-y-4 text-xs">
-              <div>
-                <label className="block font-bold text-slate-700 mb-1.5">Official Admin Email Address</label>
-                <div className="relative">
-                  <FaEnvelope className="w-4 h-4 text-blue-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@roleready.ai"
-                    className="w-full pl-10 pr-4 py-2.5 bg-blue-50/40 border border-blue-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
-                  />
-                </div>
-              </div>
+              {authMethod === 'email' ? (
+                /* EMAIL LOGIN METHOD */
+                <>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1.5">Official Email Address</label>
+                    <div className="relative">
+                      <FaEnvelope className="w-4 h-4 text-blue-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="name@domain.com"
+                        className="w-full pl-10 pr-4 py-2.5 bg-blue-50/40 border border-blue-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+                      />
+                    </div>
+                  </div>
 
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="font-bold text-slate-700">Account Password</label>
-                  <button 
-                    type="button" 
-                    onClick={() => {
-                      setToastMessage("Password reset link dispatched!");
-                      setTimeout(() => setToastMessage(null), 3000);
-                    }}
-                    className="text-blue-600 hover:underline text-[11px] font-semibold cursor-pointer"
-                  >
-                    Forgot Password?
-                  </button>
-                </div>
-                <div className="relative">
-                  <FaLock className="w-4 h-4 text-blue-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••••••"
-                    className="w-full pl-10 pr-10 py-2.5 bg-blue-50/40 border border-blue-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 cursor-pointer"
-                  >
-                    {showPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="font-bold text-slate-700">Account Password</label>
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          setToastMessage("Password reset link dispatched to registered email address.");
+                          setTimeout(() => setToastMessage(null), 3000);
+                        }}
+                        className="text-blue-600 hover:underline text-[11px] font-semibold cursor-pointer"
+                      >
+                        Forgot Password?
+                      </button>
+                    </div>
+                    <div className="relative">
+                      <FaLock className="w-4 h-4 text-blue-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••••••"
+                        className="w-full pl-10 pr-10 py-2.5 bg-blue-50/40 border border-blue-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 cursor-pointer"
+                      >
+                        {showPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                /* MOBILE OTP METHOD */
+                <>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1.5">Mobile Phone Number</label>
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <FaMobileScreen className="w-4 h-4 text-blue-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="text"
+                          required
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          placeholder="+91 98765 43210"
+                          className="w-full pl-10 pr-4 py-2.5 bg-blue-50/40 border border-blue-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleSendOtp}
+                        className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-xs transition cursor-pointer shrink-0"
+                      >
+                        {otpSent ? 'Resend OTP' : 'Send OTP'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1.5">6-Digit Verification OTP Code</label>
+                    <div className="relative">
+                      <FaKey className="w-4 h-4 text-blue-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        maxLength={6}
+                        required
+                        value={otpCode}
+                        onChange={(e) => setOtpCode(e.target.value)}
+                        placeholder="e.g. 849201"
+                        className="w-full pl-10 pr-4 py-2.5 bg-blue-50/40 border border-blue-200 rounded-xl text-slate-900 font-mono tracking-widest text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+                      />
+                    </div>
+                    {otpSent && (
+                      <span className="text-emerald-600 text-[11px] font-semibold mt-1 block">
+                        ✓ SMS OTP Code sent to {phoneNumber} (Demo Code: 849201)
+                      </span>
+                    )}
+                  </div>
+                </>
+              )}
 
               <div className="flex items-center justify-between pt-1">
                 <label className="flex items-center gap-2 cursor-pointer text-slate-600 font-medium">
@@ -230,17 +349,17 @@ export default function LoginRoute() {
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="w-4 h-4 accent-blue-600 rounded"
                   />
-                  <span>Keep me signed in on this device</span>
+                  <span>Keep session active on this device</span>
                 </label>
               </div>
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 rounded-xl shadow-md shadow-blue-500/20 transition cursor-pointer flex items-center justify-center gap-2 mt-4"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 rounded-xl shadow-md shadow-blue-500/20 transition cursor-pointer flex items-center justify-center gap-2 mt-4 active:scale-98"
               >
                 {isLoading ? (
-                  <span>Authenticating...</span>
+                  <span>Authenticating Session...</span>
                 ) : (
                   <>
                     <span>Sign In to {selectedRole.toUpperCase()} Workspace</span>

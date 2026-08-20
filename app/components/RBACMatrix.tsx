@@ -41,15 +41,15 @@ export const RBACMatrix: React.FC<RBACMatrixProps> = ({ onSave, isDarkMode = fal
         <div>
           <div className="flex items-center gap-2">
             <Sliders className="w-5 h-5 text-blue-500" />
-            <h2 className={`text-lg font-bold ${textHeading}`}>Role-Based Access Control (RBAC) Matrix</h2>
+            <h2 className={`text-lg font-semibold ${textHeading}`}>Role-Based Access Control (RBAC) Matrix</h2>
           </div>
-          <p className={`text-xs mt-1 ${textMuted}`}>
+          <p className={`text-sm font-normal mt-1 ${textMuted}`}>
             Configure granular module permissions and data visibility policies across all 7 partner role verticals
           </p>
         </div>
         <button
           onClick={handleSave}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-md shadow-blue-500/20 transition cursor-pointer"
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-4 py-2 rounded-xl shadow-md shadow-blue-500/20 transition cursor-pointer"
         >
           <Save className="w-4 h-4" />
           <span>Save Global RBAC Matrix</span>
@@ -57,9 +57,9 @@ export const RBACMatrix: React.FC<RBACMatrixProps> = ({ onSave, isDarkMode = fal
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse text-xs">
+        <table className="w-full text-left border-collapse text-sm">
           <thead>
-            <tr className={`border-b text-[11px] font-bold uppercase tracking-wider ${
+            <tr className={`border-b text-xs font-semibold uppercase tracking-wider ${
               isDarkMode ? 'bg-slate-800/80 text-slate-300 border-slate-700' : 'bg-slate-50/50 text-slate-400 border-slate-200'
             }`}>
               <th className="py-3.5 px-4 rounded-l-xl">Platform Module / Capability</th>
@@ -71,7 +71,7 @@ export const RBACMatrix: React.FC<RBACMatrixProps> = ({ onSave, isDarkMode = fal
           <tbody className={`divide-y ${borderDivider}`}>
             {rbacModules.map((mod, idx) => (
               <tr key={mod.key} className={`transition ${isDarkMode ? 'hover:bg-slate-800/60' : 'hover:bg-blue-50/40'}`}>
-                <td className={`py-4 px-4 font-bold ${textHeading}`}>{mod.name}</td>
+                <td className={`py-4 px-4 font-medium ${textHeading}`}>{mod.name}</td>
                 {roles.map((r, rIdx) => {
                   const isChecked = (idx + rIdx) % 2 === 0 || idx === 0;
                   return (

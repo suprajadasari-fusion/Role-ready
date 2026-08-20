@@ -104,8 +104,8 @@ export const GrantAccessModal: React.FC<GrantAccessModalProps> = ({
               <UserPlus className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-extrabold text-base">Grant Ecosystem Partner Access</h3>
-              <p className="text-xs text-blue-100 font-medium">Provision credentials for Schools, Colleges, Mentors, HR & Academies</p>
+              <h3 className="font-semibold text-lg">Grant Ecosystem Partner Access</h3>
+              <p className="text-xs text-blue-100 font-normal">Provision credentials for schools, colleges, mentors, HR & academies</p>
             </div>
           </div>
           <button 
@@ -117,26 +117,26 @@ export const GrantAccessModal: React.FC<GrantAccessModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className={`block font-bold mb-1 ${labelColor}`}>Organization / Entity Name *</label>
+            <label className={`block text-[13px] font-medium mb-1.5 ${labelColor}`}>Organization / Entity Name *</label>
             <input 
               type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. St. Xavier High School, IIT Delhi, Infosys HR"
-              className={`w-full px-3.5 py-2.5 border rounded-xl focus:outline-none focus:ring-2 transition ${inputBg}`}
+              className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-normal focus:outline-none focus:ring-2 transition ${inputBg}`}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={`block font-bold mb-1 ${labelColor}`}>Partner Role Category *</label>
+              <label className={`block text-[13px] font-medium mb-1.5 ${labelColor}`}>Partner Role Category *</label>
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value as RoleType)}
-                className={`w-full px-3.5 py-2.5 border rounded-xl focus:outline-none focus:ring-2 cursor-pointer ${inputBg}`}
+                className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-normal focus:outline-none focus:ring-2 cursor-pointer ${inputBg}`}
               >
                 <option value="school" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>🏫 School Admin (K-12)</option>
                 <option value="college" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>🎓 College Admin (Higher Ed)</option>
@@ -148,50 +148,50 @@ export const GrantAccessModal: React.FC<GrantAccessModalProps> = ({
             </div>
 
             <div>
-              <label className={`block font-bold mb-1 ${labelColor}`}>Primary Admin Email *</label>
+              <label className={`block text-[13px] font-medium mb-1.5 ${labelColor}`}>Primary Admin Email *</label>
               <input 
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@organization.edu"
-                className={`w-full px-3.5 py-2.5 border rounded-xl focus:outline-none focus:ring-2 transition ${inputBg}`}
+                className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-normal focus:outline-none focus:ring-2 transition ${inputBg}`}
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={`block font-bold mb-1 ${labelColor}`}>Verified Official Domain</label>
+              <label className={`block text-[13px] font-medium mb-1.5 ${labelColor}`}>Verified Official Domain</label>
               <input 
                 type="text"
                 value={domain}
                 onChange={(e) => setDomain(e.target.value)}
                 placeholder="stxaviers.edu"
-                className={`w-full px-3.5 py-2.5 border rounded-xl focus:outline-none focus:ring-2 transition ${inputBg}`}
+                className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-normal focus:outline-none focus:ring-2 transition ${inputBg}`}
               />
             </div>
 
             <div>
-              <label className={`block font-bold mb-1 ${labelColor}`}>Allocated Seat Quota *</label>
+              <label className={`block text-[13px] font-medium mb-1.5 ${labelColor}`}>Allocated Seat Quota *</label>
               <input 
                 type="number"
                 min={10}
                 max={100000}
                 value={seats}
                 onChange={(e) => setSeats(Number(e.target.value))}
-                className={`w-full px-3.5 py-2.5 border rounded-xl focus:outline-none focus:ring-2 transition ${inputBg}`}
+                className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-normal focus:outline-none focus:ring-2 transition ${inputBg}`}
               />
             </div>
           </div>
 
           <div>
-            <label className={`block font-bold mb-2 ${labelColor}`}>Granted Feature Permissions</label>
+            <label className={`block text-[13px] font-medium mb-2 ${labelColor}`}>Granted Feature Permissions</label>
             <div className={`grid grid-cols-2 gap-2 p-3 rounded-2xl border ${
               isDarkMode ? 'bg-slate-800/40 border-slate-800' : 'bg-blue-50/30 border-blue-100'
             }`}>
               {availableFeatures.map(f => (
-                <label key={f} className={`flex items-center gap-2 cursor-pointer font-medium ${
+                <label key={f} className={`flex items-center gap-2 cursor-pointer text-xs font-medium ${
                   isDarkMode ? 'text-slate-300' : 'text-slate-700'
                 }`}>
                   <input 
@@ -210,13 +210,13 @@ export const GrantAccessModal: React.FC<GrantAccessModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className={`px-4 py-2.5 rounded-xl font-bold transition cursor-pointer ${cancelBtnClass}`}
+              className={`px-4 py-2.5 rounded-xl text-sm font-medium transition cursor-pointer ${cancelBtnClass}`}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20 transition cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95"
+              className="px-5 py-2.5 rounded-xl text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20 transition cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95"
             >
               <Key className="w-4 h-4" />
               <span>Generate Credentials & Provision</span>

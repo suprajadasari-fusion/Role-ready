@@ -8,13 +8,13 @@ import {
   FaGraduationCap, 
   FaBriefcase, 
   FaHandshake, 
-  FaIndianRupeeSign,
-  FaAward,
-  FaBookOpen,
-  FaBullhorn,
-  FaLandmark,
-  FaArrowTrendUp,
-  FaShieldHalved
+  FaIndianRupeeSign, 
+  FaAward, 
+  FaBookOpen, 
+  FaBullhorn, 
+  FaLandmark, 
+  FaArrowTrendUp, 
+  FaShieldHalved 
 } from 'react-icons/fa6';
 
 interface MetricsGridProps {
@@ -33,8 +33,8 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
   isDarkMode = false
 }) => {
   const cardBg = isDarkMode 
-    ? 'bg-slate-900 border-slate-800 text-white shadow-md hover:-translate-y-1.5 hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-500/40 cursor-pointer transition-all duration-300' 
-    : 'bg-white border-blue-100 text-slate-900 shadow-xs hover:-translate-y-1.5 hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-300 cursor-pointer transition-all duration-300';
+    ? 'bg-slate-900 border-slate-800 text-white shadow-md hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-500/40 cursor-pointer transition-all duration-200' 
+    : 'bg-white border-blue-100 text-slate-900 shadow-xs hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-300 cursor-pointer transition-all duration-200';
 
   const textMuted = isDarkMode ? 'text-slate-400' : 'text-slate-500';
   const textHeading = isDarkMode ? 'text-white' : 'text-slate-900';
@@ -44,52 +44,52 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8 font-sans">
         <div className={`p-5 rounded-2xl border transition ${cardBg}`}>
           <div className="flex items-center justify-between mb-3">
-            <span className={`text-xs font-semibold ${textMuted}`}>Provisioned Entities</span>
+            <span className={`text-[13px] font-medium ${textMuted}`}>Provisioned Entities</span>
             <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
               <FaBuildingUser className="w-5 h-5" />
             </div>
           </div>
-          <h3 className={`text-2xl font-extrabold mb-1 ${textHeading}`}>{totalEntities}</h3>
-          <span className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
+          <h3 className={`text-2xl lg:text-3xl font-bold tracking-tight mb-1 ${textHeading}`}>{totalEntities}</h3>
+          <span className="text-xs font-medium text-emerald-500 flex items-center gap-1">
             <FaArrowTrendUp className="w-3.5 h-3.5" /> +14.2% active growth
           </span>
         </div>
 
         <div className={`p-5 rounded-2xl border transition ${cardBg}`}>
           <div className="flex items-center justify-between mb-3">
-            <span className={`text-xs font-semibold ${textMuted}`}>Active Seat Quotas</span>
+            <span className={`text-[13px] font-medium ${textMuted}`}>Active Seat Quotas</span>
             <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
               <FaUsersGear className="w-5 h-5" />
             </div>
           </div>
-          <h3 className={`text-2xl font-extrabold mb-1 ${textHeading}`}>{totalSeats.toLocaleString()}</h3>
-          <span className="text-[11px] font-semibold text-blue-400 flex items-center gap-1">
+          <h3 className={`text-2xl lg:text-3xl font-bold tracking-tight mb-1 ${textHeading}`}>{totalSeats.toLocaleString()}</h3>
+          <span className="text-xs font-medium text-blue-500 flex items-center gap-1">
             <FaShieldHalved className="w-3.5 h-3.5" /> 84.6% allocated
           </span>
         </div>
 
         <div className={`p-5 rounded-2xl border transition ${cardBg}`}>
           <div className="flex items-center justify-between mb-3">
-            <span className={`text-xs font-semibold ${textMuted}`}>AI Career DNA Runs</span>
+            <span className={`text-[13px] font-medium ${textMuted}`}>AI Career DNA Runs</span>
             <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
               <FaBrain className="w-5 h-5" />
             </div>
           </div>
-          <h3 className={`text-2xl font-extrabold mb-1 ${textHeading}`}>2.8M</h3>
-          <span className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
+          <h3 className={`text-2xl lg:text-3xl font-bold tracking-tight mb-1 ${textHeading}`}>2.8M</h3>
+          <span className="text-xs font-medium text-emerald-500 flex items-center gap-1">
             <FaArrowTrendUp className="w-3.5 h-3.5" /> 99.4% Latency &lt;450ms
           </span>
         </div>
 
         <div className={`p-5 rounded-2xl border transition ${cardBg}`}>
           <div className="flex items-center justify-between mb-3">
-            <span className={`text-xs font-semibold ${textMuted}`}>Pending Approvals</span>
+            <span className={`text-[13px] font-medium ${textMuted}`}>Pending Approvals</span>
             <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
               <FaClock className="w-5 h-5" />
             </div>
           </div>
-          <h3 className={`text-2xl font-extrabold mb-1 ${textHeading}`}>{pendingCount}</h3>
-          <span className="text-[11px] font-semibold text-amber-400 flex items-center gap-1">
+          <h3 className={`text-2xl lg:text-3xl font-bold tracking-tight mb-1 ${textHeading}`}>{pendingCount}</h3>
+          <span className="text-xs font-medium text-amber-500 flex items-center gap-1">
             Action required by Admin
           </span>
         </div>
@@ -152,13 +152,13 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
         return (
           <div key={idx} className={`p-5 rounded-2xl border transition ${cardBg}`}>
             <div className="flex items-center justify-between mb-3">
-              <span className={`text-xs font-semibold ${textMuted}`}>{m.label}</span>
+              <span className={`text-[13px] font-medium ${textMuted}`}>{m.label}</span>
               <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
                 <Icon className="w-5 h-5" />
               </div>
             </div>
-            <h3 className={`text-2xl font-extrabold mb-1 ${textHeading}`}>{m.value}</h3>
-            <span className="text-[11px] font-semibold text-blue-400">{m.sub}</span>
+            <h3 className={`text-2xl lg:text-3xl font-bold tracking-tight mb-1 ${textHeading}`}>{m.value}</h3>
+            <span className="text-xs font-medium text-blue-500">{m.sub}</span>
           </div>
         );
       })}

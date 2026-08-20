@@ -61,7 +61,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
     : 'text-slate-400 hover:text-slate-800 hover:bg-blue-50';
 
   return (
-    <div className={`fixed inset-[0] z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in font-sans ${
+    <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in font-sans ${
       isDarkMode ? 'bg-slate-950/70' : 'bg-slate-900/40'
     }`}>
       <div className={`border rounded-3xl max-w-md w-full overflow-hidden relative animate-scale-up ${cardBg}`}>
@@ -72,8 +72,8 @@ export const ActionModal: React.FC<ActionModalProps> = ({
               <Sparkles className="w-5 h-5 text-blue-500" />
             </div>
             <div>
-              <h3 className={`font-extrabold text-base tracking-tight ${titleColor}`}>{title}</h3>
-              <p className={`text-xs ${subtitleColor}`}>{subtitle}</p>
+              <h3 className={`font-semibold text-base tracking-tight ${titleColor}`}>{title}</h3>
+              <p className={`text-xs font-normal ${subtitleColor}`}>{subtitle}</p>
             </div>
           </div>
           <button
@@ -85,17 +85,17 @@ export const ActionModal: React.FC<ActionModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {fields.map((f) => (
             <div key={f.name}>
-              <label className={`block font-bold mb-1.5 ${labelColor}`}>{f.label}</label>
+              <label className={`block text-[13px] font-medium mb-1.5 ${labelColor}`}>{f.label}</label>
               <input
                 type={f.type}
                 required
                 value={formData[f.name] || ''}
                 onChange={(e) => handleChange(f.name, e.target.value)}
                 placeholder={f.placeholder}
-                className={`w-full px-3.5 py-2.5 border rounded-xl focus:outline-none focus:ring-2 transition ${inputBg}`}
+                className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-normal focus:outline-none focus:ring-2 transition ${inputBg}`}
               />
             </div>
           ))}
@@ -104,13 +104,13 @@ export const ActionModal: React.FC<ActionModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className={`px-4 py-2.5 rounded-xl border font-bold transition cursor-pointer ${cancelBtnClass}`}
+              className={`px-4 py-2.5 rounded-xl border text-sm font-medium transition cursor-pointer ${cancelBtnClass}`}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-xl bg-[#12163A] hover:bg-[#1A2050] text-white font-bold transition shadow-md cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95"
+              className="px-5 py-2.5 rounded-xl bg-[#12163A] hover:bg-[#1A2050] text-white text-sm font-medium transition shadow-md cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95"
             >
               <Plus className="w-4 h-4 text-[#3665EE]" />
               <span>Submit & Save</span>

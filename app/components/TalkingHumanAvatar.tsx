@@ -116,7 +116,7 @@ export const TalkingHumanAvatar: React.FC<TalkingHumanAvatarProps> = ({
             />
 
             {/* Speaking Badge */}
-            <div className={`absolute bottom-2 right-2 z-20 backdrop-blur-md px-3 py-1 rounded-full border text-[11px] font-bold flex items-center gap-1.5 shadow-lg ${
+            <div className={`absolute bottom-2 right-2 z-20 backdrop-blur-md px-3 py-1 rounded-full border text-xs font-medium flex items-center gap-1.5 shadow-lg ${
               isDarkMode 
                 ? 'bg-slate-900/90 border-blue-400/40 text-blue-300' 
                 : 'bg-white/90 border-blue-200 text-blue-700'
@@ -124,7 +124,7 @@ export const TalkingHumanAvatar: React.FC<TalkingHumanAvatarProps> = ({
               {isSpeaking ? (
                 <>
                   <FaVolumeHigh className="w-3.5 h-3.5 text-emerald-500 animate-bounce" />
-                  <span className="text-emerald-500 font-extrabold">Speaking Out Loud...</span>
+                  <span className="text-emerald-500 font-semibold">Speaking Out Loud...</span>
                 </>
               ) : (
                 <>
@@ -136,7 +136,7 @@ export const TalkingHumanAvatar: React.FC<TalkingHumanAvatarProps> = ({
           </div>
 
           <div className="mt-4 text-center">
-            <h3 className={`font-extrabold text-base ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+            <h3 className={`font-semibold text-base ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
               Ananya Sharma
             </h3>
             <p className={`text-xs font-medium ${isDarkMode ? 'text-blue-300' : 'text-blue-600'}`}>
@@ -154,28 +154,28 @@ export const TalkingHumanAvatar: React.FC<TalkingHumanAvatarProps> = ({
               : 'bg-blue-50/60 border-blue-200'
           }`}>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-blue-500 flex items-center gap-1.5">
+              <span className="text-xs font-semibold uppercase tracking-wider text-blue-500 flex items-center gap-1.5">
                 <FaRobot className="w-3.5 h-3.5" /> Live Voice Advice Speech
               </span>
 
               {isSpeaking ? (
                 <button 
                   onClick={stopSpeech}
-                  className="bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/40 px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1"
+                  className="bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/40 px-3 py-1 rounded-lg text-xs font-medium transition cursor-pointer flex items-center gap-1"
                 >
                   <FaStop className="w-3 h-3" /> Stop Voice
                 </button>
               ) : (
                 <button 
                   onClick={() => speakText(currentSpeechText)}
-                  className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-sm"
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded-lg text-xs font-medium transition cursor-pointer flex items-center gap-1.5 shadow-sm"
                 >
                   <FaVolumeHigh className="w-3 h-3" /> Speak Out Loud
                 </button>
               )}
             </div>
 
-            <p className={`text-xs leading-relaxed font-medium ${
+            <p className={`text-sm leading-relaxed font-normal ${
               isDarkMode ? 'text-slate-200' : 'text-slate-800'
             }`}>
               "{currentSpeechText}"
@@ -184,7 +184,7 @@ export const TalkingHumanAvatar: React.FC<TalkingHumanAvatarProps> = ({
 
           {/* Quick Preset Voice Prompts */}
           <div>
-            <label className={`block text-[10px] font-bold uppercase tracking-wider mb-2 ${
+            <label className={`block text-xs font-medium mb-2 ${
               isDarkMode ? 'text-slate-400' : 'text-slate-500'
             }`}>
               Ask AI Human Advisor Out Loud
@@ -213,7 +213,7 @@ export const TalkingHumanAvatar: React.FC<TalkingHumanAvatarProps> = ({
               value={userQuery}
               onChange={(e) => setUserQuery(e.target.value)}
               placeholder="Ask your AI Human Advisor anything about career pathways..."
-              className={`flex-1 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 border ${
+              className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-normal focus:outline-none focus:ring-2 focus:ring-blue-500 border ${
                 isDarkMode 
                   ? 'bg-slate-800 border-blue-500/30 text-white placeholder-slate-400' 
                   : 'bg-blue-50/50 border-blue-200 text-slate-900 placeholder-slate-400'
@@ -221,7 +221,7 @@ export const TalkingHumanAvatar: React.FC<TalkingHumanAvatarProps> = ({
             />
             <button 
               type="submit"
-              className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-blue-600/30"
+              className="bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm px-5 py-2.5 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-blue-600/30"
             >
               <FaVolumeHigh className="w-3.5 h-3.5" />
               <span>Talk & Answer</span>

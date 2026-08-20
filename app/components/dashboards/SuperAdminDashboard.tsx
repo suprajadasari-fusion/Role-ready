@@ -6,14 +6,12 @@ import { RBACMatrix } from '../RBACMatrix';
 import { AIEngineConfig } from '../AIEngineConfig';
 import { AuditFeed } from '../AuditFeed';
 import { 
-  FaShieldHalved, 
   FaSchool, 
   FaGraduationCap, 
   FaUserCheck, 
   FaChalkboardUser, 
   FaBriefcase, 
-  FaBuilding, 
-  FaLandmark 
+  FaBuilding
 } from 'react-icons/fa6';
 
 interface SuperAdminDashboardProps {
@@ -106,8 +104,8 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
 
       {/* Ecosystem Partner Verticals Overview Cards */}
       <div className={`rounded-2xl border p-6 transition-colors duration-200 ${cardClass}`}>
-        <h3 className={`font-bold text-sm mb-4 ${textHeading}`}>Registered Ecosystem Partner Breakdown</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+        <h3 className={`font-semibold text-base mb-4 ${textHeading}`}>Registered Ecosystem Partner Breakdown</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
           {[
             { name: "School Admins", count: "2 Registered", icon: FaSchool, role: 'school' },
             { name: "College Admins", count: "1 Registered", icon: FaGraduationCap, role: 'college' },
@@ -126,11 +124,11 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
                 <div className="flex items-center gap-3">
                   <Icon className="w-4 h-4 text-blue-500" />
                   <div>
-                    <div className={`font-bold ${textHeading}`}>{v.name}</div>
-                    <div className={`text-[11px] ${textMuted}`}>{v.count}</div>
+                    <div className={`font-semibold text-sm ${textHeading}`}>{v.name}</div>
+                    <div className={`text-xs font-normal ${textMuted}`}>{v.count}</div>
                   </div>
                 </div>
-                <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-md border border-emerald-500/30">
+                <span className="text-xs font-medium bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-md border border-emerald-500/30">
                   Active
                 </span>
               </div>
@@ -145,25 +143,25 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
         <div className={`rounded-2xl border p-6 ${
           isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-blue-100 text-slate-900 shadow-xs'
         }`}>
-          <h3 className="font-bold text-sm mb-3">TanStack Query Cache Telemetry</h3>
-          <div className="space-y-2 text-xs">
+          <h3 className="font-semibold text-base mb-3">TanStack Query Cache Telemetry</h3>
+          <div className="space-y-2 text-sm">
             <div className={`flex justify-between p-2.5 rounded-xl ${
               isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-blue-50/50 text-slate-600'
             }`}>
               <span>Entities Cached Records</span>
-              <strong className="text-blue-400">{entities.length} items</strong>
+              <strong className="text-blue-500 font-semibold">{entities.length} items</strong>
             </div>
             <div className={`flex justify-between p-2.5 rounded-xl ${
               isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-blue-50/50 text-slate-600'
             }`}>
               <span>Audit Stream Cached Records</span>
-              <strong className="text-blue-400">{auditLogs.length} logs</strong>
+              <strong className="text-blue-500 font-semibold">{auditLogs.length} logs</strong>
             </div>
             <div className={`flex justify-between p-2.5 rounded-xl ${
               isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-blue-50/50 text-slate-600'
             }`}>
               <span>Active Workspace</span>
-              <span className="text-blue-400 font-mono font-bold">SUPER-ADMIN</span>
+              <span className="text-blue-500 font-mono font-semibold">Super Admin</span>
             </div>
           </div>
         </div>

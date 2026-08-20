@@ -3,19 +3,16 @@ import { EcosystemEntity, RoleType } from '~/lib/types';
 import { 
   Building2, 
   ExternalLink, 
-  Edit3, 
   Power, 
   Trash2, 
   Globe, 
   CheckCircle2, 
   Clock, 
-  Ban,
-  School,
-  GraduationCap,
-  UserCheck,
-  BookOpen,
-  Briefcase,
-  Landmark
+  School, 
+  GraduationCap, 
+  UserCheck, 
+  BookOpen, 
+  Briefcase 
 } from 'lucide-react';
 
 interface EntitiesTableProps {
@@ -82,9 +79,9 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
     <div className={`rounded-2xl border p-6 mb-8 font-sans transition-colors duration-200 ${cardClass}`}>
       <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b ${borderDivider}`}>
         <div>
-          <h2 className={`text-lg font-bold ${textHeading}`}>Partner Access & Ecosystem Governance</h2>
-          <p className={`text-xs ${textMuted}`}>
-            Super Admin authorization hub for Schools, Colleges, Mentors, Training Academies, Recruiters & Companies
+          <h2 className={`text-lg font-semibold ${textHeading}`}>Partner Access & Ecosystem Governance</h2>
+          <p className={`text-sm font-normal ${textMuted}`}>
+            Super Admin authorization hub for schools, colleges, mentors, training academies, recruiters, and companies
           </p>
         </div>
       </div>
@@ -106,7 +103,7 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
             <button
               key={tab.id}
               onClick={() => onFilterChange(tab.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95 ${
+              className={`px-3.5 py-1.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95 ${
                 isActive 
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' 
                   : isDarkMode
@@ -116,7 +113,7 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
             >
               <Icon className="w-3.5 h-3.5" />
               <span>{tab.label}</span>
-              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                 isActive 
                   ? 'bg-blue-700 text-white' 
                   : isDarkMode
@@ -134,20 +131,20 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className={`border-b text-[11px] font-bold uppercase tracking-wider ${tableHeaderBg}`}>
+            <tr className={`border-b text-xs font-semibold uppercase tracking-wider ${tableHeaderBg}`}>
               <th className="py-3.5 px-4 rounded-l-xl">Entity Name</th>
               <th className="py-3.5 px-4">Role Category</th>
               <th className="py-3.5 px-4">Admin Email & Domain</th>
-              <th className="py-3.5 px-4">APPROVAL WORKFLOW PIPELINE</th>
-              <th className="py-3.5 px-4">DOCUMENT & BG VERIFICATION</th>
-              <th className="py-3.5 px-4">SUBSCRIPTION TIER</th>
+              <th className="py-3.5 px-4">Approval Pipeline</th>
+              <th className="py-3.5 px-4">Verification Status</th>
+              <th className="py-3.5 px-4">Subscription Tier</th>
               <th className="py-3.5 px-4 rounded-r-xl text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className={`divide-y text-xs ${borderDivider}`}>
+          <tbody className={`divide-y text-sm ${borderDivider}`}>
             {filteredEntities.length === 0 ? (
               <tr>
-                <td colSpan={7} className={`py-12 text-center ${textMuted}`}>
+                <td colSpan={7} className={`py-12 text-center text-sm font-normal ${textMuted}`}>
                   <Building2 className="w-10 h-10 mx-auto text-blue-400 mb-2 opacity-60" />
                   No partner entities match the selected filter or search term.
                 </td>
@@ -165,12 +162,12 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
 
                 return (
                   <tr key={e.id} className={`transition-all duration-200 ${isDarkMode ? 'hover:bg-slate-800/80' : 'hover:bg-blue-50/70'}`}>
-                    <td className={`py-4 px-4 font-bold ${textHeading}`}>
-                      <div>{e.name}</div>
-                      <span className={`text-[10px] font-mono ${textMuted}`}>ID: {e.id}</span>
+                    <td className={`py-4 px-4 font-semibold ${textHeading}`}>
+                      <div className="text-sm font-semibold">{e.name}</div>
+                      <span className={`text-xs font-mono font-normal ${textMuted}`}>ID: {e.id}</span>
                     </td>
                     <td className="py-4 px-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-transform duration-200 hover:scale-105 ${
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border transition-transform duration-200 hover:scale-105 ${
                         isDarkMode ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' : 'bg-blue-50 text-blue-700 border-blue-200'
                       }`}>
                         {roleLabels[e.role] || e.role}
@@ -180,19 +177,19 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
                       <button 
                         onClick={() => onSimulateWorkspace(e.role)}
                         title={`Click email to open ${e.role.toUpperCase()} Workspace Dashboard`}
-                        className="font-bold text-[#3665EE] hover:underline cursor-pointer text-left block"
+                        className="text-sm font-medium text-[#3665EE] hover:underline cursor-pointer text-left block"
                       >
                         {e.contactEmail}
                       </button>
-                      <span className="text-[10px] text-blue-400 flex items-center gap-1">
+                      <span className="text-xs font-normal text-blue-400 flex items-center gap-1">
                         <Globe className="w-3 h-3" /> {e.domain}
                       </span>
                     </td>
                     <td className="py-4 px-4 min-w-[220px]">
                       <div className="space-y-1.5">
-                        <div className="flex items-center justify-between text-[10px] font-bold">
+                        <div className="flex items-center justify-between text-xs font-medium">
                           <span className="text-blue-500">Stage {stageNum} of 7: {stage}</span>
-                          <span className="text-slate-400">{Math.round((stageNum / 7) * 100)}%</span>
+                          <span className="text-slate-400 font-normal">{Math.round((stageNum / 7) * 100)}%</span>
                         </div>
                         {/* 7-Step Progress Bar */}
                         <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden flex">
@@ -201,74 +198,74 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
                             style={{ width: `${(stageNum / 7) * 100}%` }}
                           />
                         </div>
-                        <div className="text-[9px] text-slate-400 font-mono flex flex-wrap gap-1 pt-0.5">
+                        <div className="text-[11px] text-slate-400 font-mono flex flex-wrap gap-1 pt-0.5">
                           <span>1. Register</span> → 
                           <span>2. Pending</span> → 
                           <span>3. Docs</span> → 
                           <span>4. BG Check</span> → 
                           <span>5. Admin</span> → 
                           <span>6. Sub</span> → 
-                          <span className="text-emerald-500 font-bold">7. Live</span>
+                          <span className="text-emerald-500 font-medium">7. Live</span>
                         </div>
                       </div>
                     </td>
                     <td className="py-4 px-4 max-w-xs space-y-1">
-                      <div className="text-[10px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                      <div className="text-xs font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1">
                         <CheckCircle2 className="w-3 h-3 text-emerald-500" />
                         <span>{e.docsStatus || 'Document Verification Pending'}</span>
                       </div>
-                      <div className="text-[10px] text-slate-500 flex items-center gap-1">
+                      <div className="text-xs font-normal text-slate-500 flex items-center gap-1">
                         <Clock className="w-3 h-3 text-blue-400" />
                         <span>{e.bgCheckStatus || 'Passed Clear'}</span>
                       </div>
                     </td>
                     <td className="py-4 px-4">
-                      <span className="inline-block px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#E4F4EC] text-[#12163A] border border-[#C3E6D5] shadow-2xs">
+                      <span className="inline-block px-2.5 py-1 rounded-lg text-xs font-medium bg-[#E4F4EC] text-[#12163A] border border-[#C3E6D5] shadow-2xs">
                         {e.subscriptionPlan || 'Enterprise Tier'}
                       </span>
-                      <div className="text-[10px] text-slate-400 mt-1 font-bold">
+                      <div className="text-xs text-slate-400 mt-1 font-normal">
                         {e.usedSeats.toLocaleString()} / {e.seats.toLocaleString()} Seats
                       </div>
                     </td>
-                  <td className="py-4 px-4 text-right">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <button
-                        onClick={() => onEditEntity(e)}
-                        title="Approve Next Workflow Stage / Edit Details"
-                        className="px-2.5 py-1 rounded-lg bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold text-[10px] transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shadow-xs flex items-center gap-1"
-                      >
-                        <CheckCircle2 className="w-3 h-3" /> Approve Step
-                      </button>
-                      <button
-                        onClick={() => onSimulateWorkspace(e.role)}
-                        title={`Launch ${e.role} Live Portal`}
-                        className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer shadow-xs"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => onToggleStatus(e.id)}
-                        title={e.status === 'active' ? 'Suspend Access' : 'Activate Access'}
-                        className={`p-1.5 rounded-lg border transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer ${
-                          e.status === 'active' 
-                            ? 'bg-amber-500/20 border-amber-500/30 text-amber-400 hover:bg-amber-500/30' 
-                            : 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30'
-                        }`}
-                      >
-                        <Power className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => onDeleteEntity(e.id)}
-                        title="Revoke & Delete Access"
-                        className="p-1.5 rounded-lg bg-rose-500/20 border border-rose-500/30 text-rose-400 hover:bg-rose-500/30 transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })
+                    <td className="py-4 px-4 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => onEditEntity(e)}
+                          title="Approve Next Workflow Stage / Edit Details"
+                          className="px-2.5 py-1 rounded-lg bg-[#3665EE] hover:bg-[#2A54D5] text-white font-medium text-xs transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shadow-xs flex items-center gap-1"
+                        >
+                          <CheckCircle2 className="w-3 h-3" /> Approve Step
+                        </button>
+                        <button
+                          onClick={() => onSimulateWorkspace(e.role)}
+                          title={`Launch ${e.role} Live Portal`}
+                          className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer shadow-xs"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => onToggleStatus(e.id)}
+                          title={e.status === 'active' ? 'Suspend Access' : 'Activate Access'}
+                          className={`p-1.5 rounded-lg border transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer ${
+                            e.status === 'active' 
+                              ? 'bg-amber-500/20 border-amber-500/30 text-amber-400 hover:bg-amber-500/30' 
+                              : 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30'
+                          }`}
+                        >
+                          <Power className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => onDeleteEntity(e.id)}
+                          title="Revoke & Delete Access"
+                          className="p-1.5 rounded-lg bg-rose-500/20 border border-rose-500/30 text-rose-400 hover:bg-rose-500/30 transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
@@ -276,7 +273,7 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
 
       <div className={`mt-4 pt-4 border-t flex items-center justify-between text-xs ${borderDivider} ${textMuted}`}>
         <div>Showing <strong>{filteredEntities.length}</strong> of <strong>{entities.length}</strong> registered ecosystem entities</div>
-        <div className="font-semibold text-blue-400">All entity state managed via TanStack Query</div>
+        <div className="font-medium text-blue-400">All entity state managed via TanStack Query</div>
       </div>
     </div>
   );
