@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Sparkles, Plus } from 'lucide-react';
+import { FiX, FiCpu, FiPlus } from 'react-icons/fi';
 
 interface ActionModalProps {
   isOpen: boolean;
@@ -21,6 +21,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({
   isDarkMode = true
 }) => {
   const [formData, setFormData] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
@@ -30,9 +31,13 @@ export const ActionModal: React.FC<ActionModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
-    setFormData({});
-    onClose();
+    setIsSubmitting(true);
+    setTimeout(() => {
+      onSubmit(formData);
+      setFormData({});
+      setIsSubmitting(false);
+      onClose();
+    }, 400);
   };
 
   const cardBg = isDarkMode
@@ -69,18 +74,19 @@ export const ActionModal: React.FC<ActionModalProps> = ({
         <div className={`p-6 border-b flex items-center justify-between ${headerBg}`}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-blue-600/20 text-blue-500 border border-blue-500/30 flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-blue-500" />
+              <FiCpu className="w-5 h-5 text-blue-500" />
             </div>
             <div>
-              <h3 className={`font-extrabold text-base tracking-tight ${titleColor}`}>{title}</h3>
+              <h3 className={`font-bold text-base tracking-tight ${titleColor}`}>{title}</h3>
               <p className={`text-xs ${subtitleColor}`}>{subtitle}</p>
             </div>
           </div>
           <button
             onClick={onClose}
+            aria-label="Close modal"
             className={`p-2 rounded-xl transition cursor-pointer ${closeIconClass}`}
           >
-            <X className="w-4 h-4" />
+            <FiX className="w-4 h-4" />
           </button>
         </div>
 
@@ -110,10 +116,11 @@ export const ActionModal: React.FC<ActionModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-xl bg-[#12163A] hover:bg-[#1A2050] text-white font-bold transition shadow-md cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95"
+              disabled={isSubmitting}
+              className="px-5 py-2.5 rounded-xl bg-[#12163A] hover:bg-[#1A2050] text-white font-bold transition shadow-md cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Plus className="w-4 h-4 text-[#3665EE]" />
-              <span>Submit & Save</span>
+              <FiPlus className="w-4 h-4 text-[#3665EE]" />
+              <span>{isSubmitting ? 'Saving...' : 'Submit & Save'}</span>
             </button>
           </div>
         </form>

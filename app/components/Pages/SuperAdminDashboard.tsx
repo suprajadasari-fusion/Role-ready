@@ -1,20 +1,19 @@
 import React from 'react';
-import { EcosystemEntity, AuditLog, RoleType } from '~/lib/types';
+import { EcosystemEntity, AuditLog, RoleType } from '../../lib/types';
 import { MetricsGrid } from '../MetricsGrid';
 import { EntitiesTable } from '../EntitiesTable';
 import { RBACMatrix } from '../RBACMatrix';
 import { AIEngineConfig } from '../AIEngineConfig';
 import { AuditFeed } from '../AuditFeed';
+import { UserProfileView } from '../profile/UserProfileView';
 import { 
-  FaShieldHalved, 
-  FaSchool, 
-  FaGraduationCap, 
-  FaUserCheck, 
-  FaChalkboardUser, 
-  FaBriefcase, 
-  FaBuilding, 
-  FaLandmark 
-} from 'react-icons/fa6';
+  FiShield, 
+  FiBookOpen, 
+  FiUserCheck, 
+  FiBriefcase, 
+  FiGrid, 
+  FiCompass 
+} from 'react-icons/fi';
 
 interface SuperAdminDashboardProps {
   activeSubView: string;
@@ -93,7 +92,12 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
     return <AuditFeed logs={auditLogs} showFullTable={true} isDarkMode={isDarkMode} />;
   }
 
-  // 5. SUPER ADMIN OVERVIEW DASHBOARD PAGE
+  // 5. DEDICATED SUPER ADMIN PROFILE PAGE
+  if (activeSubView === 'profile') {
+    return <UserProfileView onShowToast={onShowToast} isDarkMode={isDarkMode} />;
+  }
+
+  // 6. SUPER ADMIN OVERVIEW DASHBOARD PAGE
   return (
     <div className="space-y-8 font-sans">
       <MetricsGrid
@@ -109,12 +113,12 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
         <h3 className={`font-bold text-sm mb-4 ${textHeading}`}>Registered Ecosystem Partner Breakdown</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
           {[
-            { name: "School Admins", count: "2 Registered", icon: FaSchool, role: 'school' },
-            { name: "College Admins", count: "1 Registered", icon: FaGraduationCap, role: 'college' },
-            { name: "Mentors & Counselors", count: "1 Registered", icon: FaUserCheck, role: 'mentor' },
-            { name: "Training Academies", count: "2 Registered", icon: FaChalkboardUser, role: 'training' },
-            { name: "Recruiters & HR", count: "1 Registered", icon: FaBriefcase, role: 'recruiter' },
-            { name: "Companies", count: "1 Registered", icon: FaBuilding, role: 'company' }
+            { name: "School Admins", count: "2 Registered", icon: FiBookOpen, role: 'school' },
+            { name: "College Admins", count: "1 Registered", icon: FiBookOpen, role: 'college' },
+            { name: "Mentors & Counselors", count: "1 Registered", icon: FiUserCheck, role: 'mentor' },
+            { name: "Training Academies", count: "2 Registered", icon: FiGrid, role: 'training' },
+            { name: "Recruiters & HR", count: "1 Registered", icon: FiBriefcase, role: 'recruiter' },
+            { name: "Companies", count: "1 Registered", icon: FiGrid, role: 'company' }
           ].map((v, i) => {
             const Icon = v.icon;
             return (

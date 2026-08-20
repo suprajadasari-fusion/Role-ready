@@ -1,12 +1,12 @@
 import React from 'react';
 import { RoleType } from '~/lib/types';
 import { 
-  FaMagnifyingGlass, 
-  FaBell, 
-  FaUserCheck, 
-  FaSun, 
-  FaMoon 
-} from 'react-icons/fa6';
+  FiSearch, 
+  FiBell, 
+  FiUserCheck, 
+  FiSun, 
+  FiMoon 
+} from 'react-icons/fi';
 
 interface TopbarProps {
   currentWorkspace: RoleType;
@@ -44,7 +44,7 @@ export const Topbar: React.FC<TopbarProps> = ({
       {/* Search Input */}
       <div className="flex items-center gap-3 w-96">
         <div className="relative w-full">
-          <FaMagnifyingGlass className={`w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 ${
+          <FiSearch className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${
             isDarkMode ? 'text-slate-400' : 'text-[#3665EE]'
           }`} />
           <input
@@ -66,8 +66,9 @@ export const Topbar: React.FC<TopbarProps> = ({
         {/* Dark / Light Theme Toggle Button */}
         <button
           onClick={onToggleTheme}
+          aria-label={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-xs font-bold transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${
             isDarkMode 
               ? 'bg-slate-800 border-amber-500/40 text-amber-400 hover:bg-slate-700' 
               : 'bg-[#DEE9FF] border-[#C6D9FF] text-[#12163A] hover:bg-[#CBDDFF]'
@@ -75,12 +76,12 @@ export const Topbar: React.FC<TopbarProps> = ({
         >
           {isDarkMode ? (
             <>
-              <FaSun className="w-3.5 h-3.5 text-amber-400 animate-spin-slow" />
+              <FiSun className="w-4 h-4 text-amber-400" />
               <span>Light Mode</span>
             </>
           ) : (
             <>
-              <FaMoon className="w-3.5 h-3.5 text-[#3665EE]" />
+              <FiMoon className="w-4 h-4 text-[#3665EE]" />
               <span>Dark Mode</span>
             </>
           )}
@@ -89,13 +90,14 @@ export const Topbar: React.FC<TopbarProps> = ({
         {/* Notifications Icon */}
         <button 
           onClick={() => onShowToast("Notifications: 2 pending seat approval requests.")}
+          aria-label="View notifications"
           className={`relative p-2 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${
             isDarkMode 
               ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white' 
               : 'bg-[#DEE9FF] border-[#C6D9FF] text-[#12163A] hover:bg-[#CBDDFF]'
           }`}
         >
-          <FaBell className="w-4 h-4 text-[#3665EE]" />
+          <FiBell className="w-4 h-4 text-[#3665EE]" />
           <span className="absolute top-1 right-1 w-2 h-2 bg-[#3665EE] rounded-full animate-ping" />
           <span className="absolute top-1 right-1 w-2 h-2 bg-[#3665EE] rounded-full" />
         </button>
@@ -104,15 +106,15 @@ export const Topbar: React.FC<TopbarProps> = ({
 
         {/* Profile Avatar Badge */}
         <div className="flex items-center gap-2.5 hover:scale-105 transition-transform duration-200 cursor-pointer">
-          <div className="w-8 h-8 rounded-xl bg-[#12163A] text-white font-extrabold flex items-center justify-center text-xs shadow-md border border-[#3665EE]/40">
-            <FaUserCheck className="w-4 h-4 text-[#3665EE]" />
+          <div className="w-8 h-8 rounded-xl bg-[#12163A] text-white font-bold flex items-center justify-center text-xs shadow-md border border-[#3665EE]/40">
+            <FiUserCheck className="w-4 h-4 text-[#3665EE]" />
           </div>
           <div className="hidden sm:block text-left">
-            <div className={`text-xs font-bold leading-tight ${isDarkMode ? 'text-white' : 'text-[#12163A]'}`}>
+            <div className={`text-xs font-semibold leading-tight ${isDarkMode ? 'text-white' : 'text-[#12163A]'}`}>
               System Administrator
             </div>
-            <div className="text-[10px] font-bold text-[#3665EE]">
-              {currentWorkspace.toUpperCase()}
+            <div className="text-[10px] font-medium text-[#3665EE]">
+              {currentWorkspace === 'super-admin' ? 'Super Admin' : currentWorkspace.charAt(0).toUpperCase() + currentWorkspace.slice(1)}
             </div>
           </div>
         </div>

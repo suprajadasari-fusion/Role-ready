@@ -1,29 +1,24 @@
 import React, { useState } from 'react';
 import { 
-  FaCompass, 
-  FaClipboardList, 
-  FaBrain, 
-  FaDna, 
-  FaWandMagicSparkles, 
-  FaAward, 
-  FaGraduationCap, 
-  FaRoute, 
-  FaFileCode, 
-  FaChartLine, 
-  FaCircleCheck, 
-  FaArrowRight, 
-  FaMagnifyingGlass, 
-  FaDownload, 
-  FaStar, 
-  FaFire, 
-  FaClock, 
-  FaUpload, 
-  FaBolt,
-  FaBuilding,
-  FaBookOpen,
-  FaBriefcase,
-  FaIndianRupeeSign
-} from 'react-icons/fa6';
+  FiCompass, 
+  FiClipboard, 
+  FiCpu, 
+  FiZap, 
+  FiAward, 
+  FiBookOpen, 
+  FiTrendingUp, 
+  FiCheckCircle, 
+  FiArrowRight, 
+  FiSearch, 
+  FiDownload, 
+  FiStar, 
+  FiClock, 
+  FiUpload, 
+  FiGrid,
+  FiBriefcase,
+  FiDollarSign,
+  FiFileText
+} from 'react-icons/fi';
 
 import { TalkingHumanAvatar } from './TalkingHumanAvatar';
 
@@ -55,16 +50,16 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
   const [atsScore, setAtsScore] = useState(88);
 
   const tabs: Array<{ id: typeof activeTab; label: string; icon: any }> = [
-    { id: 'discovery', label: '1. Career Discovery', icon: FaCompass },
-    { id: 'assessment', label: '2. Assessments', icon: FaClipboardList },
-    { id: 'psychometric', label: '3. Psychometric Test', icon: FaBrain },
-    { id: 'dna', label: '4. Career DNA', icon: FaDna },
-    { id: 'ai-recs', label: '5. AI Recommendations', icon: FaWandMagicSparkles },
-    { id: 'scholarships', label: '6. Scholarships', icon: FaAward },
-    { id: 'colleges', label: '7. College Explorer', icon: FaGraduationCap },
-    { id: 'roadmap', label: '8. Career Roadmap', icon: FaRoute },
-    { id: 'resume', label: '9. Resume ATS Score', icon: FaFileCode },
-    { id: 'learning', label: '10. Learning Progress', icon: FaChartLine }
+    { id: 'discovery', label: '1. Career Discovery', icon: FiCompass },
+    { id: 'assessment', label: '2. Assessments', icon: FiClipboard },
+    { id: 'psychometric', label: '3. Psychometric Test', icon: FiCpu },
+    { id: 'dna', label: '4. Career DNA', icon: FiZap },
+    { id: 'ai-recs', label: '5. AI Recommendations', icon: FiCpu },
+    { id: 'scholarships', label: '6. Scholarships', icon: FiAward },
+    { id: 'colleges', label: '7. College Explorer', icon: FiBookOpen },
+    { id: 'roadmap', label: '8. Career Roadmap', icon: FiTrendingUp },
+    { id: 'resume', label: '9. Resume ATS Score', icon: FiFileText },
+    { id: 'learning', label: '10. Learning Progress', icon: FiTrendingUp }
   ];
 
   const cardClass = isDarkMode
@@ -119,12 +114,12 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
           }`}>
             <div>
               <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-                <FaCompass className="w-5 h-5 text-blue-500" /> Career Discovery Engine
+                <FiCompass className="w-5 h-5 text-blue-500" /> Career Discovery Engine
               </h2>
               <p className={`text-xs ${textMuted}`}>Explore 500+ future-ready career pathways, required skillstacks, and market compensation in INR</p>
             </div>
             <div className="relative w-72">
-              <FaMagnifyingGlass className="w-3.5 h-3.5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              <FiSearch className="w-3.5 h-3.5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2" />
               <input 
                 type="text" 
                 placeholder="Search careers (e.g. AI Architect, Quant Analyst)..." 
@@ -166,7 +161,7 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
                   onClick={() => onShowToast(`Opened Career Pathway Guide for ${c.title}`)}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 text-xs"
                 >
-                  <span>Explore Pathway</span> <FaArrowRight className="w-3 h-3" />
+                  <span>Explore Pathway</span> <FiArrowRight className="w-3 h-3" />
                 </button>
               </div>
             ))}
@@ -182,7 +177,7 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
           <div className={`flex items-center justify-between pb-4 border-b ${isDarkMode ? 'border-slate-800' : 'border-slate-100'}`}>
             <div>
               <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-                <FaClipboardList className="w-5 h-5 text-blue-500" /> Aptitude & Skill Diagnostic Tests
+                <FiClipboard className="w-5 h-5 text-blue-500" /> Aptitude & Skill Diagnostic Tests
               </h2>
               <p className={textMuted}>Standardized cognitive reasoning and technical skill benchmark assessments</p>
             </div>
@@ -202,7 +197,7 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
                 <div>
                   <h4 className={`font-extrabold text-sm mb-1 ${textHeading}`}>{a.name}</h4>
                   <div className={`text-[11px] font-medium flex items-center gap-3 ${textMuted}`}>
-                    <span><FaClock className="inline w-3 h-3 text-blue-400" /> {a.time}</span>
+                    <span><FiClock className="inline w-3 h-3 text-blue-400" /> {a.time}</span>
                     <span>{a.qCount}</span>
                   </div>
                   <div className="mt-2 text-blue-400 font-bold">{a.score}</div>
@@ -227,7 +222,7 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
           <div className={`flex items-center justify-between pb-4 border-b ${isDarkMode ? 'border-slate-800' : 'border-slate-100'}`}>
             <div>
               <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-                <FaBrain className="w-5 h-5 text-blue-500" /> Holland Code (RIASEC) Psychometric Inventory
+                <FiCpu className="w-5 h-5 text-blue-500" /> Holland Code (RIASEC) Psychometric Inventory
               </h2>
               <p className={textMuted}>Measures vocational personality traits across 6 key interest domains</p>
             </div>
@@ -309,7 +304,7 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
           <div className={`flex items-center justify-between pb-4 border-b ${isDarkMode ? 'border-slate-800' : 'border-slate-100'}`}>
             <div>
               <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-                <FaDna className="w-5 h-5 text-blue-500" /> Unified Student Career DNA Profile
+                <FiZap className="w-5 h-5 text-blue-500" /> Unified Student Career DNA Profile
               </h2>
               <p className={textMuted}>Synthesis of cognitive aptitude, psychometrics, market demand, and values alignment</p>
             </div>
@@ -317,16 +312,16 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
               onClick={() => onShowToast("Exported Official Career DNA Certificate PDF!")}
               className="bg-blue-600 text-white font-bold px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer"
             >
-              <FaDownload className="w-3.5 h-3.5" /> Download Career DNA PDF
+              <FiDownload className="w-3.5 h-3.5" /> Download Career DNA PDF
             </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
             {[
-              { label: "Cognitive Aptitude Index", score: "94 / 100", status: "Top 2% Nationwide", icon: FaBrain },
-              { label: "Psychometric Trait Alignment", score: "90 / 100", status: "High STEM Alignment", icon: FaDna },
-              { label: "Industry Market Demand", score: "96 / 100", status: "High Growth Sector", icon: FaBolt },
-              { label: "Values & Passion Fit", score: "92 / 100", status: "Optimal Satisfaction", icon: FaStar }
+              { label: "Cognitive Aptitude Index", score: "94 / 100", status: "Top 2% Nationwide", icon: FiCpu },
+              { label: "Psychometric Trait Alignment", score: "90 / 100", status: "High STEM Alignment", icon: FiZap },
+              { label: "Industry Market Demand", score: "96 / 100", status: "High Growth Sector", icon: FiZap },
+              { label: "Values & Passion Fit", score: "92 / 100", status: "Optimal Satisfaction", icon: FiStar }
             ].map((d, i) => {
               const Icon = d.icon;
               return (
@@ -335,7 +330,7 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
                     <span className={`font-semibold ${textMuted}`}>{d.label}</span>
                     <Icon className="w-4 h-4 text-blue-500" />
                   </div>
-                  <div className={`text-2xl font-extrabold mb-1 ${textHeading}`}>{d.score}</div>
+                  <div className={`text-2xl font-bold mb-1 ${textHeading}`}>{d.score}</div>
                   <span className="text-blue-400 font-bold">{d.status}</span>
                 </div>
               );
@@ -351,7 +346,7 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
         <div className={`rounded-2xl border p-6 space-y-6 text-xs ${cardClass}`}>
           <div className={`pb-4 border-b ${isDarkMode ? 'border-slate-800' : 'border-slate-100'}`}>
             <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-              <FaWandMagicSparkles className="w-5 h-5 text-blue-500" /> AI Recommendation Engine Output
+              <FiCpu className="w-5 h-5 text-blue-500" /> AI Recommendation Engine Output
             </h2>
             <p className={textMuted}>Personalized career pathway matches generated via custom neural network recommendation models</p>
           </div>
@@ -364,11 +359,11 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
             ].map((r, i) => (
               <div key={i} className={`p-5 rounded-2xl border flex flex-col md:flex-row md:items-center justify-between gap-4 ${subCardClass}`}>
                 <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white font-extrabold text-lg flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20">
+                  <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white font-bold text-lg flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20">
                     {r.match}
                   </div>
                   <div>
-                    <h3 className={`font-extrabold text-sm mb-1 ${textHeading}`}>{r.role}</h3>
+                    <h3 className={`font-bold text-sm mb-1 ${textHeading}`}>{r.role}</h3>
                     <p className={`leading-relaxed mb-2 ${textMuted}`}>{r.reason}</p>
                     <span className="bg-emerald-500/20 text-emerald-400 font-bold px-2.5 py-0.5 rounded-md border border-emerald-500/30">
                       {r.demand}
@@ -395,7 +390,7 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
           <div className={`flex items-center justify-between pb-4 border-b ${isDarkMode ? 'border-slate-800' : 'border-slate-100'}`}>
             <div>
               <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-                <FaAward className="w-5 h-5 text-blue-500" /> Scholarship & Merit Grant Explorer
+                <FiAward className="w-5 h-5 text-blue-500" /> Scholarship & Merit Grant Explorer
               </h2>
               <p className={textMuted}>Direct application portal for national merit fellowships and STEM grants in Indian Rupees</p>
             </div>
@@ -413,8 +408,8 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
               <div key={i} className={`p-5 rounded-2xl border flex items-center justify-between ${subCardClass}`}>
                 <div>
                   <span className="text-[10px] font-bold text-blue-400 uppercase">{s.provider}</span>
-                  <h3 className={`font-extrabold text-sm mb-1 ${textHeading}`}>{s.name}</h3>
-                  <div className="text-emerald-400 font-extrabold text-sm">{s.amount}</div>
+                  <h3 className={`font-bold text-sm mb-1 ${textHeading}`}>{s.name}</h3>
+                  <div className="text-emerald-400 font-bold text-sm">{s.amount}</div>
                   <div className={`text-[11px] mt-1 ${textMuted}`}>Deadline: {s.deadline}</div>
                 </div>
                 <button 
@@ -436,7 +431,7 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
         <div className={`rounded-2xl border p-6 space-y-6 text-xs ${cardClass}`}>
           <div className={`pb-4 border-b ${isDarkMode ? 'border-slate-800' : 'border-slate-100'}`}>
             <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-              <FaGraduationCap className="w-5 h-5 text-blue-500" /> College & University Admissions Explorer
+              <FiBookOpen className="w-5 h-5 text-blue-500" /> College & University Admissions Explorer
             </h2>
             <p className={textMuted}>AI acceptance probability calculator and NIRF university rankings</p>
           </div>
@@ -449,8 +444,8 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
             ].map((col, i) => (
               <div key={i} className={`p-5 rounded-2xl border space-y-3 ${subCardClass}`}>
                 <span className="bg-blue-500/20 text-blue-400 font-bold px-2 py-0.5 rounded-md text-[10px] border border-blue-500/30">{col.rank}</span>
-                <h3 className={`font-extrabold text-sm leading-snug ${textHeading}`}>{col.name}</h3>
-                <div className="text-emerald-400 font-extrabold">{col.chance}</div>
+                <h3 className={`font-bold text-sm leading-snug ${textHeading}`}>{col.name}</h3>
+                <div className="text-emerald-400 font-bold">{col.chance}</div>
                 <div className={`font-medium ${textMuted}`}>{col.ctc}</div>
                 <div className={`text-[11px] ${textMuted}`}>{col.location}</div>
                 <button 
@@ -472,17 +467,17 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
         <div className={`rounded-2xl border p-6 space-y-6 text-xs ${cardClass}`}>
           <div className={`pb-4 border-b ${isDarkMode ? 'border-slate-800' : 'border-slate-100'}`}>
             <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-              <FaRoute className="w-5 h-5 text-blue-500" /> Milestone Career Roadmap
+              <FiTrendingUp className="w-5 h-5 text-blue-500" /> Milestone Career Roadmap
             </h2>
             <p className={textMuted}>Step-by-step milestone path to becoming a Senior AI Architect</p>
           </div>
 
           <div className="space-y-6 relative pl-6 border-l-2 border-blue-500/40">
             {[
-              { step: "Step 1: Secondary Education (Class 10 - 12)", desc: "Focus on PCM (Physics, Chemistry, Math), Algorithmic Logic, and Python fundamentals.", status: "Completed", icon: FaCircleCheck },
-              { step: "Step 2: Undergrad Degree (B.Tech CS / AI)", desc: "Enroll at Top University, master Data Structures, Algorithms, Machine Learning theory.", status: "In Progress", icon: FaClock },
-              { step: "Step 3: Industry Internship (Summer Tech Drive)", desc: "Complete 3-month Software & Cloud Engineering internship at Tier-1 Tech firm.", status: "Upcoming", icon: FaBriefcase },
-              { step: "Step 4: Full-Time Placement (AI Architect / Quant)", desc: "Secure campus offer as AI/ML Engineer with competitive CTC package in INR.", status: "Goal Target", icon: FaAward }
+              { step: "Step 1: Secondary Education (Class 10 - 12)", desc: "Focus on PCM (Physics, Chemistry, Math), Algorithmic Logic, and Python fundamentals.", status: "Completed", icon: FiCheckCircle },
+              { step: "Step 2: Undergrad Degree (B.Tech CS / AI)", desc: "Enroll at Top University, master Data Structures, Algorithms, Machine Learning theory.", status: "In Progress", icon: FiClock },
+              { step: "Step 3: Industry Internship (Summer Tech Drive)", desc: "Complete 3-month Software & Cloud Engineering internship at Tier-1 Tech firm.", status: "Upcoming", icon: FiBriefcase },
+              { step: "Step 4: Full-Time Placement (AI Architect / Quant)", desc: "Secure campus offer as AI/ML Engineer with competitive CTC package in INR.", status: "Goal Target", icon: FiAward }
             ].map((m, i) => (
               <div key={i} className="relative">
                 <div className="absolute -left-[31px] top-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-sm">
@@ -490,7 +485,7 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
                 </div>
                 <div className={`p-4 rounded-xl border ${subCardClass}`}>
                   <div className="flex justify-between items-center mb-1">
-                    <h4 className={`font-extrabold text-xs ${textHeading}`}>{m.step}</h4>
+                    <h4 className={`font-bold text-xs ${textHeading}`}>{m.step}</h4>
                     <span className="bg-blue-500/20 text-blue-400 font-bold px-2 py-0.5 rounded-md text-[10px]">{m.status}</span>
                   </div>
                   <p className={`text-[11px] ${textMuted}`}>{m.desc}</p>
@@ -508,7 +503,7 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
         <div className={`rounded-2xl border p-6 space-y-6 text-xs ${cardClass}`}>
           <div className={`pb-4 border-b ${isDarkMode ? 'border-slate-800' : 'border-slate-100'}`}>
             <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-              <FaFileCode className="w-5 h-5 text-blue-500" /> AI Resume ATS Matcher & Score Dashboard
+              <FiFileText className="w-5 h-5 text-blue-500" /> AI Resume ATS Matcher & Score Dashboard
             </h2>
             <p className={textMuted}>Scan your resume against target AI/Tech job descriptions for ATS keyword optimization</p>
           </div>
@@ -531,14 +526,14 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl transition cursor-pointer flex items-center gap-2"
               >
-                <FaUpload className="w-3.5 h-3.5" /> Scan Resume with AI ATS Scanner
+                <FiUpload className="w-3.5 h-3.5" /> Scan Resume with AI ATS Scanner
               </button>
             </div>
 
             <div className={`p-5 rounded-2xl border flex flex-col justify-between ${subCardClass}`}>
               <div>
                 <span className={`font-bold block mb-1 ${textMuted}`}>ATS Resume Compatibility</span>
-                <div className="text-4xl font-extrabold text-blue-500 mb-2">{atsScore} / 100</div>
+                <div className="text-4xl font-bold text-blue-500 mb-2">{atsScore} / 100</div>
                 <div className="space-y-2">
                   <div className={`flex justify-between text-[11px] font-semibold ${textHeading}`}>
                     <span>Keyword Density Match</span><strong className="text-emerald-400">92%</strong>
@@ -554,7 +549,7 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
               <div className={`mt-4 p-3 rounded-xl border text-[11px] font-semibold ${
                 isDarkMode ? 'bg-slate-900 border-slate-700 text-blue-400' : 'bg-white border-blue-100 text-blue-700'
               }`}>
-                ✨ Suggestion: Add 'PyTorch', 'System Architecture' for +6 points
+                Suggestion: Add 'PyTorch', 'System Architecture' for +6 points
               </div>
             </div>
           </div>
@@ -569,20 +564,20 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
           <div className={`flex items-center justify-between pb-4 border-b ${isDarkMode ? 'border-slate-800' : 'border-slate-100'}`}>
             <div>
               <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
-                <FaChartLine className="w-5 h-5 text-blue-500" /> Learning Progress & Skill Tracker
+                <FiTrendingUp className="w-5 h-5 text-blue-500" /> Learning Progress & Skill Tracker
               </h2>
               <p className={textMuted}>Track active bootcamp courses, study streaks, and earned certificate badges</p>
             </div>
             <span className="bg-amber-500/20 text-amber-400 font-bold px-3 py-1 rounded-full border border-amber-500/30 flex items-center gap-1.5">
-              <FaFire className="w-3.5 h-3.5 text-amber-500 animate-bounce" /> 14 Day Study Streak
+              <FiZap className="w-3.5 h-3.5 text-amber-500 animate-bounce" /> 14 Day Study Streak
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {[
-              { name: "Fullstack Cloud & React Architecture", progress: 85, cert: "AWS Certified", icon: FaBookOpen },
-              { name: "Neural Networks & Deep Learning Spec", progress: 92, cert: "OpenAI Certified", icon: FaBrain },
-              { name: "Data Structures & Algorithmic Thinking", progress: 78, cert: "AlgoExpert Certified", icon: FaFileCode }
+              { name: "Fullstack Cloud & React Architecture", progress: 85, cert: "AWS Certified", icon: FiBookOpen },
+              { name: "Neural Networks & Deep Learning Spec", progress: 92, cert: "OpenAI Certified", icon: FiCpu },
+              { name: "Data Structures & Algorithmic Thinking", progress: 78, cert: "AlgoExpert Certified", icon: FiFileText }
             ].map((lp, i) => {
               const Icon = lp.icon;
               return (
@@ -591,7 +586,7 @@ export const StudentCareerSuite: React.FC<StudentCareerSuiteProps> = ({
                     <Icon className="w-5 h-5 text-blue-500" />
                     <span className="bg-blue-500/20 text-blue-400 font-bold px-2 py-0.5 rounded-md text-[10px] border border-blue-500/30">{lp.cert}</span>
                   </div>
-                  <h3 className={`font-extrabold text-xs leading-snug ${textHeading}`}>{lp.name}</h3>
+                  <h3 className={`font-bold text-xs leading-snug ${textHeading}`}>{lp.name}</h3>
                   <div>
                     <div className={`flex justify-between font-bold text-[11px] mb-1 ${textMuted}`}>
                       <span>Progress</span><span className="text-blue-400">{lp.progress}%</span>
