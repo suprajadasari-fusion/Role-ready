@@ -148,11 +148,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Dynamic Nav Items */}
       <nav className="flex-1 overflow-y-auto p-4 flex flex-col justify-between">
         <div>
-          <div className={`text-[11px] font-semibold tracking-wider uppercase px-2 mb-2 ${
-            isDarkMode ? 'text-slate-400' : 'text-slate-500'
-          }`}>
-            {currentWorkspace.charAt(0).toUpperCase() + currentWorkspace.slice(1)} Navigation
-          </div>
           <div className="space-y-2">
             {navItems
               .filter((item) => item.id !== 'profile')
@@ -213,20 +208,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </nav>
 
-      {/* System Status & Log Out Footer */}
-      <div className={`p-4 border-t space-y-3 ${
+      {/* Log Out Footer */}
+      <div className={`p-4 border-t ${
         isDarkMode ? 'border-slate-800 bg-slate-950/60' : 'border-blue-100 bg-blue-50/40'
       }`}>
-        <div className="flex items-center gap-3">
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-          <div className="text-xs">
-            <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>AI Engine v2.4</div>
-            <div className={`text-[10px] ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-              All Microservices Operational
-            </div>
-          </div>
-        </div>
-
         {/* Prominent Log Out Button */}
         <button
           onClick={() => {
