@@ -18,7 +18,8 @@ import {
   FiClock, 
   FiDollarSign, 
   FiAward, 
-  FiFileText 
+  FiFileText,
+  FiTrendingUp
 } from 'react-icons/fi';
 import { ActionModal } from '../ActionModal';
 import { StudentToolsViews } from '../StudentToolsViews';
@@ -141,6 +142,10 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
   const cardClass = isDarkMode
     ? 'bg-slate-900 border-slate-800 text-white shadow-xl'
     : 'bg-white border-slate-200 text-slate-900 shadow-xs';
+
+  const subCardClass = isDarkMode
+    ? 'bg-slate-800/80 border-slate-700/80 text-white'
+    : 'bg-blue-50/40 border-blue-100 text-slate-900';
 
   const textMuted = isDarkMode ? 'text-slate-400' : 'text-[#6B7280]';
   const textHeading = isDarkMode ? 'text-white' : 'text-[#12163A]';
@@ -372,92 +377,344 @@ export const MentorDashboard: React.FC<MentorDashboardProps> = ({
     }
 
     // 5. STUDENT REQUESTS
-    // 5. STUDENT REQUESTS
-    if (activeSubView === 'student-requests' || activeSubView === 'mentees') {
+    // 5. ASSIGNED STUDENTS LIST
+    if (activeSubView === 'students' || activeSubView === 'mentees' || activeSubView === 'student-requests') {
+      const sampleStudents = [
+        { id: 'STU-01', name: 'Aarav Sharma', grade: 'Grade 12 - Senior Secondary', school: 'Delhi Public School, R.K. Puram', targetCareer: 'Computer Science & AI', matchScore: 94, readiness: 'High' },
+        { id: 'STU-02', name: 'Diya Patel', grade: 'Grade 11 - Senior Secondary', school: 'National Public School, Indiranagar', targetCareer: 'Biotechnology & Genetics', matchScore: 89, readiness: 'Strong' },
+        { id: 'STU-03', name: 'Rohan Iyer', grade: 'Grade 10 - Secondary', school: 'St. Xavier\'s Collegiate School', targetCareer: 'Robotics & Mechatronics', matchScore: 92, readiness: 'High' },
+        { id: 'STU-04', name: 'Ananya Gupta', grade: 'Grade 12 - Senior Secondary', school: 'The Mother\'s International School', targetCareer: 'Economics & Data Analytics', matchScore: 86, readiness: 'Moderate' }
+      ];
+
       return (
         <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
-          <div className={`flex items-center justify-between pb-4 border-b ${borderDivider}`}>
+          <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b ${borderDivider}`}>
             <div>
               <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
-                <FiUsers className="w-5 h-5 text-[#3665EE]" /> Student Counseling Booking Requests
+                <FiUsers className="w-5 h-5 text-[#3665EE]" /> Assigned Students Roster & Profiles
               </h2>
-              <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>Review pending mentorship booking requests</p>
+              <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>
+                Monitor assigned mentees, target career pathways, and academic readiness
+              </p>
             </div>
-          </div>
-
-          <div className="py-12 text-center text-[13px] text-slate-400">
-            <FiUsers className="w-8 h-8 mx-auto text-blue-400 mb-2 opacity-50" />
-            No pending counseling booking requests at this time.
-          </div>
-        </div>
-      );
-    }
-
-    // 6. VIDEO SESSIONS
-    if (activeSubView === 'video-sessions' || activeSubView === 'counseling') {
-      return (
-        <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
-          <div className={`flex items-center justify-between pb-4 border-b ${borderDivider}`}>
-            <div>
-              <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
-                <FiVideo className="w-5 h-5 text-[#3665EE]" /> Live 1-on-1 Video Counseling Room
-              </h2>
-              <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>HD encrypted video room with live screen share & action plan notes</p>
-            </div>
-            <button 
-              onClick={() => openTriggerModal("Save Session Notes", "Record counseling takeaways and student action items", [
-                { label: "Action Items for Student", name: "notes", type: "text", placeholder: "Complete roadmap milestones and ATS resume update" }
+            <button
+              onClick={() => openTriggerModal("Schedule Session", "Book a 1-on-1 counseling slot with a student", [
+                { label: "Select Student", name: "student", type: "text", placeholder: "Aarav Sharma" },
+                { label: "Date & Time", name: "time", type: "text", placeholder: "Tomorrow, 4:00 PM" },
+                { label: "Counseling Topic", name: "topic", type: "text", placeholder: "College Shortlist Strategy" }
               ])}
-              className="bg-[#12163A] hover:bg-[#1A2050] text-white text-[14px] font-semibold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md"
+              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white text-[14px] font-semibold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shrink-0"
             >
-              <FiFileText className="w-4 h-4" /> Save Session Notes
+              <FiPlus className="w-4 h-4" /> Schedule Guidance Session
             </button>
           </div>
 
-          <div className="p-8 rounded-[24px] bg-[#12163A] text-white text-center space-y-4">
-            <div className="w-16 h-16 rounded-full bg-[#3665EE] flex items-center justify-center mx-auto shadow-lg">
-              <FiVideo className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="text-[20px] md:text-[22px] font-semibold">Encrypted Video Counseling Room</h3>
-            <p className="text-[13px] md:text-[14px] text-slate-300 max-w-md mx-auto leading-normal">
-              Ready to launch 1-on-1 video call. Camera and microphone permissions active.
-            </p>
-            <button 
-              onClick={() => onShowToast("Camera & Microphone connected! Launching HD video stream.")}
-              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white text-[14px] font-semibold px-6 py-2.5 rounded-xl cursor-pointer shadow-md transition hover:scale-105"
-            >
-              Launch Live Call Now
-            </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {sampleStudents.map((st) => (
+              <div key={st.id} className={`p-5 rounded-[20px] border flex flex-col justify-between space-y-3 ${
+                isDarkMode ? 'bg-slate-800/40 border-slate-700' : 'bg-blue-50/40 border-blue-100'
+              }`}>
+                <div>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h4 className={`text-[16px] font-semibold ${textHeading}`}>{st.name}</h4>
+                      <p className={`text-[12px] ${textMuted} mt-0.5`}>{st.grade} • {st.school}</p>
+                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      {st.readiness} Readiness
+                    </span>
+                  </div>
+                  <div className="mt-3 text-[13px] space-y-1">
+                    <p className={textMuted}>Target Career: <strong className="text-blue-400 font-semibold">{st.targetCareer}</strong></p>
+                    <p className={textMuted}>AI Match Alignment: <strong className="text-emerald-400 font-semibold">{st.matchScore}%</strong></p>
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-slate-700/40 flex items-center justify-between">
+                  <button
+                    onClick={() => onShowToast(`Reviewing guidance notes for ${st.name}`)}
+                    className="text-xs font-semibold text-blue-400 hover:underline cursor-pointer"
+                  >
+                    View Career DNA
+                  </button>
+                  <button
+                    onClick={() => onShowToast(`Initiating counseling call with ${st.name}`)}
+                    className="bg-[#3665EE] hover:bg-[#2A54D5] text-white text-xs font-semibold px-3 py-1.5 rounded-xl cursor-pointer"
+                  >
+                    1-on-1 Connect
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       );
     }
 
-    // 7. ASSESSMENTS & GUIDANCE
+    // 5B. STUDENT PROGRESS & MILESTONES
+    if (activeSubView === 'progress') {
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
+          <div className={`pb-4 border-b ${borderDivider}`}>
+            <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
+              <FiTrendingUp className="w-5 h-5 text-emerald-400" /> Student Growth & Learning Progress
+            </h2>
+            <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>
+              Track skill acquisition, milestone roadmaps, and assessment diagnostics across mentees
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {[
+              { name: "Aarav Sharma", career: "Computer Science & AI", course: "Python & Machine Learning Track", progress: 85, status: "Ahead of Schedule" },
+              { name: "Diya Patel", career: "Biotechnology & Genetics", course: "Molecular Biology & Research Methods", progress: 72, status: "On Track" },
+              { name: "Rohan Iyer", career: "Robotics & Mechatronics", course: "Embedded Systems & Arduino Fundamentals", progress: 64, status: "In Progress" },
+              { name: "Ananya Gupta", career: "Economics & Data Analytics", course: "Statistical Modeling & R Programming", progress: 91, status: "Excellence" }
+            ].map((p, idx) => (
+              <div key={idx} className={`p-4 rounded-xl border ${subCardClass} flex flex-col md:flex-row md:items-center justify-between gap-4`}>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <h4 className={`font-semibold text-[15px] ${textHeading}`}>{p.name}</h4>
+                    <span className="text-[11px] font-semibold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full">{p.career}</span>
+                  </div>
+                  <p className={`text-xs ${textMuted}`}>{p.course}</p>
+                </div>
+                <div className="w-full md:w-64 space-y-1">
+                  <div className="flex justify-between text-xs font-semibold">
+                    <span className={textMuted}>Milestone Progress</span>
+                    <span className="text-blue-400">{p.progress}%</span>
+                  </div>
+                  <div className="w-full bg-slate-700/40 rounded-full h-2 overflow-hidden">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${p.progress}%` }} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // 6. MENTORSHIP SESSIONS (UPCOMING & PAST)
+    if (activeSubView === 'sessions' || activeSubView === 'video-sessions' || activeSubView === 'counseling') {
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
+          <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b ${borderDivider}`}>
+            <div>
+              <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
+                <FiVideo className="w-5 h-5 text-[#3665EE]" /> Mentorship Sessions & Video Counseling Room
+              </h2>
+              <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>
+                Manage scheduled 1-on-1 sessions, encrypted video rooms, and action takeaway notes
+              </p>
+            </div>
+            <button
+              onClick={() => openTriggerModal("Add Available Slot", "Create a new time slot for student bookings", [
+                { label: "Target Day", name: "day", type: "text", placeholder: "Tomorrow" },
+                { label: "Time Slot", name: "time", type: "text", placeholder: "2:00 PM - 3:00 PM" },
+                { label: "Counseling Topic", name: "topic", type: "text", placeholder: "1-on-1 Career Strategy" }
+              ])}
+              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white text-[14px] font-semibold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shrink-0"
+            >
+              <FiPlus className="w-4 h-4" /> Schedule New Session
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="p-6 rounded-[20px] bg-[#12163A] text-white space-y-4">
+              <div className="w-12 h-12 rounded-xl bg-[#3665EE] flex items-center justify-center">
+                <FiVideo className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-[18px] font-semibold">Live 1-on-1 Encrypted Video Room</h3>
+                <p className="text-xs text-slate-300 mt-1 leading-normal">
+                  HD real-time streaming with live screen share, whiteboard, and digital notes integration.
+                </p>
+              </div>
+              <button
+                onClick={() => onShowToast("Camera & Microphone connected! Launching live counseling room.")}
+                className="w-full bg-[#3665EE] hover:bg-[#2A54D5] text-white text-xs font-semibold py-2.5 rounded-xl cursor-pointer transition shadow-md"
+              >
+                Launch Counseling Call
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <h4 className={`text-xs font-semibold uppercase tracking-wider ${textMuted}`}>Upcoming Bookings</h4>
+              {slotsList.length === 0 ? (
+                <div className="py-8 text-center text-xs text-slate-400 border border-dashed border-slate-700/60 rounded-xl">
+                  No upcoming mentorship bookings. Configure slots above to accept sessions.
+                </div>
+              ) : (
+                slotsList.map((sl) => (
+                  <div key={sl.id} className={`p-3.5 rounded-xl border flex items-center justify-between ${subCardClass}`}>
+                    <div>
+                      <span className="text-xs font-bold text-blue-400">{sl.day} • {sl.time}</span>
+                      <h5 className={`font-semibold text-sm ${textHeading} mt-0.5`}>{sl.topic}</h5>
+                      <span className={`text-[11px] ${textMuted}`}>Mentee: {sl.mentee}</span>
+                    </div>
+                    <button
+                      onClick={() => onShowToast(`Joined session for ${sl.topic}`)}
+                      className="bg-[#3665EE] hover:bg-[#2A54D5] text-white text-xs font-semibold px-3 py-1.5 rounded-lg cursor-pointer"
+                    >
+                      Connect
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // 7. CAREER GUIDANCE & COUNSELING
     if (activeSubView === 'guidance') {
       return (
         <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
-          <div className={`flex items-center justify-between pb-4 border-b ${borderDivider}`}>
+          <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b ${borderDivider}`}>
             <div>
               <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
-                <FiCompass className="w-5 h-5 text-[#3665EE]" /> Student Assessment Review & Career Guidance
+                <FiCompass className="w-5 h-5 text-[#3665EE]" /> Student Career Guidance & Review Desk
               </h2>
-              <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>Review Holland Code DNA passports & issue customized career roadmaps</p>
+              <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>
+                Provide structured career roadmaps, guidance notes, and psychometric feedback
+              </p>
             </div>
-            <button 
+            <button
               onClick={() => openTriggerModal("Issue Career Action Plan", "Send structured action items to student portal", [
-                { label: "Target Student", name: "student", type: "text", placeholder: "Student Name" },
+                { label: "Target Student", name: "student", type: "text", placeholder: "Aarav Sharma" },
                 { label: "Recommended Milestone", name: "milestone", type: "text", placeholder: "Complete PyTorch Certification" }
               ])}
-              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white text-[14px] font-semibold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95"
+              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white text-[14px] font-semibold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shrink-0"
             >
-              <FiPlus className="w-4 h-4" /> Issue Career Action Plan
+              <FiPlus className="w-4 h-4" /> Issue Guidance Action Plan
             </button>
           </div>
 
-          <div className="py-12 text-center text-[13px] text-slate-400">
-            <FiCompass className="w-8 h-8 mx-auto text-blue-400 mb-2 opacity-50" />
-            No pending student assessment reviews at this time.
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className={`p-5 rounded-[20px] border ${subCardClass} space-y-2`}>
+              <h4 className={`font-semibold text-sm ${textHeading}`}>Aarav Sharma — Computer Science & AI</h4>
+              <p className={`text-xs leading-normal ${textMuted}`}>
+                "Strong aptitude in algorithmic problem solving. Recommended to focus on advanced mathematics and Python fundamentals before Grade 12 board preparations."
+              </p>
+              <span className="text-[11px] text-blue-400 font-semibold block pt-1">Issued: 3 days ago</span>
+            </div>
+            <div className={`p-5 rounded-[20px] border ${subCardClass} space-y-2`}>
+              <h4 className={`font-semibold text-sm ${textHeading}`}>Diya Patel — Biotechnology & Genetics</h4>
+              <p className={`text-xs leading-normal ${textMuted}`}>
+                "Excellent scientific inquiry scores. Recommended targeting IISc Bangalore and top biotechnology research programs with Olympiad preparation."
+              </p>
+              <span className="text-[11px] text-blue-400 font-semibold block pt-1">Issued: 1 week ago</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // 7B. ASSESSMENTS REVIEW
+    if (activeSubView === 'assessments') {
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
+          <div className={`pb-4 border-b ${borderDivider}`}>
+            <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
+              <FiAward className="w-5 h-5 text-purple-400" /> Student Assessment & Diagnostic Reviews
+            </h2>
+            <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>
+              Review Holland RIASEC psychometric codes, career readiness scores, and skill matrices
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { name: "Aarav Sharma", riasec: "IRC (Investigative, Realistic, Conventional)", readiness: 94, topMatch: "Machine Learning Engineer" },
+              { name: "Diya Patel", riasec: "ISR (Investigative, Social, Realistic)", readiness: 89, topMatch: "Geneticist / Biotech Researcher" },
+              { name: "Rohan Iyer", riasec: "RIE (Realistic, Investigative, Enterprising)", readiness: 92, topMatch: "Robotics Hardware Architect" }
+            ].map((a, idx) => (
+              <div key={idx} className={`p-5 rounded-[20px] border ${subCardClass} space-y-2`}>
+                <div className="flex items-center justify-between">
+                  <h4 className={`font-semibold text-sm ${textHeading}`}>{a.name}</h4>
+                  <span className="text-xs font-bold text-emerald-400">{a.readiness}% Readiness</span>
+                </div>
+                <p className={`text-xs ${textMuted}`}>Holland Code: <strong className="text-purple-400 font-semibold">{a.riasec}</strong></p>
+                <div className="pt-2 border-t border-slate-700/40">
+                  <span className="text-[11px] uppercase tracking-wider text-slate-400 block">Top Neural Match</span>
+                  <span className="text-xs font-semibold text-blue-400">{a.topMatch}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // 7C. RECOMMENDATIONS DESK
+    if (activeSubView === 'recommendations') {
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
+          <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b ${borderDivider}`}>
+            <div>
+              <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
+                <FiAward className="w-5 h-5 text-amber-400" /> Recommendations & Skill Endorsements
+              </h2>
+              <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>
+                Recommend careers, courses, and certifications directly to student dashboards
+              </p>
+            </div>
+            <button
+              onClick={() => onShowToast("Added new course recommendation for student cohort!")}
+              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white text-xs font-semibold px-4 py-2 rounded-xl cursor-pointer"
+            >
+              + Recommend Course
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { type: "Course Track", title: "CS50 Introduction to Computer Science", forStudent: "Aarav Sharma", rationale: "Solidify foundation prior to university entrance exams" },
+              { type: "Certification", title: "AWS Certified Cloud Practitioner", forStudent: "Rohan Iyer", rationale: "Enhance practical infrastructure knowledge for IoT projects" }
+            ].map((rec, idx) => (
+              <div key={idx} className={`p-4 rounded-xl border ${subCardClass} space-y-2`}>
+                <span className="text-[11px] font-semibold uppercase text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">{rec.type}</span>
+                <h4 className={`font-semibold text-sm ${textHeading}`}>{rec.title}</h4>
+                <p className={`text-xs ${textMuted}`}>Recommended for: <strong className="text-blue-400">{rec.forStudent}</strong></p>
+                <p className={`text-xs ${textMuted}`}>{rec.rationale}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // 7D. MESSAGES & COMMUNICATIONS
+    if (activeSubView === 'messages') {
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
+          <div className={`pb-4 border-b ${borderDivider}`}>
+            <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
+              <FiFileText className="w-5 h-5 text-[#3665EE]" /> Mentee & Parent Direct Messages
+            </h2>
+            <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>
+              Communicate with assigned students and their parents regarding guidance sessions
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {[
+              { sender: "Aarav Sharma (Student)", time: "Today, 11:30 AM", message: "Thank you for the guidance session! I have started the Python coursework.", unread: true },
+              { sender: "Mr. Sharma (Parent)", time: "Yesterday", message: "Can we schedule a follow-up session next weekend to review college options?", unread: false }
+            ].map((msg, idx) => (
+              <div key={idx} className={`p-4 rounded-xl border flex items-center justify-between cursor-pointer transition ${subCardClass}`} onClick={() => onShowToast(`Opened conversation with ${msg.sender}`)}>
+                <div>
+                  <div className="flex items-center gap-2">
+                    {msg.unread && <span className="w-2 h-2 rounded-full bg-blue-500" />}
+                    <span className={`font-semibold text-sm ${textHeading}`}>{msg.sender}</span>
+                    <span className={`text-[11px] ${textMuted}`}>{msg.time}</span>
+                  </div>
+                  <p className={`text-xs mt-1 ${textMuted}`}>{msg.message}</p>
+                </div>
+                <button className="text-xs text-blue-400 font-semibold hover:underline">Reply</button>
+              </div>
+            ))}
           </div>
         </div>
       );

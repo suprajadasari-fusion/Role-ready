@@ -334,38 +334,94 @@ export async function fetchAdminHealth(): Promise<AdminHealthData> {
 // 5. USER PROFILE MANAGEMENT APIS (/api/v1/profile/*)
 // ----------------------------------------------------------------------------
 
-export async function fetchUserProfile(): Promise<UserProfile> {
-  const res = await apiFetch<{ success: boolean; message: string; data: any }>('/api/v1/profile/', {
-    method: 'GET'
-  });
+export function normalizeUserProfile(raw: any): UserProfile {
+  if (!raw) {
+    return {
+      id: 'user-profile',
+      fullName: 'User Profile',
+      firstName: '',
+      lastName: '',
+      email: '',
+      mobile: '',
+      phoneNumber: '',
+      dob: '',
+      gender: '',
+      location: '',
+      education: '',
+      qualification: '',
+      skills: [],
+      bio: '',
+      avatarUrl: '',
+      role: 'mentor' as any,
+      onboardingCompleted: true,
+      roleData: {},
+      updatedAt: new Date().toISOString()
+    };
+  }
 
-  const raw = res.data;
-  const p = raw.profile || {};
+  const p = raw.profile || raw || {};
+  const roleData = p.roleData || raw.roleData || {};
+  const firstName = p.firstName || raw.firstName || '';
+  const lastName = p.lastName || raw.lastName || '';
+  const fullName = firstName && lastName 
+    ? `${firstName} ${lastName}` 
+    : (firstName || raw.name || raw.email || 'User');
 
-  // Normalize backend payload to UserProfile interface strictly from API response
-  const profile: UserProfile = {
-    id: raw.id || p.profileId || '',
-    fullName: p.firstName && p.lastName ? `${p.firstName} ${p.lastName}` : (p.firstName || raw.email || 'User'),
-    firstName: p.firstName || '',
-    lastName: p.lastName || '',
-    email: raw.email || '',
-    mobile: p.phoneNumber || raw.phone || '',
-    phoneNumber: p.phoneNumber || raw.phone || '',
-    dob: p.roleData?.dob || '',
-    gender: p.roleData?.gender || '',
-    location: p.roleData?.location || '',
-    education: p.roleData?.education?.qualification || '',
-    qualification: p.roleData?.education?.qualification || '',
-    skills: Array.isArray(p.roleData?.skills) ? p.roleData.skills : [],
-    bio: p.bio || '',
-    avatarUrl: raw.avatarUrl || p.profilePicUrl || '',
-    role: (raw.role?.toLowerCase() as any) || 'parent',
+  return {
+    id: raw.id || p.profileId || raw._id || 'user-profile',
+    fullName,
+    firstName,
+    lastName,
+    email: raw.email || p.email || '',
+    mobile: p.phoneNumber || raw.phone || p.mobile || '',
+    phoneNumber: p.phoneNumber || raw.phone || p.mobile || '',
+    dob: roleData.dob || p.dob || '',
+    gender: roleData.gender || p.gender || '',
+    location: roleData.location || p.location || '',
+    education: roleData.education?.qualification || p.education || roleData.qualification || '',
+    qualification: roleData.qualification || roleData.education?.qualification || p.qualification || '',
+    skills: Array.isArray(roleData.skills) ? roleData.skills : (Array.isArray(p.skills) ? p.skills : []),
+    bio: p.bio || roleData.bio || '',
+    avatarUrl: raw.avatarUrl || p.profilePicUrl || p.avatarUrl || '',
+    role: (raw.role?.toLowerCase() as any) || (p.role?.toLowerCase() as any) || 'mentor',
     onboardingCompleted: p.onboardingCompleted ?? true,
-    roleData: p.roleData || {},
-    updatedAt: raw.createdAt || new Date().toISOString()
+    roleData: roleData,
+    updatedAt: raw.updatedAt || raw.createdAt || new Date().toISOString()
   };
+}
 
-  return profile;
+export async function fetchUserProfile(): Promise<UserProfile> {
+  // 1. Primary: Try GET /api/v1/profile/
+  try {
+    const res = await apiFetch<{ success: boolean; message: string; data: any }>('/api/v1/profile/', {
+      method: 'GET'
+    });
+    if (res?.data) {
+      return normalizeUserProfile(res.data);
+    }
+  } catch (err) {
+    console.warn("Could not fetch /api/v1/profile/, trying /api/v1/users/me:", err);
+  }
+
+  // 2. Secondary: Try GET /api/v1/users/me
+  try {
+    const meRes = await apiFetch<{ success: boolean; message: string; data: any }>('/api/v1/users/me', {
+      method: 'GET'
+    });
+    if (meRes?.data) {
+      return normalizeUserProfile(meRes.data);
+    }
+  } catch (meErr) {
+    console.warn("Could not fetch /api/v1/users/me:", meErr);
+  }
+
+  // 3. Fallback: Authenticated session in localStorage/sessionStorage
+  const cached = getCachedUser();
+  if (cached) {
+    return normalizeUserProfile(cached);
+  }
+
+  throw new Error("Unable to load profile data from backend or local session.");
 }
 
 export async function updateUserProfile(updates: {
@@ -552,77 +608,59 @@ export * from '../services/parent';
  *   PARENT -> /portal/parent
  *   MENTOR -> /portal/mentor
  *   RECRUITER -> /portal/recruiter
- *   COMPANY_ADMIN -> /portal/company
- *   SCHOOL -> /portal/school
- *   COLLEGE -> /portal/college
- *   TRAINING -> /portal/training
- *   SUPER_ADMIN -> /portal/super-admin
+/**
+ * Resolves the authorized role dashboard path based on authenticated user role:
+ *   Parent             -> /parent/dashboard
+ *   Mentor             -> /mentor/dashboard
+ *   Recruiter          -> /recruiter/dashboard
+ *   Super Admin        -> /super-admin/dashboard
+ *   College            -> /college/dashboard
+ *   Training Institute -> /training-institute/dashboard
+ *   School             -> /school/dashboard
+ *   Company            -> /company/dashboard
  */
 export function resolveDashboardRoute(
   backendRoute: any, 
   userRole?: string
 ): string {
-  // 1. If backend returned a valid portal route as a string, prefer it directly!
-  if (typeof backendRoute === 'string') {
-    const trimmed = backendRoute.trim();
-    if (trimmed === '/portal/student' || trimmed === '/student') {
-      return '/portal/parent';
-    }
-    if (trimmed.startsWith('/portal/')) {
-      return trimmed;
-    }
-    if (trimmed.startsWith('/') && !trimmed.startsWith('/auth/')) {
-      return trimmed;
-    }
+  let roleCandidate = userRole;
+  if (!roleCandidate && backendRoute && typeof backendRoute === 'object') {
+    roleCandidate = backendRoute.role;
   }
 
-  // 2. If backend returned an object with redirectUrl starting with /portal/
-  if (backendRoute && typeof backendRoute === 'object') {
-    if (typeof backendRoute.redirectUrl === 'string') {
-      if (backendRoute.redirectUrl === '/portal/student' || backendRoute.redirectUrl === '/student') {
-        return '/portal/parent';
-      }
-      if (backendRoute.redirectUrl.startsWith('/portal/')) {
-        return backendRoute.redirectUrl;
-      }
-    }
-    if (!userRole && typeof backendRoute.role === 'string') {
-      userRole = backendRoute.role;
-    }
-  }
-
-  // 3. Role-based fallback matching requirements
-  const normalized = (userRole || '').toLowerCase().trim().replace(/[-_ ]/g, '');
+  const normalized = (roleCandidate || '').toLowerCase().trim().replace(/[-_ ]/g, '');
   switch (normalized) {
-    case 'student':
-      return '/portal/parent';
     case 'parent':
-      return '/portal/parent';
+    case 'student':
+      return '/parent/dashboard';
     case 'mentor':
     case 'counselor':
-      return '/portal/mentor';
+      return '/mentor/dashboard';
     case 'recruiter':
     case 'talent':
     case 'hr':
-      return '/portal/recruiter';
+      return '/recruiter/dashboard';
     case 'companyadmin':
     case 'company':
     case 'enterprise':
-      return '/portal/company';
+      return '/company/dashboard';
     case 'school':
     case 'schooladmin':
-      return '/portal/school';
+      return '/school/dashboard';
     case 'college':
     case 'collegeadmin':
-      return '/portal/college';
+      return '/college/dashboard';
     case 'training':
     case 'traininginstitute':
-      return '/portal/training';
+      return '/training-institute/dashboard';
     case 'superadmin':
     case 'admin':
-      return '/portal/super-admin';
+      return '/super-admin/dashboard';
     default:
-      return userRole ? `/portal/${userRole.toLowerCase()}` : '/portal/parent';
+      if (typeof backendRoute === 'string' && backendRoute.startsWith('/') && !backendRoute.startsWith('/auth/')) {
+        return backendRoute;
+      }
+      return '/parent/dashboard';
   }
 }
 

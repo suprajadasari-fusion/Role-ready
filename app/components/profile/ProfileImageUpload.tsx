@@ -1,9 +1,10 @@
 import React, { useRef } from 'react';
-import { FiCamera, FiUpload, FiUser } from 'react-icons/fi';
+import { FiCamera, FiUser } from 'react-icons/fi';
 import { uploadProfileAttachment } from '../../lib/api';
 
 interface ProfileImageUploadProps {
-  avatarUrl: string;
+  avatarUrl?: string | null;
+  name?: string;
   isEditing: boolean;
   onPhotoChange: (newPhotoUrl: string) => void;
   isDarkMode?: boolean;
@@ -11,12 +12,21 @@ interface ProfileImageUploadProps {
 
 export const ProfileImageUpload: React.FC<ProfileImageUploadProps> = ({
   avatarUrl,
+  name,
   isEditing,
   onPhotoChange,
   isDarkMode = false
 }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isUploading, setIsUploading] = React.useState(false);
+
+  const initials = (name || 'RR')
+    .split(' ')
+    .filter(Boolean)
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase() || 'RR';
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -47,16 +57,27 @@ export const ProfileImageUpload: React.FC<ProfileImageUploadProps> = ({
   };
 
   return (
-    <div className="relative group inline-block">
-      <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl overflow-hidden border-4 border-white dark:border-slate-800 shadow-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center relative">
+    <div className="relative group inline-block shrink-0">
+      <div className={`w-24 h-24 sm:w-28 sm:h-28 rounded-2xl sm:rounded-3xl overflow-hidden ring-4 shadow-xl flex items-center justify-center relative transition-all duration-300 ${
+        isDarkMode ? 'ring-slate-900 bg-slate-800' : 'ring-white bg-slate-100'
+      }`}>
         {avatarUrl ? (
           <img 
             src={avatarUrl} 
-            alt="User Profile" 
+            alt={name || "User Profile"} 
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <FiUser className="w-12 h-12 text-slate-400" />
+          <div className="w-full h-full bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-800 text-white font-bold text-2xl sm:text-3xl flex items-center justify-center tracking-wider shadow-inner">
+            {initials}
+          </div>
+        )}
+
+        {/* Loading Spinner Overlay */}
+        {isUploading && (
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center">
+            <div className="w-7 h-7 border-3 border-white border-t-transparent rounded-full animate-spin" />
+          </div>
         )}
       </div>
 
@@ -72,10 +93,11 @@ export const ProfileImageUpload: React.FC<ProfileImageUploadProps> = ({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="absolute bottom-1 right-1 bg-blue-600 hover:bg-blue-500 text-white p-2.5 rounded-2xl shadow-lg transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer border-2 border-white dark:border-slate-800"
-            title="Change / Upload Photo"
+            className="absolute -bottom-1.5 -right-1.5 bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-xl shadow-lg transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer border-2 border-white dark:border-slate-900"
+            title="Upload or Change Photo"
+            aria-label="Upload or Change Photo"
           >
-            <FiCamera className="w-4 h-4" />
+            <FiCamera className="w-3.5 h-3.5" />
           </button>
         </>
       )}

@@ -967,7 +967,7 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
       {/* B. TAB CONTENT VIEWS */}
       
       {/* If no children exist and user is viewing child-specific tabs */}
-      {!selectedChild && ['attendance', 'academic', 'learning', 'career', 'career-reports', 'fees'].includes(activeSubView) && (
+      {!selectedChild && ['attendance', 'academic', 'learning', 'career', 'career-reports', 'fees', 'career-discovery', 'career-roadmap', 'assessments'].includes(activeSubView) && (
         <div className={`p-10 rounded-3xl border text-center ${
           isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-blue-100 text-slate-900'
         }`}>
@@ -1084,7 +1084,7 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
       )}
 
       {/* 2. MY CHILDREN TAB */}
-      {activeSubView === 'children' && (
+      {(activeSubView === 'children' || activeSubView === 'child') && (
         <div className={`p-6 rounded-3xl border ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-blue-100 shadow-sm'} space-y-6`}>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-700/40">
             <div>
@@ -1468,16 +1468,16 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
         </div>
       )}
 
-      {/* 5. CAREER PROGRESS TAB */}
-      {activeSubView === 'career' && selectedChild && (
+      {/* 5. CAREER DISCOVERY & DNA TAB */}
+      {(activeSubView === 'career' || activeSubView === 'career-discovery') && selectedChild && (
         <div className={`p-6 rounded-3xl border ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-blue-100 shadow-sm'} space-y-6`}>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-700/40">
             <div>
               <h3 className="text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2">
                 <FiCompass className="w-5 h-5 text-indigo-400" />
-                Career DNA & Psychometric Trajectory — {selectedChild.name}
+                AI Career Discovery & Psychometric Profile — {selectedChild.name}
               </h3>
-              <p className="text-[13px] md:text-[14px] text-slate-400 mt-1 leading-normal">Calculated via Holland RIASEC Hexagonal Cognitive Aptitude Assessment.</p>
+              <p className="text-[13px] md:text-[14px] text-slate-400 mt-1 leading-normal">Evaluated via Holland RIASEC Hexagonal Cognitive Aptitude Diagnostic & Skills Matrix.</p>
             </div>
             <span className="px-3 py-1 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[13px] font-semibold">
               Holland Code: {careerProgress?.riasecCode || "Pending"}
@@ -1487,7 +1487,7 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Holland Scores (6 Cols) */}
             <div className="lg:col-span-6 space-y-3">
-              <h4 className="text-[12px] font-semibold uppercase text-slate-400 tracking-wider">RIASEC Psychological Profile</h4>
+              <h4 className="text-[12px] font-semibold uppercase text-slate-400 tracking-wider">RIASEC Psychological Profile & Strengths</h4>
               {(careerProgress?.hollandScores?.length || 0) === 0 ? (
                 <div className="p-6 text-center border border-dashed border-slate-700 rounded-2xl text-[13px] text-slate-400">
                   RIASEC Holland Code assessment pending. When your student completes the diagnostic in their portal, live psychometric data will appear here.
@@ -1509,7 +1509,7 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
 
             {/* AI Career Pathways (6 Cols) */}
             <div className="lg:col-span-6 space-y-3">
-              <h4 className="text-[12px] font-semibold uppercase text-slate-400 tracking-wider">AI Neural Career Pathways</h4>
+              <h4 className="text-[12px] font-semibold uppercase text-slate-400 tracking-wider">Suggested Career Paths & Alignment</h4>
               {(careerProgress?.pathways?.length || 0) === 0 ? (
                 <div className="p-6 text-center border border-dashed border-slate-700 rounded-2xl text-[13px] text-slate-400">
                   Career pathways will generate once the student completes their career diagnostic.
@@ -1524,7 +1524,7 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
                       </span>
                     </div>
                     <p className="text-slate-400 text-[13px] leading-normal">{p.matchRationale}</p>
-                    <p className="text-blue-300 text-[13px] font-medium">Est. Salary: {p.salaryRange} • {p.growthOutlook}</p>
+                    <p className="text-blue-300 text-[13px] font-medium">Est. Compensation: {p.salaryRange} • {p.growthOutlook}</p>
                   </div>
                 ))
               )}
@@ -1533,8 +1533,68 @@ export const ParentDashboard: React.FC<ParentDashboardProps> = ({
         </div>
       )}
 
-      {/* 6. CAREER REPORTS TAB */}
-      {activeSubView === 'career-reports' && selectedChild && (
+      {/* 5B. CAREER ROADMAP TAB */}
+      {(activeSubView === 'career-roadmap' || activeSubView === 'roadmap') && selectedChild && (
+        <div className={`p-6 rounded-3xl border ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-blue-100 shadow-sm'} space-y-6`}>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-700/40">
+            <div>
+              <h3 className="text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2">
+                <FiTrendingUp className="w-5 h-5 text-emerald-400" />
+                Personalized Career Roadmap — {selectedChild.name}
+              </h3>
+              <p className="text-[13px] md:text-[14px] text-slate-400 mt-1 leading-normal">
+                Step-by-step milestone progression toward target career: <strong className="text-blue-400 font-semibold">{selectedChild.targetCareer || "Software & Technology"}</strong>
+              </p>
+            </div>
+            <span className="px-3.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[13px] font-semibold">
+              On Track • Milestone 2 of 5
+            </span>
+          </div>
+
+          {/* Stepper Timeline */}
+          <div className="space-y-4">
+            {[
+              { step: "Phase 1", title: "Secondary School Foundation (Grades 8 - 10)", status: "Completed", desc: "Solidify core mathematics, sciences, and introductory computing literacy. Maintain >85% GPA.", badge: "Completed" },
+              { step: "Phase 2", title: "Senior Secondary Stream & Electives (Grades 11 - 12)", status: "In Progress", desc: "Select STEM PCM stream. Build portfolio projects, prepare for competitive entrance examinations.", badge: "In Progress" },
+              { step: "Phase 3", title: "Undergraduate Degree & Specialized Track", status: "Upcoming", desc: "B.Tech Computer Science / AI / Data Systems from an accredited partner university.", badge: "Upcoming" },
+              { step: "Phase 4", title: "Industry Internships & Technical Certifications", status: "Upcoming", desc: "Cloud certifications (AWS/Azure), open-source contributions, and corporate summer internships.", badge: "Upcoming" },
+              { step: "Phase 5", title: "Career Placement & Professional Launch", status: "Upcoming", desc: "Full-time campus placement or lateral role placement with corporate recruiting partners.", badge: "Upcoming" }
+            ].map((milestone, idx) => (
+              <div key={idx} className={`p-4 rounded-2xl border flex items-start justify-between gap-4 ${
+                milestone.status === 'Completed'
+                  ? isDarkMode ? 'bg-emerald-950/20 border-emerald-500/30' : 'bg-emerald-50/60 border-emerald-200'
+                  : milestone.status === 'In Progress'
+                    ? isDarkMode ? 'bg-blue-950/20 border-blue-500/30 ring-1 ring-blue-500/30' : 'bg-blue-50/60 border-blue-200'
+                    : isDarkMode ? 'bg-slate-800/40 border-slate-700/60' : 'bg-slate-50 border-slate-200'
+              }`}>
+                <div className="flex items-start gap-3">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold shrink-0 mt-0.5 ${
+                    milestone.status === 'Completed' ? 'bg-emerald-500 text-white' :
+                    milestone.status === 'In Progress' ? 'bg-blue-600 text-white animate-pulse' : 'bg-slate-700 text-slate-300'
+                  }`}>
+                    {idx + 1}
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{milestone.step}</span>
+                    <h4 className="text-[16px] font-semibold text-slate-100">{milestone.title}</h4>
+                    <p className="text-[13px] text-slate-400 mt-1 leading-normal">{milestone.desc}</p>
+                  </div>
+                </div>
+                <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold shrink-0 ${
+                  milestone.status === 'Completed' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                  milestone.status === 'In Progress' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                  'bg-slate-700/40 text-slate-400 border border-slate-600/30'
+                }`}>
+                  {milestone.badge}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 6. ASSESSMENTS & CAREER REPORTS TAB */}
+      {(activeSubView === 'career-reports' || activeSubView === 'assessments') && selectedChild && (
         <div className={`p-6 rounded-3xl border ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-blue-100 shadow-sm'} space-y-6`}>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-700/40">
             <div>

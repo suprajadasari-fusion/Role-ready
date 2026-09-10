@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { RoleType } from '../lib/types';
-import { logoutUser } from '../lib/api';
+import { logoutUser, getCachedUser } from '../lib/api';
+import { useCurrentUser } from '../hooks/useUser';
 import { 
   FiCompass, 
   FiShield, 
@@ -13,7 +14,6 @@ import {
   FiSliders, 
   FiCpu, 
   FiCheckSquare, 
-  FiPieChart, 
   FiCalendar, 
   FiFileText, 
   FiVideo, 
@@ -22,10 +22,13 @@ import {
   FiTrendingUp,
   FiLogOut,
   FiStar,
-  FiCreditCard,
   FiSearch,
   FiActivity,
-  FiUser
+  FiUser,
+  FiPlus,
+  FiChevronUp,
+  FiEdit2,
+  FiX
 } from 'react-icons/fi';
 
 interface SidebarProps {
@@ -36,6 +39,8 @@ interface SidebarProps {
   onRoleFilter: (role: string) => void;
   totalEntities: number;
   isDarkMode: boolean;
+  isMobileOpen?: boolean;
+  onCloseMobile?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -45,220 +50,444 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onViewChange,
   onRoleFilter,
   totalEntities,
-  isDarkMode
+  isDarkMode,
+  isMobileOpen = false,
+  onCloseMobile
 }) => {
-
-
+  // Navigation items per role (Profile is placed exclusively at the bottom of the sidebar)
   const roleNavItems: Record<RoleType, Array<{ id: string; label: string; icon: any; section?: string }>> = {
-    'super-admin': [
-      { id: 'overview', label: 'Dashboard Overview', icon: FiGrid },
-      { id: 'access', label: 'Access Provisioning', icon: FiShield },
-      { id: 'rbac', label: 'Permission Matrix', icon: FiSliders },
-      { id: 'ai', label: 'AI Engine Control', icon: FiCpu },
-      { id: 'audit', label: 'Audit & Compliance', icon: FiCheckSquare }
-    ],
-    'school': [
-      { id: 'overview', label: 'Dashboard', icon: FiGrid },
-      { id: 'students', label: 'Students', icon: FiUsers },
-      { id: 'teachers', label: 'Teachers', icon: FiUsers },
-      { id: 'assessments', label: 'Assessments & Readiness', icon: FiCheckSquare },
-      { id: 'reports', label: 'Career Reports', icon: FiFileText },
-      { id: 'events', label: 'Events & Video Sessions', icon: FiVideo },
-      { id: 'analytics', label: 'Student Analytics', icon: FiTrendingUp },
-      { id: 'performance', label: 'Performance Dashboard', icon: FiCpu },
-      { id: 'placement', label: 'Placement Reports', icon: FiBriefcase },
-      { id: 'notifications', label: 'Notifications', icon: FiBell },
-      { id: 'settings', label: 'Settings', icon: FiSliders }
-    ],
-    'college': [
-      { id: 'overview', label: 'Dashboard', icon: FiGrid },
-      { id: 'programs', label: 'Programs', icon: FiBookOpen },
-      { id: 'admissions', label: 'Admissions', icon: FiUserCheck },
-      { id: 'applications', label: 'Applications', icon: FiFileText },
-      { id: 'scholarships', label: 'Scholarships', icon: FiAward },
-      { id: 'placement-cell', label: 'Placement Cell', icon: FiBriefcase },
-      { id: 'industry-connect', label: 'Industry Connect', icon: FiUsers },
-      { id: 'analytics', label: 'Analytics', icon: FiTrendingUp },
+    'parent': [
+      { id: 'dashboard', label: 'Dashboard', icon: FiGrid },
+      { id: 'child', label: 'My Child', icon: FiUsers },
+      { id: 'academic', label: 'Academic Progress', icon: FiBookOpen },
+      { id: 'assessments', label: 'Assessments', icon: FiCheckSquare },
+      { id: 'career-discovery', label: 'Career Discovery', icon: FiCompass },
+      { id: 'career-roadmap', label: 'Career Roadmap', icon: FiTrendingUp },
+      { id: 'colleges', label: 'Colleges', icon: FiAward },
+      { id: 'scholarships', label: 'Scholarships', icon: FiDollarSign },
+      { id: 'learning', label: 'Learning', icon: FiActivity },
       { id: 'notifications', label: 'Notifications', icon: FiBell },
       { id: 'settings', label: 'Settings', icon: FiSliders }
     ],
     'mentor': [
-      { id: 'overview', label: 'Dashboard', icon: FiGrid },
-      { id: 'skills', label: 'Skills & Expertise', icon: FiCpu },
-      { id: 'availability', label: 'Availability & Calendar', icon: FiCalendar },
-      { id: 'student-requests', label: 'Student Requests', icon: FiUsers },
-      { id: 'video-sessions', label: 'Video Sessions', icon: FiVideo },
-      { id: 'guidance', label: 'Assessments & Guidance', icon: FiCompass },
-      { id: 'ratings', label: 'Ratings & Reviews', icon: FiStar },
-      { id: 'wallet', label: 'Wallet & Payouts', icon: FiCreditCard },
+      { id: 'dashboard', label: 'Dashboard', icon: FiGrid },
+      { id: 'students', label: 'Students', icon: FiUsers },
+      { id: 'progress', label: 'Student Progress', icon: FiTrendingUp },
+      { id: 'sessions', label: 'Mentorship Sessions', icon: FiVideo },
+      { id: 'guidance', label: 'Career Guidance', icon: FiCompass },
+      { id: 'assessments', label: 'Assessments', icon: FiCheckSquare },
+      { id: 'recommendations', label: 'Recommendations', icon: FiAward },
+      { id: 'messages', label: 'Messages', icon: FiFileText },
+      { id: 'notifications', label: 'Notifications', icon: FiBell },
+      { id: 'settings', label: 'Settings', icon: FiSliders }
+    ],
+    'recruiter': [
+      { id: 'dashboard', label: 'Dashboard', icon: FiGrid },
+      { id: 'jobs', label: 'Jobs', icon: FiBriefcase },
+      { id: 'create-job', label: 'Create Job', icon: FiPlus },
+      { id: 'applications', label: 'Applications', icon: FiFileText },
+      { id: 'candidates', label: 'Candidates', icon: FiSearch },
+      { id: 'shortlisted', label: 'Shortlisted', icon: FiStar },
+      { id: 'interviews', label: 'Interviews', icon: FiCalendar },
+      { id: 'selected', label: 'Selected Candidates', icon: FiCheckSquare },
+      { id: 'messages', label: 'Messages', icon: FiFileText },
+      { id: 'notifications', label: 'Notifications', icon: FiBell },
+      { id: 'settings', label: 'Settings', icon: FiSliders }
+    ],
+    'super-admin': [
+      { id: 'dashboard', label: 'Dashboard', icon: FiGrid },
+      { id: 'users', label: 'User Management', icon: FiUsers },
+      { id: 'parents', label: 'Parent Management', icon: FiUsers },
+      { id: 'mentors', label: 'Mentor Management', icon: FiUserCheck },
+      { id: 'recruiters', label: 'Recruiter Management', icon: FiBriefcase },
+      { id: 'schools', label: 'School Management', icon: FiBookOpen },
+      { id: 'colleges', label: 'College Management', icon: FiAward },
+      { id: 'training-institutes', label: 'Training Institute Management', icon: FiCpu },
+      { id: 'companies', label: 'Company Management', icon: FiGrid },
+      { id: 'approvals', label: 'Approvals', icon: FiCheckSquare },
+      { id: 'reports', label: 'Reports', icon: FiFileText },
+      { id: 'analytics', label: 'Analytics', icon: FiTrendingUp },
+      { id: 'notifications', label: 'Notifications', icon: FiBell },
+      { id: 'settings', label: 'System Settings', icon: FiSliders }
+    ],
+    'college': [
+      { id: 'dashboard', label: 'Dashboard', icon: FiGrid },
+      { id: 'students', label: 'Students', icon: FiUsers },
+      { id: 'courses', label: 'Courses', icon: FiBookOpen },
+      { id: 'departments', label: 'Departments', icon: FiGrid },
+      { id: 'placements', label: 'Placements', icon: FiAward },
+      { id: 'jobs', label: 'Jobs', icon: FiBriefcase },
+      { id: 'applications', label: 'Applications', icon: FiFileText },
+      { id: 'events', label: 'Events', icon: FiCalendar },
+      { id: 'reports', label: 'Reports', icon: FiFileText },
       { id: 'notifications', label: 'Notifications', icon: FiBell },
       { id: 'settings', label: 'Settings', icon: FiSliders }
     ],
     'training': [
-      { id: 'overview', label: 'Institute Overview', icon: FiGrid },
-      { id: 'courses', label: 'Skill Courses Track', icon: FiBookOpen },
-      { id: 'certs', label: 'Certifications Registry', icon: FiAward },
-      { id: 'hiring', label: 'Hiring Partners', icon: FiBriefcase }
+      { id: 'dashboard', label: 'Dashboard', icon: FiGrid },
+      { id: 'courses', label: 'Courses', icon: FiBookOpen },
+      { id: 'batches', label: 'Batches', icon: FiCalendar },
+      { id: 'learners', label: 'Students/Learners', icon: FiUsers },
+      { id: 'trainers', label: 'Trainers', icon: FiUserCheck },
+      { id: 'enrollments', label: 'Enrollments', icon: FiFileText },
+      { id: 'attendance', label: 'Attendance', icon: FiCheckSquare },
+      { id: 'progress', label: 'Progress', icon: FiTrendingUp },
+      { id: 'certificates', label: 'Certificates', icon: FiAward },
+      { id: 'reports', label: 'Reports', icon: FiFileText },
+      { id: 'notifications', label: 'Notifications', icon: FiBell },
+      { id: 'settings', label: 'Settings', icon: FiSliders }
     ],
-    'recruiter': [
-      { id: 'overview', label: 'Dashboard', icon: FiGrid },
-      { id: 'verification', label: 'Company & Verification', icon: FiGrid },
-      { id: 'jobs', label: 'Job Postings', icon: FiFileText },
-      { id: 'campus-hiring', label: 'Campus Hiring', icon: FiAward },
-      { id: 'student-search', label: 'Student Search', icon: FiSearch },
-      { id: 'ai-match', label: 'AI Matcher', icon: FiCpu },
-      { id: 'interviews', label: 'Interviews', icon: FiCalendar },
-      { id: 'offers', label: 'Offer Letters', icon: FiAward },
-      { id: 'hiring-analytics', label: 'Hiring Analytics', icon: FiTrendingUp },
+    'school': [
+      { id: 'dashboard', label: 'Dashboard', icon: FiGrid },
+      { id: 'students', label: 'Students', icon: FiUsers },
+      { id: 'parents', label: 'Parents', icon: FiUsers },
+      { id: 'teachers', label: 'Teachers/Mentors', icon: FiUserCheck },
+      { id: 'classes', label: 'Classes', icon: FiBookOpen },
+      { id: 'assessments', label: 'Assessments', icon: FiCheckSquare },
+      { id: 'progress', label: 'Student Progress', icon: FiTrendingUp },
+      { id: 'guidance', label: 'Career Guidance', icon: FiCompass },
+      { id: 'reports', label: 'Reports', icon: FiFileText },
       { id: 'notifications', label: 'Notifications', icon: FiBell },
       { id: 'settings', label: 'Settings', icon: FiSliders }
     ],
     'company': [
-      { id: 'overview', label: 'Company Overview', icon: FiGrid },
-      { id: 'internships', label: 'Internship Programs', icon: FiBriefcase },
-      { id: 'partnerships', label: 'Campus Partnerships', icon: FiAward },
-      { id: 'pipeline', label: 'Talent Pipeline', icon: FiPieChart }
-    ],
-    'parent': [
-      { id: 'overview', label: 'Dashboard', icon: FiGrid },
-      { id: 'children', label: 'My Children', icon: FiUsers },
-      { id: 'accounts', label: 'Family Accounts', icon: FiShield },
-      { id: 'attendance', label: 'Attendance', icon: FiCalendar, section: 'Academic' },
-      { id: 'academic', label: 'Academic Performance', icon: FiBookOpen },
-      { id: 'learning', label: 'Learning Progress', icon: FiActivity },
-      { id: 'career', label: 'Career Progress', icon: FiTrendingUp, section: 'Career' },
-      { id: 'career-reports', label: 'Career Reports', icon: FiFileText },
-      { id: 'scholarships', label: 'Scholarships', icon: FiAward, section: 'Opportunities' },
-      { id: 'mentors', label: 'Mentor Booking', icon: FiUserCheck, section: 'Communication' },
+      { id: 'dashboard', label: 'Dashboard', icon: FiGrid },
+      { id: 'jobs', label: 'Jobs', icon: FiBriefcase },
+      { id: 'candidates', label: 'Candidates', icon: FiSearch },
+      { id: 'applications', label: 'Applications', icon: FiFileText },
+      { id: 'interviews', label: 'Interviews', icon: FiCalendar },
+      { id: 'employees', label: 'Employees', icon: FiUsers },
+      { id: 'recruitment', label: 'Recruitment', icon: FiTrendingUp },
+      { id: 'reports', label: 'Reports', icon: FiFileText },
+      { id: 'messages', label: 'Messages', icon: FiFileText },
       { id: 'notifications', label: 'Notifications', icon: FiBell },
-      { id: 'subscription', label: 'Subscription Plans', icon: FiCreditCard, section: 'Subscription' },
-      { id: 'settings', label: 'Settings', icon: FiSliders, section: 'Settings' }
+      { id: 'settings', label: 'Settings', icon: FiSliders }
     ]
+  };
+
+  const roleDisplayTitles: Record<RoleType, string> = {
+    'parent': 'Parent Workspace',
+    'mentor': 'Mentor Workspace',
+    'recruiter': 'Recruiter Workspace',
+    'super-admin': 'Super Admin Portal',
+    'college': 'College Workspace',
+    'training': 'Training Institute',
+    'school': 'School Workspace',
+    'company': 'Company Workspace'
+  };
+
+  const roleBadgeTitles: Record<RoleType, string> = {
+    'parent': 'Parent Account',
+    'mentor': 'Career Mentor',
+    'recruiter': 'Recruiter / Talent',
+    'super-admin': 'Super Administrator',
+    'college': 'College Admin',
+    'training': 'Training Institute',
+    'school': 'School Admin',
+    'company': 'Company Admin'
   };
 
   const navItems = roleNavItems[currentWorkspace] || roleNavItems['super-admin'];
 
+  // Dynamic user data resolution from live API / cached session
+  const { data: currentUser } = useCurrentUser();
+  const cachedUser = typeof window !== 'undefined' ? getCachedUser() : null;
+  const user = currentUser || cachedUser;
+
+  const firstName = user?.profile?.firstName || user?.firstName;
+  const lastName = user?.profile?.lastName || user?.lastName;
+  const fullName = firstName && lastName ? `${firstName} ${lastName}` : (firstName || lastName);
+
+  const orgName = 
+    user?.profile?.roleData?.institutionName ||
+    user?.profile?.roleData?.companyName ||
+    user?.profile?.roleData?.schoolName ||
+    user?.profile?.roleData?.collegeName ||
+    user?.profile?.roleData?.organizationName ||
+    user?.institutionName ||
+    user?.companyName ||
+    user?.schoolName ||
+    user?.collegeName;
+
+  const displayName = orgName || fullName || user?.name || (user?.email ? user.email.split('@')[0] : 'User Account');
+  const userRoleDisplay = roleBadgeTitles[currentWorkspace] || (user?.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1).toLowerCase()) : 'Member');
+  const userAvatar = user?.avatarUrl || user?.profile?.avatarUrl;
+
+  const initials = (displayName || 'RR')
+    .split(' ')
+    .filter(Boolean)
+    .map((w: string) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase() || 'RR';
+
+  // Popover state for bottom profile section
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const profileSectionRef = useRef<HTMLDivElement>(null);
+
+  // Close popover on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileSectionRef.current && !profileSectionRef.current.contains(event.target as Node)) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    if (isProfileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isProfileMenuOpen]);
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } catch {
+      // Clean up local tokens
+    } finally {
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+    }
+  };
+
   return (
-    <aside className={`w-72 min-h-screen flex flex-col fixed top-0 bottom-0 left-0 z-40 shadow-xl border-r font-sans transition-colors duration-200 ${
-      isDarkMode 
-        ? 'bg-slate-900 border-slate-800 text-white' 
-        : 'bg-white border-blue-100 text-slate-900'
-    }`}>
-      {/* Brand Header */}
-      <div className={`p-5 flex items-center gap-3.5 border-b ${
-        isDarkMode ? 'border-slate-800 bg-slate-950/60' : 'border-blue-100 bg-blue-50/40'
+    <>
+      {/* Mobile Drawer Backdrop Overlay */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden animate-fade-in"
+          onClick={onCloseMobile}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Main Left Sidebar */}
+      <aside className={`w-72 h-screen flex flex-col fixed top-0 bottom-0 left-0 z-50 shadow-xl border-r font-sans transition-transform duration-300 md:translate-x-0 ${
+        isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      } ${
+        isDarkMode 
+          ? 'bg-slate-900 border-slate-800 text-white' 
+          : 'bg-white border-blue-100 text-slate-900'
       }`}>
-        <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-          <FiCompass className="w-6 h-6 animate-pulse-glow" />
-        </div>
-        <div>
-          <h2 className={`font-bold text-xl tracking-tight font-sans ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-            Role Ready
-          </h2>
-          <span className="inline-block text-[12px] font-medium bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-md border border-blue-400/20">
-            {currentWorkspace === 'super-admin' ? 'Super Admin Portal' : `${currentWorkspace.charAt(0).toUpperCase() + currentWorkspace.slice(1)} Workspace`}
-          </span>
-        </div>
-      </div>
-
-      {/* Dynamic Nav Items */}
-      <nav className="flex-1 overflow-y-auto p-3 flex flex-col justify-between">
-        <div>
-          <div className="space-y-1">
-            {navItems
-              .filter((item) => item.id !== 'profile')
-              .map((item) => {
-                const Icon = item.icon;
-                const isActive = activeView === item.id;
-                return (
-                  <React.Fragment key={item.id}>
-                    {item.section && (
-                      <div className={`pt-3.5 pb-1 px-3 text-[12px] font-semibold uppercase tracking-wider ${
-                        isDarkMode ? 'text-slate-400' : 'text-slate-500'
-                      }`}>
-                        {item.section}
-                      </div>
-                    )}
-                    <button
-                      onClick={() => onViewChange(item.id)}
-                      className={`w-full flex items-center justify-between min-h-[42px] px-3.5 py-2.5 rounded-xl text-[15px] font-medium leading-[1.5] transition-colors duration-150 cursor-pointer border ${
-                        isActive 
-                          ? 'bg-[#12163A] text-white shadow-md border-[#3665EE]/40' 
-                          : isDarkMode
-                            ? 'border-transparent text-slate-300 hover:bg-[#12163A]/60 hover:text-white'
-                            : 'border-transparent text-[#4B5563] hover:bg-[#DEE9FF]/60 hover:text-[#12163A]'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
-                        <Icon className={`w-4.5 h-4.5 shrink-0 transition-colors duration-150 ${
-                          isActive ? 'text-[#3665EE]' : 'text-[#94A3B8]'
-                        }`} />
-                        <span className="truncate whitespace-nowrap text-left">{item.label}</span>
-                      </div>
-                      {item.id === 'access' && (
-                        <span className="bg-[#3665EE]/20 text-[#3665EE] text-[12px] px-2 py-0.5 rounded-full font-semibold ml-2 shrink-0">
-                          {totalEntities}
-                        </span>
-                      )}
-                      {item.id === 'ai' && (
-                        <span className="bg-[#E4F4EC] text-[#12163A] text-[12px] px-2 py-0.5 rounded-full font-semibold ml-2 shrink-0">Live</span>
-                      )}
-                    </button>
-                  </React.Fragment>
-                );
-              })}
-          </div>
-        </div>
-
-        {/* Profile Navigation Item (Always at the bottom of navigation) */}
-        <div className="mt-auto pt-2">
-          <button
-            onClick={() => onViewChange('profile')}
-            className={`w-full flex items-center justify-between min-h-[42px] px-3.5 py-2.5 rounded-xl text-[15px] font-medium leading-[1.5] transition-colors duration-150 cursor-pointer border ${
-              activeView === 'profile'
-                ? 'bg-[#12163A] text-white shadow-md border-[#3665EE]/40' 
-                : isDarkMode
-                  ? 'border-transparent text-slate-300 hover:bg-[#12163A]/60 hover:text-white'
-                  : 'border-transparent text-[#4B5563] hover:bg-[#DEE9FF]/60 hover:text-[#12163A]'
-            }`}
-          >
-            <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
-              <FiUser className={`w-4.5 h-4.5 shrink-0 transition-colors duration-150 ${
-                activeView === 'profile' ? 'text-[#3665EE]' : 'text-[#94A3B8]'
-              }`} />
-              <span className="truncate whitespace-nowrap text-left">Profile</span>
+        {/* Brand Header */}
+        <div className={`p-5 flex items-center justify-between border-b shrink-0 ${
+          isDarkMode ? 'border-slate-800 bg-slate-950/60' : 'border-blue-100 bg-blue-50/40'
+        }`}>
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 shrink-0">
+              <FiCompass className="w-6 h-6 animate-pulse-glow" />
             </div>
-          </button>
-        </div>
-      </nav>
+            <div className="min-w-0">
+              <h2 className={`font-bold text-xl tracking-tight font-sans truncate ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                Role Ready
+              </h2>
+              <span className="inline-block text-[12px] font-medium bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-md border border-blue-400/20 truncate max-w-[160px]">
+                {roleDisplayTitles[currentWorkspace] || 'Workspace Portal'}
+              </span>
+            </div>
+          </div>
 
-      {/* Log Out Footer */}
-      <div className={`p-3 border-t shrink-0 ${
-        isDarkMode ? 'border-slate-800 bg-slate-950/60' : 'border-blue-100 bg-blue-50/40'
-      }`}>
-        {/* Prominent Log Out Button */}
-        <button
-          onClick={async () => {
-            try {
-              await logoutUser();
-            } catch {
-              // Ignore
-            } finally {
-              if (typeof window !== 'undefined') {
-                window.location.href = '/login';
-              }
-            }
-          }}
-          className={`w-full flex items-center justify-center min-h-[40px] gap-2 py-2 px-3.5 rounded-xl text-[14px] font-semibold transition-colors duration-150 cursor-pointer border ${
-            isDarkMode
-              ? 'bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 shadow-xs'
-              : 'bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100 hover:border-rose-300 shadow-xs'
+          {/* Mobile Drawer Close Button */}
+          {onCloseMobile && (
+            <button
+              onClick={onCloseMobile}
+              className="md:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer"
+              aria-label="Close sidebar"
+            >
+              <FiX className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+
+        {/* Independently Scrollable Navigation Menu */}
+        <nav className="flex-1 overflow-y-auto p-3 space-y-1 scrollbar-thin">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = (item.id === 'dashboard' || item.id === 'overview')
+              ? (activeView === 'dashboard' || activeView === 'overview' || !activeView)
+              : (activeView === item.id || (item.id === 'child' && activeView === 'children'));
+
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  onViewChange(item.id);
+                  if (onCloseMobile) onCloseMobile();
+                }}
+                className={`w-full flex items-center justify-between min-h-[40px] px-3.5 py-2 rounded-xl text-[14px] font-medium transition-colors duration-150 cursor-pointer border ${
+                  isActive 
+                    ? 'bg-[#12163A] text-white shadow-md border-[#3665EE]/40' 
+                    : isDarkMode
+                      ? 'border-transparent text-slate-300 hover:bg-[#12163A]/60 hover:text-white'
+                      : 'border-transparent text-[#4B5563] hover:bg-[#DEE9FF]/60 hover:text-[#12163A]'
+                }`}
+              >
+                <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+                  <Icon className={`w-4 h-4 shrink-0 transition-colors duration-150 ${
+                    isActive ? 'text-[#3665EE]' : 'text-[#94A3B8]'
+                  }`} />
+                  <span className="truncate whitespace-nowrap text-left">{item.label}</span>
+                </div>
+                {item.id === 'users' && currentWorkspace === 'super-admin' && (
+                  <span className="bg-[#3665EE]/20 text-[#3665EE] text-[11px] px-2 py-0.5 rounded-full font-semibold ml-2 shrink-0">
+                    {totalEntities}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Fixed / Sticky Profile Section at Bottom of Left Sidebar */}
+        <div 
+          ref={profileSectionRef}
+          className={`p-3 border-t shrink-0 relative ${
+            isDarkMode ? 'border-slate-800 bg-slate-950/70' : 'border-blue-100 bg-blue-50/50'
           }`}
         >
-          <FiLogOut className="w-4 h-4" />
-          <span>Log Out</span>
-        </button>
-      </div>
-    </aside>
+          {/* Upward Popover Menu */}
+          {isProfileMenuOpen && (
+            <div 
+              className={`absolute bottom-full left-3 right-3 mb-2 p-2 rounded-2xl shadow-2xl border transition-all duration-200 z-50 animate-fade-in ${
+                isDarkMode 
+                  ? 'bg-slate-900 border-slate-700 text-white' 
+                  : 'bg-white border-blue-200 text-slate-800'
+              }`}
+            >
+              {/* Signed In User Summary Header */}
+              <div className={`px-3 py-2.5 border-b mb-1.5 text-left ${isDarkMode ? 'border-slate-800' : 'border-blue-50'}`}>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-blue-500">Authenticated Account</p>
+                <p className={`text-[13.5px] font-bold truncate mt-0.5 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{displayName}</p>
+                <p className="text-[11px] text-slate-400 truncate">{user?.email || 'Active Session'}</p>
+              </div>
+
+              {/* View Profile */}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsProfileMenuOpen(false);
+                  onViewChange('profile');
+                  if (onCloseMobile) onCloseMobile();
+                }}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
+                  isDarkMode ? 'hover:bg-slate-800 text-slate-200 hover:text-white' : 'hover:bg-blue-50 text-slate-700 hover:text-blue-700'
+                }`}
+              >
+                <FiUser className="w-4 h-4 text-blue-500 shrink-0" />
+                <span>View Profile</span>
+              </button>
+
+              {/* Edit Profile */}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsProfileMenuOpen(false);
+                  onViewChange('profile');
+                  if (onCloseMobile) onCloseMobile();
+                }}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
+                  isDarkMode ? 'hover:bg-slate-800 text-slate-200 hover:text-white' : 'hover:bg-blue-50 text-slate-700 hover:text-blue-700'
+                }`}
+              >
+                <FiEdit2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                <span>Edit Profile</span>
+              </button>
+
+              {/* Account Settings */}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsProfileMenuOpen(false);
+                  onViewChange('settings');
+                  if (onCloseMobile) onCloseMobile();
+                }}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
+                  isDarkMode ? 'hover:bg-slate-800 text-slate-200 hover:text-white' : 'hover:bg-blue-50 text-slate-700 hover:text-blue-700'
+                }`}
+              >
+                <FiSliders className="w-4 h-4 text-purple-500 shrink-0" />
+                <span>Account Settings</span>
+              </button>
+
+              {/* Divider */}
+              <div className={`h-px my-1.5 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`} />
+
+              {/* Popover Logout Option */}
+              <button
+                type="button"
+                onClick={handleLogout}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
+                  isDarkMode ? 'hover:bg-rose-500/20 text-rose-400' : 'hover:bg-rose-50 text-rose-600'
+                }`}
+              >
+                <FiLogOut className="w-4 h-4 shrink-0" />
+                <span>Logout</span>
+              </button>
+            </div>
+          )}
+
+          {/* Profile Clickable Box */}
+          <button
+            type="button"
+            onClick={() => setIsProfileMenuOpen(prev => !prev)}
+            className={`w-full flex items-center justify-between p-2.5 rounded-xl border transition-all duration-150 cursor-pointer text-left ${
+              isProfileMenuOpen
+                ? (isDarkMode ? 'bg-slate-800 border-blue-500/50 shadow-md' : 'bg-blue-50 border-blue-300 shadow-sm')
+                : (isDarkMode ? 'bg-slate-900/90 border-slate-800 hover:bg-slate-800/60 hover:border-slate-700' : 'bg-white border-blue-100 hover:bg-blue-50/60 hover:border-blue-200')
+            }`}
+            aria-expanded={isProfileMenuOpen}
+            aria-haspopup="true"
+          >
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              {/* User Avatar / Initials */}
+              {userAvatar ? (
+                <img
+                  src={userAvatar}
+                  alt={displayName}
+                  className="w-9 h-9 rounded-xl object-cover ring-1 ring-blue-500/30 shrink-0"
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-bold flex items-center justify-center text-xs shadow-md ring-1 ring-blue-500/30 shrink-0">
+                  {initials}
+                </div>
+              )}
+
+              {/* User Name & Role */}
+              <div className="min-w-0 flex-1">
+                <div className={`text-[13px] font-semibold leading-tight truncate ${isDarkMode ? 'text-white' : 'text-slate-900'}`} title={displayName}>
+                  {displayName}
+                </div>
+                <div className="text-[11.5px] font-medium text-blue-500 dark:text-blue-400 truncate mt-0.5" title={userRoleDisplay}>
+                  {userRoleDisplay}
+                </div>
+              </div>
+            </div>
+
+            {/* Dropdown Chevron Indicator */}
+            <FiChevronUp 
+              className={`w-4 h-4 text-slate-400 shrink-0 ml-1.5 transition-transform duration-200 ${
+                isProfileMenuOpen ? 'rotate-180 text-blue-500' : ''
+              }`} 
+            />
+          </button>
+
+          {/* Dedicated Log Out Button Below Profile Box */}
+          <button
+            type="button"
+            onClick={handleLogout}
+            className={`w-full mt-2 flex items-center justify-center min-h-[38px] gap-2 py-2 px-3.5 rounded-xl text-[13.5px] font-semibold transition-colors duration-150 cursor-pointer border ${
+              isDarkMode
+                ? 'bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 shadow-xs'
+                : 'bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100 hover:border-rose-300 shadow-xs'
+            }`}
+          >
+            <FiLogOut className="w-4 h-4" />
+            <span>Log Out</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 };

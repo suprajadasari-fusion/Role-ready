@@ -25,7 +25,8 @@ import {
   FiAlertCircle, 
   FiUserCheck,
   FiEdit2,
-  FiVideo
+  FiVideo,
+  FiCompass
 } from 'react-icons/fi';
 import { ActionModal } from '../ActionModal';
 import { VideoCallModal } from '../VideoCallModal';
@@ -111,6 +112,31 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
   });
 
   const [teachersList, setTeachersList] = useState<any[]>([]);
+
+  const [parentsList, setParentsList] = useState<any[]>([
+    { id: 'PAR-101', parentName: 'Mr. Arvind Sharma', studentName: 'Aarav Sharma', grade: 'Grade 10-A', phone: '+91 98765 43210', email: 'arvind.sharma@example.com', status: 'Active App User', lastActive: 'Today' },
+    { id: 'PAR-102', parentName: 'Mrs. Sunita Patel', studentName: 'Diya Patel', grade: 'Grade 11-PCM', phone: '+91 98765 43211', email: 'sunita.patel@example.com', status: 'Active App User', lastActive: 'Yesterday' },
+    { id: 'PAR-103', parentName: 'Dr. Mohan Iyer', studentName: 'Rohan Iyer', grade: 'Grade 12-Commerce', phone: '+91 98765 43212', email: 'mohan.iyer@example.com', status: 'Pending Verification', lastActive: '3 days ago' },
+    { id: 'PAR-104', parentName: 'Mrs. Kavita Gupta', studentName: 'Ananya Gupta', grade: 'Grade 9-B', phone: '+91 98765 43213', email: 'kavita.gupta@example.com', status: 'Active App User', lastActive: 'Today' },
+    { id: 'PAR-105', parentName: 'Mr. Rajesh Verma', studentName: 'Siddharth Verma', grade: 'Grade 10-B', phone: '+91 98765 43214', email: 'rajesh.verma@example.com', status: 'Active App User', lastActive: '5 days ago' }
+  ]);
+
+  const [classesList, setClassesList] = useState<any[]>([
+    { id: 'CLS-08A', grade: 'Grade 8', section: 'Section A', classTeacher: 'Mrs. Suman Rao', studentsCount: 38, room: 'Room 101, Junior Wing', stream: 'General Foundation', avgScore: 84 },
+    { id: 'CLS-09A', grade: 'Grade 9', section: 'Section A', classTeacher: 'Mr. Devendra Mishra', studentsCount: 42, room: 'Room 202, Middle Wing', stream: 'General Foundation', avgScore: 86 },
+    { id: 'CLS-09B', grade: 'Grade 9', section: 'Section B', classTeacher: 'Ms. Neha Kapoor', studentsCount: 40, room: 'Room 203, Middle Wing', stream: 'General Foundation', avgScore: 82 },
+    { id: 'CLS-10A', grade: 'Grade 10', section: 'Section A', classTeacher: 'Dr. Rajesh Verma', studentsCount: 45, room: 'Room 301, Senior Wing', stream: 'Board Exam Preparation', avgScore: 91 },
+    { id: 'CLS-10B', grade: 'Grade 10', section: 'Section B', classTeacher: 'Mrs. Meenakshi Sundaram', studentsCount: 44, room: 'Room 302, Senior Wing', stream: 'Board Exam Preparation', avgScore: 88 },
+    { id: 'CLS-11S', grade: 'Grade 11', section: 'Science (PCM/PCB)', classTeacher: 'Mr. Vikram Sen', studentsCount: 50, room: 'Science Block Lab 1', stream: 'Pure Sciences & STEM', avgScore: 92 },
+    { id: 'CLS-11C', grade: 'Grade 11', section: 'Commerce & Economics', classTeacher: 'Mrs. Pooja Bansal', studentsCount: 36, room: 'Room 401, Senior Wing', stream: 'Commerce & Finance', avgScore: 87 },
+    { id: 'CLS-12S', grade: 'Grade 12', section: 'Science (PCM/PCB)', classTeacher: 'Dr. Ananya Roy', studentsCount: 48, room: 'Science Block Lab 2', stream: 'Higher Secondary STEM', avgScore: 94 }
+  ]);
+
+  const [guidanceSessions, setGuidanceSessions] = useState<any[]>([
+    { id: 'GUD-01', title: 'Stream Selection Advisory (PCM vs PCB vs Commerce)', grade: 'Grade 10 Students & Parents', counselor: 'Dr. Rajesh Verma', date: 'March 15, 2026', time: '10:30 AM', venue: 'School Main Auditorium', registered: '165 Registered' },
+    { id: 'GUD-02', title: 'Top Engineering & Medical Entrance Prep Strategy', grade: 'Grades 11 & 12 Science', counselor: 'Prof. Ramesh Sundaram', date: 'March 22, 2026', time: '02:00 PM', venue: 'Virtual Conference Room', registered: '98 Registered' },
+    { id: 'GUD-03', title: 'Liberal Arts, Design & Economics Career Pathways', grade: 'Grades 10 - 12', counselor: 'Ms. Neha Kapoor', date: 'March 28, 2026', time: '11:00 AM', venue: 'Seminar Hall 2', registered: '74 Registered' }
+  ]);
 
   const cardClass = isDarkMode
     ? 'bg-slate-900 border-slate-800 text-white shadow-xl'
@@ -201,6 +227,45 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
       setTeachersList(updated);
       updateMutation.mutate({ teachers: updated });
       onShowToast(`Successfully added teacher: ${newTch.name}!`);
+    } else if (actionModalConfig.title === "Link Parent Account") {
+      const newParent = {
+        id: `PAR-${Math.floor(200 + Math.random() * 800)}`,
+        parentName: data.parentName || "Parent Guardian",
+        studentName: data.studentName || "Student Ward",
+        grade: data.grade || "Grade 10",
+        phone: data.phone || "+91 98765 00000",
+        email: data.email || "parent@example.com",
+        status: "Active App User",
+        lastActive: "Just now"
+      };
+      setParentsList(prev => [newParent, ...prev]);
+      onShowToast(`Linked parent account for ${newParent.studentName}!`);
+    } else if (actionModalConfig.title === "Add Class / Section") {
+      const newClass = {
+        id: `CLS-${Math.floor(100 + Math.random() * 900)}`,
+        grade: data.grade || "Grade 10",
+        section: data.section || "Section C",
+        classTeacher: data.classTeacher || "Assigned Teacher",
+        studentsCount: parseInt(data.studentsCount) || 40,
+        room: data.room || "Room 205",
+        stream: data.stream || "General Curriculum",
+        avgScore: 85
+      };
+      setClassesList(prev => [newClass, ...prev]);
+      onShowToast(`Created new class section: ${newClass.grade} ${newClass.section}!`);
+    } else if (actionModalConfig.title === "Schedule Guidance Session") {
+      const newGuidance = {
+        id: `GUD-${Math.floor(10 + Math.random() * 90)}`,
+        title: data.title || "Career Counseling Workshop",
+        grade: data.grade || "All Grades",
+        counselor: data.counselor || "Lead Career Counselor",
+        date: data.date || "Next Week",
+        time: data.time || "11:00 AM",
+        venue: data.venue || "Auditorium",
+        registered: "30 Registered"
+      };
+      setGuidanceSessions(prev => [newGuidance, ...prev]);
+      onShowToast(`Scheduled guidance workshop: ${newGuidance.title}!`);
     } else {
       onShowToast(`Action completed: ${actionModalConfig.title}`);
     }
@@ -713,6 +778,140 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
       );
     }
 
+    // 3B. PARENTS DIRECTORY
+    if (activeSubView === 'parents') {
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-xs font-sans ${cardClass}`}>
+          <div className={`flex items-center justify-between pb-4 border-b ${borderDivider}`}>
+            <div>
+              <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
+                <FiUsers className="w-5 h-5 text-[#3665EE]" /> Parent Directory & Student Ward Linkage
+              </h2>
+              <p className={textMuted}>Registered parents, ward communication channels, and parent portal app status</p>
+            </div>
+            <button 
+              onClick={() => openTriggerModal("Link Parent Account", "Connect a parent guardian with their student ward", [
+                { label: "Parent Full Name", name: "parentName", type: "text", placeholder: "e.g. Mr. Arvind Sharma" },
+                { label: "Student Ward Name", name: "studentName", type: "text", placeholder: "e.g. Aarav Sharma" },
+                { label: "Grade & Section", name: "grade", type: "text", placeholder: "e.g. Grade 10-A" },
+                { label: "Phone Number", name: "phone", type: "text", placeholder: "+91 98765 00000" },
+                { label: "Parent Email", name: "email", type: "email", placeholder: "parent@example.com" }
+              ])}
+              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md"
+            >
+              <FiPlus className="w-3.5 h-3.5" /> Link Parent Account
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {parentsList.map((par) => (
+              <div key={par.id} className={`p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-3 ${subCardClass} transition hover:shadow-md`}>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className={`font-bold text-sm ${textHeading}`}>{par.parentName}</h4>
+                    <span className="text-[10px] font-mono text-slate-400">({par.id})</span>
+                  </div>
+                  <div className="text-[#3665EE] font-semibold text-[11px] mt-0.5">
+                    Ward: {par.studentName} • {par.grade}
+                  </div>
+                  <div className={`text-[10px] ${textMuted} mt-0.5`}>
+                    Phone: {par.phone} • Email: {par.email} • Last Active: {par.lastActive}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-[10px] px-2.5 py-1 rounded-full font-bold border ${
+                    par.status.includes('Active')
+                      ? 'bg-emerald-500/20 text-emerald-600 border-emerald-500/30'
+                      : 'bg-amber-500/20 text-amber-600 border-amber-500/30'
+                  }`}>
+                    {par.status}
+                  </span>
+                  <button
+                    onClick={() => onShowToast(`Initiated direct message to ${par.parentName}`)}
+                    className="bg-[#12163A] hover:bg-[#1A2050] text-white font-semibold px-3 py-1.5 rounded-xl text-xs transition cursor-pointer"
+                  >
+                    Send Message
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // 3C. CLASSES / GRADES ROSTER
+    if (activeSubView === 'classes') {
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-xs font-sans ${cardClass}`}>
+          <div className={`flex items-center justify-between pb-4 border-b ${borderDivider}`}>
+            <div>
+              <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
+                <FiBookOpen className="w-5 h-5 text-[#3665EE]" /> Academic Classes & Grade Roster
+              </h2>
+              <p className={textMuted}>Class sections, assigned class teachers, student capacities, and readiness averages</p>
+            </div>
+            <button 
+              onClick={() => openTriggerModal("Add Class / Section", "Create a new grade section with class teacher assignment", [
+                { label: "Grade Level", name: "grade", type: "text", placeholder: "e.g. Grade 10" },
+                { label: "Section Name", name: "section", type: "text", placeholder: "e.g. Section C" },
+                { label: "Assigned Class Teacher", name: "classTeacher", type: "text", placeholder: "e.g. Mrs. Suman Rao" },
+                { label: "Student Count", name: "studentsCount", type: "number", placeholder: "40" },
+                { label: "Classroom Room / Wing", name: "room", type: "text", placeholder: "e.g. Room 204, Senior Wing" },
+                { label: "Curriculum Stream", name: "stream", type: "text", placeholder: "e.g. Science / General" }
+              ])}
+              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md"
+            >
+              <FiPlus className="w-3.5 h-3.5" /> Add Class / Section
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {classesList.map((cls) => (
+              <div key={cls.id} className={`p-5 rounded-2xl border space-y-3 ${subCardClass} transition hover:shadow-md hover:border-[#3665EE]`}>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className={`font-bold text-sm ${textHeading}`}>{cls.grade} — {cls.section}</h3>
+                    <div className="text-[#3665EE] font-semibold mt-0.5">{cls.stream}</div>
+                  </div>
+                  <span className="text-[10px] bg-blue-500/10 text-[#3665EE] border border-blue-500/20 px-2.5 py-0.5 rounded-full font-bold">
+                    Avg Score: {cls.avgScore}%
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
+                  <div>
+                    <span className={textMuted}>Class Teacher:</span> <span className="font-semibold">{cls.classTeacher}</span>
+                  </div>
+                  <div>
+                    <span className={textMuted}>Students:</span> <span className="font-semibold">{cls.studentsCount} Enrolled</span>
+                  </div>
+                  <div className="col-span-2">
+                    <span className={textMuted}>Classroom:</span> <span className="font-semibold">{cls.room}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-700/20">
+                  <button
+                    onClick={() => onShowToast(`Opened student roster for ${cls.grade} ${cls.section}`)}
+                    className="px-3 py-1.5 rounded-lg border border-slate-600/40 hover:border-[#3665EE] text-xs font-semibold transition cursor-pointer"
+                  >
+                    View Students
+                  </button>
+                  <button
+                    onClick={() => onShowToast(`Managing class schedule for ${cls.grade} ${cls.section}`)}
+                    className="px-3 py-1.5 rounded-lg bg-[#3665EE] hover:bg-[#2A54D5] text-white text-xs font-semibold transition cursor-pointer"
+                  >
+                    Manage Class
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
     // 4. ASSESSMENTS
     if (activeSubView === 'assessments') {
       return (
@@ -749,6 +948,120 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                 <div className="text-right">
                   <div className="text-[#12163A] font-bold">Avg Score: {as.score}</div>
                   <button onClick={() => onShowToast(`Analyzing results for ${as.name}`)} className="text-[#3665EE] font-bold hover:underline">View Results</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // 4B. STUDENT PROGRESS
+    if (activeSubView === 'progress') {
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-xs font-sans ${cardClass}`}>
+          <div className={`pb-4 border-b ${borderDivider}`}>
+            <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
+              <FiTrendingUp className="w-5 h-5 text-[#3665EE]" /> Student Career Progress & Readiness Trajectories
+            </h2>
+            <p className={textMuted}>Career readiness indices, RIASEC profile distributions, and milestone achievements across cohorts</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className={`p-5 rounded-2xl border space-y-1 ${subCardClass}`}>
+              <span className={textMuted}>Holland Code Completion</span>
+              <div className="text-2xl font-bold text-[#3665EE]">94.2%</div>
+              <span className="text-[10px] text-emerald-500 font-semibold">+6% this term</span>
+            </div>
+            <div className={`p-5 rounded-2xl border space-y-1 ${subCardClass}`}>
+              <span className={textMuted}>Average Readiness Index</span>
+              <div className="text-2xl font-bold text-emerald-500">88.5 / 100</div>
+              <span className="text-[10px] text-emerald-500 font-semibold">Above State Benchmark</span>
+            </div>
+            <div className={`p-5 rounded-2xl border space-y-1 ${subCardClass}`}>
+              <span className={textMuted}>STEM Aptitude High Scorers</span>
+              <div className="text-2xl font-bold text-[#3665EE]">480 Students</div>
+              <span className="text-[10px] text-slate-400">Score &gt; 90%</span>
+            </div>
+            <div className={`p-5 rounded-2xl border space-y-1 ${subCardClass}`}>
+              <span className={textMuted}>Counseling Roadmaps Completed</span>
+              <div className="text-2xl font-bold text-emerald-500">1,240</div>
+              <span className="text-[10px] text-emerald-500 font-semibold">Active Action Plans</span>
+            </div>
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <h3 className={`font-bold text-sm ${textHeading}`}>Top Performing Career Trainees</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {[
+                { name: "Aarav Sharma", grade: "Grade 10-A", dna: "Investigative / STEM", score: 96, path: "Software Engineering & AI" },
+                { name: "Diya Patel", grade: "Grade 11-PCM", dna: "Artistic / Design", score: 94, path: "Biomedical Technology" },
+                { name: "Rohan Iyer", grade: "Grade 12-Commerce", dna: "Enterprising / Business", score: 92, path: "FinTech & Quantitative Economics" }
+              ].map((tp, idx) => (
+                <div key={idx} className={`p-4 rounded-xl border ${subCardClass} space-y-2`}>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className={`font-bold ${textHeading}`}>{tp.name}</h4>
+                      <div className="text-[#3665EE] font-semibold text-[11px]">{tp.grade}</div>
+                    </div>
+                    <span className="text-[10px] bg-emerald-500/20 text-emerald-500 px-2 py-0.5 rounded-full font-bold">
+                      {tp.score}/100
+                    </span>
+                  </div>
+                  <div className={`text-[11px] ${textMuted}`}>DNA: <strong>{tp.dna}</strong></div>
+                  <div className={`text-[11px] ${textMuted}`}>Target Career: <strong className="text-blue-500">{tp.path}</strong></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // 4C. CAREER GUIDANCE & COUNSELING
+    if (activeSubView === 'guidance') {
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-xs font-sans ${cardClass}`}>
+          <div className={`flex items-center justify-between pb-4 border-b ${borderDivider}`}>
+            <div>
+              <h2 className={`text-lg font-bold flex items-center gap-2 ${textHeading}`}>
+                <FiCompass className="w-5 h-5 text-[#3665EE]" /> Career Guidance & Counseling Desk
+              </h2>
+              <p className={textMuted}>Mentorship appointments, streaming advisories (Science / Commerce / Humanities), and guidance workshops</p>
+            </div>
+            <button 
+              onClick={() => openTriggerModal("Schedule Guidance Session", "Plan a career counseling workshop or 1-on-1 desk", [
+                { label: "Workshop Title", name: "title", type: "text", placeholder: "e.g. Higher Secondary Stream Selection" },
+                { label: "Target Grade", name: "grade", type: "text", placeholder: "e.g. Grade 10 Students & Parents" },
+                { label: "Counselor / Speaker", name: "counselor", type: "text", placeholder: "e.g. Dr. Rajesh Verma" },
+                { label: "Date", name: "date", type: "text", placeholder: "e.g. March 25, 2026" },
+                { label: "Time", name: "time", type: "text", placeholder: "e.g. 10:30 AM" },
+                { label: "Venue", name: "venue", type: "text", placeholder: "e.g. School Auditorium / Virtual" }
+              ])}
+              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md"
+            >
+              <FiPlus className="w-3.5 h-3.5" /> Schedule Guidance Session
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {guidanceSessions.map((gud) => (
+              <div key={gud.id} className={`p-5 rounded-2xl border flex flex-col md:flex-row md:items-center justify-between gap-4 ${subCardClass} transition hover:shadow-md`}>
+                <div className="space-y-1">
+                  <h4 className={`font-bold text-sm ${textHeading}`}>{gud.title}</h4>
+                  <div className="text-[#3665EE] font-semibold text-[11px]">{gud.grade} • Counselor: {gud.counselor}</div>
+                  <div className={`text-[11px] ${textMuted}`}>{gud.date} at {gud.time} • Venue: {gud.venue}</div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-2.5 py-1 rounded-full font-bold">
+                    {gud.registered}
+                  </span>
+                  <button
+                    onClick={() => onShowToast(`Opened registrant details for ${gud.title}`)}
+                    className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-3 py-1.5 rounded-xl text-xs transition cursor-pointer"
+                  >
+                    View Details
+                  </button>
                 </div>
               </div>
             ))}

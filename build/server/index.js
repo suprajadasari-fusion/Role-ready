@@ -5,9 +5,9 @@ import { createReadableStreamFromReadable } from "@react-router/node";
 import { ServerRouter, UNSAFE_withComponentProps, Outlet, Meta, Links, ScrollRestoration, Scripts, redirect, useNavigate, useParams, useLocation } from "react-router";
 import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { QueryClient, QueryClientProvider, useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import { FiUsers, FiShield, FiUserCheck, FiBriefcase, FiGrid, FiBookOpen, FiAward, FiCpu, FiCheckCircle, FiCompass, FiAlertTriangle, FiMail, FiLock, FiEyeOff, FiEye, FiArrowRight, FiUserPlus, FiKey, FiCheck, FiArrowLeft, FiUser, FiPhone, FiPlus, FiTrash2, FiTag, FiX, FiGlobe, FiRefreshCw, FiCalendar, FiActivity, FiTrendingUp, FiFileText, FiBell, FiCreditCard, FiSliders, FiPieChart, FiSearch, FiVideo, FiStar, FiCheckSquare, FiLogOut, FiSun, FiMoon, FiEdit2, FiSave, FiTv, FiClock, FiMinimize, FiMaximize, FiAlertCircle, FiVideoOff, FiMicOff, FiMic, FiPhoneOff, FiDownload, FiZap, FiDollarSign, FiInfo, FiCopy, FiExternalLink, FiMapPin, FiCamera, FiChevronRight, FiPower, FiServer } from "react-icons/fi";
+import { FiUsers, FiShield, FiUserCheck, FiBriefcase, FiGrid, FiBookOpen, FiAward, FiCpu, FiCheckCircle, FiCompass, FiAlertTriangle, FiMail, FiLock, FiEyeOff, FiEye, FiArrowRight, FiUserPlus, FiKey, FiCheck, FiArrowLeft, FiUser, FiPhone, FiPlus, FiTrash2, FiTag, FiX, FiGlobe, FiRefreshCw, FiSearch, FiFileText, FiCalendar, FiTrendingUp, FiBell, FiSliders, FiCheckSquare, FiStar, FiVideo, FiDollarSign, FiActivity, FiEdit2, FiLogOut, FiChevronUp, FiMenu, FiSun, FiMoon, FiSave, FiTv, FiClock, FiMinimize, FiMaximize, FiAlertCircle, FiVideoOff, FiMicOff, FiMic, FiPhoneOff, FiDownload, FiZap, FiCreditCard, FiMessageSquare, FiSend, FiInfo, FiCopy, FiExternalLink, FiMapPin, FiCamera, FiChevronRight, FiPower, FiServer } from "react-icons/fi";
 const streamTimeout = 5e3;
 function handleRequest(request, responseStatusCode, responseHeaders, routerContext, loadContext) {
   if (request.method.toUpperCase() === "HEAD") {
@@ -64,7 +64,7 @@ const entryServer = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineP
   default: handleRequest,
   streamTimeout
 }, Symbol.toStringTag, { value: "Module" }));
-const stylesheet = "/assets/app-uiQomxI-.css";
+const stylesheet = "/assets/app-CIYb8nqa.css";
 function links() {
   return [{
     rel: "stylesheet",
@@ -1158,6 +1158,19 @@ async function fetchChildFees(studentId) {
   };
 }
 const API_BASE_URL = typeof window !== "undefined" ? ((_b = window.__ENV__) == null ? void 0 : _b.VITE_API_BASE_URL) || "https://role-ready-backendcode.onrender.com" : "https://role-ready-backendcode.onrender.com";
+function getCachedUser() {
+  if (typeof window !== "undefined") {
+    const raw = localStorage.getItem("rr_user") || sessionStorage.getItem("rr_user");
+    if (raw) {
+      try {
+        return JSON.parse(raw);
+      } catch (e) {
+        return null;
+      }
+    }
+  }
+  return null;
+}
 async function apiFetch(endpoint, options = {}) {
   const token = getAccessToken();
   const headers = new Headers(options.headers || {});
@@ -1234,35 +1247,84 @@ async function fetchAdminHealth() {
   });
   return res.data;
 }
-async function fetchUserProfile() {
-  var _a2, _b2, _c, _d, _e, _f, _g, _h, _i;
-  const res = await apiFetch("/api/v1/profile/", {
-    method: "GET"
-  });
-  const raw = res.data;
-  const p = raw.profile || {};
-  const profile = {
-    id: raw.id || p.profileId || "",
-    fullName: p.firstName && p.lastName ? `${p.firstName} ${p.lastName}` : p.firstName || raw.email || "User",
-    firstName: p.firstName || "",
-    lastName: p.lastName || "",
-    email: raw.email || "",
-    mobile: p.phoneNumber || raw.phone || "",
-    phoneNumber: p.phoneNumber || raw.phone || "",
-    dob: ((_a2 = p.roleData) == null ? void 0 : _a2.dob) || "",
-    gender: ((_b2 = p.roleData) == null ? void 0 : _b2.gender) || "",
-    location: ((_c = p.roleData) == null ? void 0 : _c.location) || "",
-    education: ((_e = (_d = p.roleData) == null ? void 0 : _d.education) == null ? void 0 : _e.qualification) || "",
-    qualification: ((_g = (_f = p.roleData) == null ? void 0 : _f.education) == null ? void 0 : _g.qualification) || "",
-    skills: Array.isArray((_h = p.roleData) == null ? void 0 : _h.skills) ? p.roleData.skills : [],
-    bio: p.bio || "",
-    avatarUrl: raw.avatarUrl || p.profilePicUrl || "",
-    role: ((_i = raw.role) == null ? void 0 : _i.toLowerCase()) || "parent",
+function normalizeUserProfile(raw) {
+  var _a2, _b2, _c, _d;
+  if (!raw) {
+    return {
+      id: "user-profile",
+      fullName: "User Profile",
+      firstName: "",
+      lastName: "",
+      email: "",
+      mobile: "",
+      phoneNumber: "",
+      dob: "",
+      gender: "",
+      location: "",
+      education: "",
+      qualification: "",
+      skills: [],
+      bio: "",
+      avatarUrl: "",
+      role: "mentor",
+      onboardingCompleted: true,
+      roleData: {},
+      updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+    };
+  }
+  const p = raw.profile || raw || {};
+  const roleData = p.roleData || raw.roleData || {};
+  const firstName = p.firstName || raw.firstName || "";
+  const lastName = p.lastName || raw.lastName || "";
+  const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName || raw.name || raw.email || "User";
+  return {
+    id: raw.id || p.profileId || raw._id || "user-profile",
+    fullName,
+    firstName,
+    lastName,
+    email: raw.email || p.email || "",
+    mobile: p.phoneNumber || raw.phone || p.mobile || "",
+    phoneNumber: p.phoneNumber || raw.phone || p.mobile || "",
+    dob: roleData.dob || p.dob || "",
+    gender: roleData.gender || p.gender || "",
+    location: roleData.location || p.location || "",
+    education: ((_a2 = roleData.education) == null ? void 0 : _a2.qualification) || p.education || roleData.qualification || "",
+    qualification: roleData.qualification || ((_b2 = roleData.education) == null ? void 0 : _b2.qualification) || p.qualification || "",
+    skills: Array.isArray(roleData.skills) ? roleData.skills : Array.isArray(p.skills) ? p.skills : [],
+    bio: p.bio || roleData.bio || "",
+    avatarUrl: raw.avatarUrl || p.profilePicUrl || p.avatarUrl || "",
+    role: ((_c = raw.role) == null ? void 0 : _c.toLowerCase()) || ((_d = p.role) == null ? void 0 : _d.toLowerCase()) || "mentor",
     onboardingCompleted: p.onboardingCompleted ?? true,
-    roleData: p.roleData || {},
-    updatedAt: raw.createdAt || (/* @__PURE__ */ new Date()).toISOString()
+    roleData,
+    updatedAt: raw.updatedAt || raw.createdAt || (/* @__PURE__ */ new Date()).toISOString()
   };
-  return profile;
+}
+async function fetchUserProfile() {
+  try {
+    const res = await apiFetch("/api/v1/profile/", {
+      method: "GET"
+    });
+    if (res == null ? void 0 : res.data) {
+      return normalizeUserProfile(res.data);
+    }
+  } catch (err) {
+    console.warn("Could not fetch /api/v1/profile/, trying /api/v1/users/me:", err);
+  }
+  try {
+    const meRes = await apiFetch("/api/v1/users/me", {
+      method: "GET"
+    });
+    if (meRes == null ? void 0 : meRes.data) {
+      return normalizeUserProfile(meRes.data);
+    }
+  } catch (meErr) {
+    console.warn("Could not fetch /api/v1/users/me:", meErr);
+  }
+  const cached = getCachedUser();
+  if (cached) {
+    return normalizeUserProfile(cached);
+  }
+  throw new Error("Unable to load profile data from backend or local session.");
 }
 async function updateUserProfile(updates) {
   await apiFetch("/api/v1/profile/complete", {
@@ -1365,62 +1427,43 @@ async function saveAIWeights(weights) {
   });
 }
 function resolveDashboardRoute(backendRoute, userRole) {
-  if (typeof backendRoute === "string") {
-    const trimmed = backendRoute.trim();
-    if (trimmed === "/portal/student" || trimmed === "/student") {
-      return "/portal/parent";
-    }
-    if (trimmed.startsWith("/portal/")) {
-      return trimmed;
-    }
-    if (trimmed.startsWith("/") && !trimmed.startsWith("/auth/")) {
-      return trimmed;
-    }
+  let roleCandidate = userRole;
+  if (!roleCandidate && backendRoute && typeof backendRoute === "object") {
+    roleCandidate = backendRoute.role;
   }
-  if (backendRoute && typeof backendRoute === "object") {
-    if (typeof backendRoute.redirectUrl === "string") {
-      if (backendRoute.redirectUrl === "/portal/student" || backendRoute.redirectUrl === "/student") {
-        return "/portal/parent";
-      }
-      if (backendRoute.redirectUrl.startsWith("/portal/")) {
-        return backendRoute.redirectUrl;
-      }
-    }
-    if (!userRole && typeof backendRoute.role === "string") {
-      userRole = backendRoute.role;
-    }
-  }
-  const normalized = (userRole || "").toLowerCase().trim().replace(/[-_ ]/g, "");
+  const normalized = (roleCandidate || "").toLowerCase().trim().replace(/[-_ ]/g, "");
   switch (normalized) {
-    case "student":
-      return "/portal/parent";
     case "parent":
-      return "/portal/parent";
+    case "student":
+      return "/parent/dashboard";
     case "mentor":
     case "counselor":
-      return "/portal/mentor";
+      return "/mentor/dashboard";
     case "recruiter":
     case "talent":
     case "hr":
-      return "/portal/recruiter";
+      return "/recruiter/dashboard";
     case "companyadmin":
     case "company":
     case "enterprise":
-      return "/portal/company";
+      return "/company/dashboard";
     case "school":
     case "schooladmin":
-      return "/portal/school";
+      return "/school/dashboard";
     case "college":
     case "collegeadmin":
-      return "/portal/college";
+      return "/college/dashboard";
     case "training":
     case "traininginstitute":
-      return "/portal/training";
+      return "/training-institute/dashboard";
     case "superadmin":
     case "admin":
-      return "/portal/super-admin";
+      return "/super-admin/dashboard";
     default:
-      return userRole ? `/portal/${userRole.toLowerCase()}` : "/portal/parent";
+      if (typeof backendRoute === "string" && backendRoute.startsWith("/") && !backendRoute.startsWith("/auth/")) {
+        return backendRoute;
+      }
+      return "/parent/dashboard";
   }
 }
 function formatApiError$2(err) {
@@ -5726,167 +5769,6 @@ const route5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   default: forgotPassword
 }, Symbol.toStringTag, { value: "Module" }));
-const Sidebar = ({
-  currentWorkspace,
-  onWorkspaceChange,
-  activeView,
-  onViewChange,
-  onRoleFilter,
-  totalEntities,
-  isDarkMode
-}) => {
-  const roleNavItems = {
-    "super-admin": [
-      { id: "overview", label: "Dashboard Overview", icon: FiGrid },
-      { id: "access", label: "Access Provisioning", icon: FiShield },
-      { id: "rbac", label: "Permission Matrix", icon: FiSliders },
-      { id: "ai", label: "AI Engine Control", icon: FiCpu },
-      { id: "audit", label: "Audit & Compliance", icon: FiCheckSquare }
-    ],
-    "school": [
-      { id: "overview", label: "Dashboard", icon: FiGrid },
-      { id: "students", label: "Students", icon: FiUsers },
-      { id: "teachers", label: "Teachers", icon: FiUsers },
-      { id: "assessments", label: "Assessments & Readiness", icon: FiCheckSquare },
-      { id: "reports", label: "Career Reports", icon: FiFileText },
-      { id: "events", label: "Events & Video Sessions", icon: FiVideo },
-      { id: "analytics", label: "Student Analytics", icon: FiTrendingUp },
-      { id: "performance", label: "Performance Dashboard", icon: FiCpu },
-      { id: "placement", label: "Placement Reports", icon: FiBriefcase },
-      { id: "notifications", label: "Notifications", icon: FiBell },
-      { id: "settings", label: "Settings", icon: FiSliders }
-    ],
-    "college": [
-      { id: "overview", label: "Dashboard", icon: FiGrid },
-      { id: "programs", label: "Programs", icon: FiBookOpen },
-      { id: "admissions", label: "Admissions", icon: FiUserCheck },
-      { id: "applications", label: "Applications", icon: FiFileText },
-      { id: "scholarships", label: "Scholarships", icon: FiAward },
-      { id: "placement-cell", label: "Placement Cell", icon: FiBriefcase },
-      { id: "industry-connect", label: "Industry Connect", icon: FiUsers },
-      { id: "analytics", label: "Analytics", icon: FiTrendingUp },
-      { id: "notifications", label: "Notifications", icon: FiBell },
-      { id: "settings", label: "Settings", icon: FiSliders }
-    ],
-    "mentor": [
-      { id: "overview", label: "Dashboard", icon: FiGrid },
-      { id: "skills", label: "Skills & Expertise", icon: FiCpu },
-      { id: "availability", label: "Availability & Calendar", icon: FiCalendar },
-      { id: "student-requests", label: "Student Requests", icon: FiUsers },
-      { id: "video-sessions", label: "Video Sessions", icon: FiVideo },
-      { id: "guidance", label: "Assessments & Guidance", icon: FiCompass },
-      { id: "ratings", label: "Ratings & Reviews", icon: FiStar },
-      { id: "wallet", label: "Wallet & Payouts", icon: FiCreditCard },
-      { id: "notifications", label: "Notifications", icon: FiBell },
-      { id: "settings", label: "Settings", icon: FiSliders }
-    ],
-    "training": [
-      { id: "overview", label: "Institute Overview", icon: FiGrid },
-      { id: "courses", label: "Skill Courses Track", icon: FiBookOpen },
-      { id: "certs", label: "Certifications Registry", icon: FiAward },
-      { id: "hiring", label: "Hiring Partners", icon: FiBriefcase }
-    ],
-    "recruiter": [
-      { id: "overview", label: "Dashboard", icon: FiGrid },
-      { id: "verification", label: "Company & Verification", icon: FiGrid },
-      { id: "jobs", label: "Job Postings", icon: FiFileText },
-      { id: "campus-hiring", label: "Campus Hiring", icon: FiAward },
-      { id: "student-search", label: "Student Search", icon: FiSearch },
-      { id: "ai-match", label: "AI Matcher", icon: FiCpu },
-      { id: "interviews", label: "Interviews", icon: FiCalendar },
-      { id: "offers", label: "Offer Letters", icon: FiAward },
-      { id: "hiring-analytics", label: "Hiring Analytics", icon: FiTrendingUp },
-      { id: "notifications", label: "Notifications", icon: FiBell },
-      { id: "settings", label: "Settings", icon: FiSliders }
-    ],
-    "company": [
-      { id: "overview", label: "Company Overview", icon: FiGrid },
-      { id: "internships", label: "Internship Programs", icon: FiBriefcase },
-      { id: "partnerships", label: "Campus Partnerships", icon: FiAward },
-      { id: "pipeline", label: "Talent Pipeline", icon: FiPieChart }
-    ],
-    "parent": [
-      { id: "overview", label: "Dashboard", icon: FiGrid },
-      { id: "children", label: "My Children", icon: FiUsers },
-      { id: "accounts", label: "Family Accounts", icon: FiShield },
-      { id: "attendance", label: "Attendance", icon: FiCalendar, section: "Academic" },
-      { id: "academic", label: "Academic Performance", icon: FiBookOpen },
-      { id: "learning", label: "Learning Progress", icon: FiActivity },
-      { id: "career", label: "Career Progress", icon: FiTrendingUp, section: "Career" },
-      { id: "career-reports", label: "Career Reports", icon: FiFileText },
-      { id: "scholarships", label: "Scholarships", icon: FiAward, section: "Opportunities" },
-      { id: "mentors", label: "Mentor Booking", icon: FiUserCheck, section: "Communication" },
-      { id: "notifications", label: "Notifications", icon: FiBell },
-      { id: "subscription", label: "Subscription Plans", icon: FiCreditCard, section: "Subscription" },
-      { id: "settings", label: "Settings", icon: FiSliders, section: "Settings" }
-    ]
-  };
-  const navItems = roleNavItems[currentWorkspace] || roleNavItems["super-admin"];
-  return /* @__PURE__ */ jsxs("aside", { className: `w-72 min-h-screen flex flex-col fixed top-0 bottom-0 left-0 z-40 shadow-xl border-r font-sans transition-colors duration-200 ${isDarkMode ? "bg-slate-900 border-slate-800 text-white" : "bg-white border-blue-100 text-slate-900"}`, children: [
-    /* @__PURE__ */ jsxs("div", { className: `p-5 flex items-center gap-3.5 border-b ${isDarkMode ? "border-slate-800 bg-slate-950/60" : "border-blue-100 bg-blue-50/40"}`, children: [
-      /* @__PURE__ */ jsx("div", { className: "w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20", children: /* @__PURE__ */ jsx(FiCompass, { className: "w-6 h-6 animate-pulse-glow" }) }),
-      /* @__PURE__ */ jsxs("div", { children: [
-        /* @__PURE__ */ jsx("h2", { className: `font-bold text-xl tracking-tight font-sans ${isDarkMode ? "text-white" : "text-slate-900"}`, children: "Role Ready" }),
-        /* @__PURE__ */ jsx("span", { className: "inline-block text-[12px] font-medium bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-md border border-blue-400/20", children: currentWorkspace === "super-admin" ? "Super Admin Portal" : `${currentWorkspace.charAt(0).toUpperCase() + currentWorkspace.slice(1)} Workspace` })
-      ] })
-    ] }),
-    /* @__PURE__ */ jsxs("nav", { className: "flex-1 overflow-y-auto p-3 flex flex-col justify-between", children: [
-      /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsx("div", { className: "space-y-1", children: navItems.filter((item) => item.id !== "profile").map((item) => {
-        const Icon = item.icon;
-        const isActive = activeView === item.id;
-        return /* @__PURE__ */ jsxs(React.Fragment, { children: [
-          item.section && /* @__PURE__ */ jsx("div", { className: `pt-3.5 pb-1 px-3 text-[12px] font-semibold uppercase tracking-wider ${isDarkMode ? "text-slate-400" : "text-slate-500"}`, children: item.section }),
-          /* @__PURE__ */ jsxs(
-            "button",
-            {
-              onClick: () => onViewChange(item.id),
-              className: `w-full flex items-center justify-between min-h-[42px] px-3.5 py-2.5 rounded-xl text-[15px] font-medium leading-[1.5] transition-colors duration-150 cursor-pointer border ${isActive ? "bg-[#12163A] text-white shadow-md border-[#3665EE]/40" : isDarkMode ? "border-transparent text-slate-300 hover:bg-[#12163A]/60 hover:text-white" : "border-transparent text-[#4B5563] hover:bg-[#DEE9FF]/60 hover:text-[#12163A]"}`,
-              children: [
-                /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 min-w-0 flex-1 text-left", children: [
-                  /* @__PURE__ */ jsx(Icon, { className: `w-4.5 h-4.5 shrink-0 transition-colors duration-150 ${isActive ? "text-[#3665EE]" : "text-[#94A3B8]"}` }),
-                  /* @__PURE__ */ jsx("span", { className: "truncate whitespace-nowrap text-left", children: item.label })
-                ] }),
-                item.id === "access" && /* @__PURE__ */ jsx("span", { className: "bg-[#3665EE]/20 text-[#3665EE] text-[12px] px-2 py-0.5 rounded-full font-semibold ml-2 shrink-0", children: totalEntities }),
-                item.id === "ai" && /* @__PURE__ */ jsx("span", { className: "bg-[#E4F4EC] text-[#12163A] text-[12px] px-2 py-0.5 rounded-full font-semibold ml-2 shrink-0", children: "Live" })
-              ]
-            }
-          )
-        ] }, item.id);
-      }) }) }),
-      /* @__PURE__ */ jsx("div", { className: "mt-auto pt-2", children: /* @__PURE__ */ jsx(
-        "button",
-        {
-          onClick: () => onViewChange("profile"),
-          className: `w-full flex items-center justify-between min-h-[42px] px-3.5 py-2.5 rounded-xl text-[15px] font-medium leading-[1.5] transition-colors duration-150 cursor-pointer border ${activeView === "profile" ? "bg-[#12163A] text-white shadow-md border-[#3665EE]/40" : isDarkMode ? "border-transparent text-slate-300 hover:bg-[#12163A]/60 hover:text-white" : "border-transparent text-[#4B5563] hover:bg-[#DEE9FF]/60 hover:text-[#12163A]"}`,
-          children: /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 min-w-0 flex-1 text-left", children: [
-            /* @__PURE__ */ jsx(FiUser, { className: `w-4.5 h-4.5 shrink-0 transition-colors duration-150 ${activeView === "profile" ? "text-[#3665EE]" : "text-[#94A3B8]"}` }),
-            /* @__PURE__ */ jsx("span", { className: "truncate whitespace-nowrap text-left", children: "Profile" })
-          ] })
-        }
-      ) })
-    ] }),
-    /* @__PURE__ */ jsx("div", { className: `p-3 border-t shrink-0 ${isDarkMode ? "border-slate-800 bg-slate-950/60" : "border-blue-100 bg-blue-50/40"}`, children: /* @__PURE__ */ jsxs(
-      "button",
-      {
-        onClick: async () => {
-          try {
-            await logoutUser();
-          } catch {
-          } finally {
-            if (typeof window !== "undefined") {
-              window.location.href = "/login";
-            }
-          }
-        },
-        className: `w-full flex items-center justify-center min-h-[40px] gap-2 py-2 px-3.5 rounded-xl text-[14px] font-semibold transition-colors duration-150 cursor-pointer border ${isDarkMode ? "bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 shadow-xs" : "bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100 hover:border-rose-300 shadow-xs"}`,
-        children: [
-          /* @__PURE__ */ jsx(FiLogOut, { className: "w-4 h-4" }),
-          /* @__PURE__ */ jsx("span", { children: "Log Out" })
-        ]
-      }
-    ) })
-  ] });
-};
 const userService = {
   /**
    * Get Current Authenticated User
@@ -5915,19 +5797,373 @@ function useCurrentUser() {
     // 5 minutes
   });
 }
+const Sidebar = ({
+  currentWorkspace,
+  onWorkspaceChange,
+  activeView,
+  onViewChange,
+  onRoleFilter,
+  totalEntities,
+  isDarkMode,
+  isMobileOpen = false,
+  onCloseMobile
+}) => {
+  var _a2, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
+  const roleNavItems = {
+    "parent": [
+      { id: "dashboard", label: "Dashboard", icon: FiGrid },
+      { id: "child", label: "My Child", icon: FiUsers },
+      { id: "academic", label: "Academic Progress", icon: FiBookOpen },
+      { id: "assessments", label: "Assessments", icon: FiCheckSquare },
+      { id: "career-discovery", label: "Career Discovery", icon: FiCompass },
+      { id: "career-roadmap", label: "Career Roadmap", icon: FiTrendingUp },
+      { id: "colleges", label: "Colleges", icon: FiAward },
+      { id: "scholarships", label: "Scholarships", icon: FiDollarSign },
+      { id: "learning", label: "Learning", icon: FiActivity },
+      { id: "notifications", label: "Notifications", icon: FiBell },
+      { id: "settings", label: "Settings", icon: FiSliders }
+    ],
+    "mentor": [
+      { id: "dashboard", label: "Dashboard", icon: FiGrid },
+      { id: "students", label: "Students", icon: FiUsers },
+      { id: "progress", label: "Student Progress", icon: FiTrendingUp },
+      { id: "sessions", label: "Mentorship Sessions", icon: FiVideo },
+      { id: "guidance", label: "Career Guidance", icon: FiCompass },
+      { id: "assessments", label: "Assessments", icon: FiCheckSquare },
+      { id: "recommendations", label: "Recommendations", icon: FiAward },
+      { id: "messages", label: "Messages", icon: FiFileText },
+      { id: "notifications", label: "Notifications", icon: FiBell },
+      { id: "settings", label: "Settings", icon: FiSliders }
+    ],
+    "recruiter": [
+      { id: "dashboard", label: "Dashboard", icon: FiGrid },
+      { id: "jobs", label: "Jobs", icon: FiBriefcase },
+      { id: "create-job", label: "Create Job", icon: FiPlus },
+      { id: "applications", label: "Applications", icon: FiFileText },
+      { id: "candidates", label: "Candidates", icon: FiSearch },
+      { id: "shortlisted", label: "Shortlisted", icon: FiStar },
+      { id: "interviews", label: "Interviews", icon: FiCalendar },
+      { id: "selected", label: "Selected Candidates", icon: FiCheckSquare },
+      { id: "messages", label: "Messages", icon: FiFileText },
+      { id: "notifications", label: "Notifications", icon: FiBell },
+      { id: "settings", label: "Settings", icon: FiSliders }
+    ],
+    "super-admin": [
+      { id: "dashboard", label: "Dashboard", icon: FiGrid },
+      { id: "users", label: "User Management", icon: FiUsers },
+      { id: "parents", label: "Parent Management", icon: FiUsers },
+      { id: "mentors", label: "Mentor Management", icon: FiUserCheck },
+      { id: "recruiters", label: "Recruiter Management", icon: FiBriefcase },
+      { id: "schools", label: "School Management", icon: FiBookOpen },
+      { id: "colleges", label: "College Management", icon: FiAward },
+      { id: "training-institutes", label: "Training Institute Management", icon: FiCpu },
+      { id: "companies", label: "Company Management", icon: FiGrid },
+      { id: "approvals", label: "Approvals", icon: FiCheckSquare },
+      { id: "reports", label: "Reports", icon: FiFileText },
+      { id: "analytics", label: "Analytics", icon: FiTrendingUp },
+      { id: "notifications", label: "Notifications", icon: FiBell },
+      { id: "settings", label: "System Settings", icon: FiSliders }
+    ],
+    "college": [
+      { id: "dashboard", label: "Dashboard", icon: FiGrid },
+      { id: "students", label: "Students", icon: FiUsers },
+      { id: "courses", label: "Courses", icon: FiBookOpen },
+      { id: "departments", label: "Departments", icon: FiGrid },
+      { id: "placements", label: "Placements", icon: FiAward },
+      { id: "jobs", label: "Jobs", icon: FiBriefcase },
+      { id: "applications", label: "Applications", icon: FiFileText },
+      { id: "events", label: "Events", icon: FiCalendar },
+      { id: "reports", label: "Reports", icon: FiFileText },
+      { id: "notifications", label: "Notifications", icon: FiBell },
+      { id: "settings", label: "Settings", icon: FiSliders }
+    ],
+    "training": [
+      { id: "dashboard", label: "Dashboard", icon: FiGrid },
+      { id: "courses", label: "Courses", icon: FiBookOpen },
+      { id: "batches", label: "Batches", icon: FiCalendar },
+      { id: "learners", label: "Students/Learners", icon: FiUsers },
+      { id: "trainers", label: "Trainers", icon: FiUserCheck },
+      { id: "enrollments", label: "Enrollments", icon: FiFileText },
+      { id: "attendance", label: "Attendance", icon: FiCheckSquare },
+      { id: "progress", label: "Progress", icon: FiTrendingUp },
+      { id: "certificates", label: "Certificates", icon: FiAward },
+      { id: "reports", label: "Reports", icon: FiFileText },
+      { id: "notifications", label: "Notifications", icon: FiBell },
+      { id: "settings", label: "Settings", icon: FiSliders }
+    ],
+    "school": [
+      { id: "dashboard", label: "Dashboard", icon: FiGrid },
+      { id: "students", label: "Students", icon: FiUsers },
+      { id: "parents", label: "Parents", icon: FiUsers },
+      { id: "teachers", label: "Teachers/Mentors", icon: FiUserCheck },
+      { id: "classes", label: "Classes", icon: FiBookOpen },
+      { id: "assessments", label: "Assessments", icon: FiCheckSquare },
+      { id: "progress", label: "Student Progress", icon: FiTrendingUp },
+      { id: "guidance", label: "Career Guidance", icon: FiCompass },
+      { id: "reports", label: "Reports", icon: FiFileText },
+      { id: "notifications", label: "Notifications", icon: FiBell },
+      { id: "settings", label: "Settings", icon: FiSliders }
+    ],
+    "company": [
+      { id: "dashboard", label: "Dashboard", icon: FiGrid },
+      { id: "jobs", label: "Jobs", icon: FiBriefcase },
+      { id: "candidates", label: "Candidates", icon: FiSearch },
+      { id: "applications", label: "Applications", icon: FiFileText },
+      { id: "interviews", label: "Interviews", icon: FiCalendar },
+      { id: "employees", label: "Employees", icon: FiUsers },
+      { id: "recruitment", label: "Recruitment", icon: FiTrendingUp },
+      { id: "reports", label: "Reports", icon: FiFileText },
+      { id: "messages", label: "Messages", icon: FiFileText },
+      { id: "notifications", label: "Notifications", icon: FiBell },
+      { id: "settings", label: "Settings", icon: FiSliders }
+    ]
+  };
+  const roleDisplayTitles = {
+    "parent": "Parent Workspace",
+    "mentor": "Mentor Workspace",
+    "recruiter": "Recruiter Workspace",
+    "super-admin": "Super Admin Portal",
+    "college": "College Workspace",
+    "training": "Training Institute",
+    "school": "School Workspace",
+    "company": "Company Workspace"
+  };
+  const roleBadgeTitles = {
+    "parent": "Parent Account",
+    "mentor": "Career Mentor",
+    "recruiter": "Recruiter / Talent",
+    "super-admin": "Super Administrator",
+    "college": "College Admin",
+    "training": "Training Institute",
+    "school": "School Admin",
+    "company": "Company Admin"
+  };
+  const navItems = roleNavItems[currentWorkspace] || roleNavItems["super-admin"];
+  const { data: currentUser } = useCurrentUser();
+  const cachedUser = typeof window !== "undefined" ? getCachedUser() : null;
+  const user = currentUser || cachedUser;
+  const firstName = ((_a2 = user == null ? void 0 : user.profile) == null ? void 0 : _a2.firstName) || (user == null ? void 0 : user.firstName);
+  const lastName = ((_b2 = user == null ? void 0 : user.profile) == null ? void 0 : _b2.lastName) || (user == null ? void 0 : user.lastName);
+  const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName || lastName;
+  const orgName = ((_d = (_c = user == null ? void 0 : user.profile) == null ? void 0 : _c.roleData) == null ? void 0 : _d.institutionName) || ((_f = (_e = user == null ? void 0 : user.profile) == null ? void 0 : _e.roleData) == null ? void 0 : _f.companyName) || ((_h = (_g = user == null ? void 0 : user.profile) == null ? void 0 : _g.roleData) == null ? void 0 : _h.schoolName) || ((_j = (_i = user == null ? void 0 : user.profile) == null ? void 0 : _i.roleData) == null ? void 0 : _j.collegeName) || ((_l = (_k = user == null ? void 0 : user.profile) == null ? void 0 : _k.roleData) == null ? void 0 : _l.organizationName) || (user == null ? void 0 : user.institutionName) || (user == null ? void 0 : user.companyName) || (user == null ? void 0 : user.schoolName) || (user == null ? void 0 : user.collegeName);
+  const displayName = orgName || fullName || (user == null ? void 0 : user.name) || ((user == null ? void 0 : user.email) ? user.email.split("@")[0] : "User Account");
+  const userRoleDisplay = roleBadgeTitles[currentWorkspace] || ((user == null ? void 0 : user.role) ? user.role.charAt(0).toUpperCase() + user.role.slice(1).toLowerCase() : "Member");
+  const userAvatar = (user == null ? void 0 : user.avatarUrl) || ((_m = user == null ? void 0 : user.profile) == null ? void 0 : _m.avatarUrl);
+  const initials = (displayName || "RR").split(" ").filter(Boolean).map((w) => w[0]).slice(0, 2).join("").toUpperCase() || "RR";
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const profileSectionRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileSectionRef.current && !profileSectionRef.current.contains(event.target)) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    if (isProfileMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isProfileMenuOpen]);
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } catch {
+    } finally {
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
+    }
+  };
+  return /* @__PURE__ */ jsxs(Fragment, { children: [
+    isMobileOpen && /* @__PURE__ */ jsx(
+      "div",
+      {
+        className: "fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden animate-fade-in",
+        onClick: onCloseMobile,
+        "aria-hidden": "true"
+      }
+    ),
+    /* @__PURE__ */ jsxs("aside", { className: `w-72 h-screen flex flex-col fixed top-0 bottom-0 left-0 z-50 shadow-xl border-r font-sans transition-transform duration-300 md:translate-x-0 ${isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"} ${isDarkMode ? "bg-slate-900 border-slate-800 text-white" : "bg-white border-blue-100 text-slate-900"}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `p-5 flex items-center justify-between border-b shrink-0 ${isDarkMode ? "border-slate-800 bg-slate-950/60" : "border-blue-100 bg-blue-50/40"}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3.5 min-w-0", children: [
+          /* @__PURE__ */ jsx("div", { className: "w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 shrink-0", children: /* @__PURE__ */ jsx(FiCompass, { className: "w-6 h-6 animate-pulse-glow" }) }),
+          /* @__PURE__ */ jsxs("div", { className: "min-w-0", children: [
+            /* @__PURE__ */ jsx("h2", { className: `font-bold text-xl tracking-tight font-sans truncate ${isDarkMode ? "text-white" : "text-slate-900"}`, children: "Role Ready" }),
+            /* @__PURE__ */ jsx("span", { className: "inline-block text-[12px] font-medium bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-md border border-blue-400/20 truncate max-w-[160px]", children: roleDisplayTitles[currentWorkspace] || "Workspace Portal" })
+          ] })
+        ] }),
+        onCloseMobile && /* @__PURE__ */ jsx(
+          "button",
+          {
+            onClick: onCloseMobile,
+            className: "md:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer",
+            "aria-label": "Close sidebar",
+            children: /* @__PURE__ */ jsx(FiX, { className: "w-5 h-5" })
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsx("nav", { className: "flex-1 overflow-y-auto p-3 space-y-1 scrollbar-thin", children: navItems.map((item) => {
+        const Icon = item.icon;
+        const isActive = item.id === "dashboard" || item.id === "overview" ? activeView === "dashboard" || activeView === "overview" || !activeView : activeView === item.id || item.id === "child" && activeView === "children";
+        return /* @__PURE__ */ jsxs(
+          "button",
+          {
+            onClick: () => {
+              onViewChange(item.id);
+              if (onCloseMobile) onCloseMobile();
+            },
+            className: `w-full flex items-center justify-between min-h-[40px] px-3.5 py-2 rounded-xl text-[14px] font-medium transition-colors duration-150 cursor-pointer border ${isActive ? "bg-[#12163A] text-white shadow-md border-[#3665EE]/40" : isDarkMode ? "border-transparent text-slate-300 hover:bg-[#12163A]/60 hover:text-white" : "border-transparent text-[#4B5563] hover:bg-[#DEE9FF]/60 hover:text-[#12163A]"}`,
+            children: [
+              /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 min-w-0 flex-1 text-left", children: [
+                /* @__PURE__ */ jsx(Icon, { className: `w-4 h-4 shrink-0 transition-colors duration-150 ${isActive ? "text-[#3665EE]" : "text-[#94A3B8]"}` }),
+                /* @__PURE__ */ jsx("span", { className: "truncate whitespace-nowrap text-left", children: item.label })
+              ] }),
+              item.id === "users" && currentWorkspace === "super-admin" && /* @__PURE__ */ jsx("span", { className: "bg-[#3665EE]/20 text-[#3665EE] text-[11px] px-2 py-0.5 rounded-full font-semibold ml-2 shrink-0", children: totalEntities })
+            ]
+          },
+          item.id
+        );
+      }) }),
+      /* @__PURE__ */ jsxs(
+        "div",
+        {
+          ref: profileSectionRef,
+          className: `p-3 border-t shrink-0 relative ${isDarkMode ? "border-slate-800 bg-slate-950/70" : "border-blue-100 bg-blue-50/50"}`,
+          children: [
+            isProfileMenuOpen && /* @__PURE__ */ jsxs(
+              "div",
+              {
+                className: `absolute bottom-full left-3 right-3 mb-2 p-2 rounded-2xl shadow-2xl border transition-all duration-200 z-50 animate-fade-in ${isDarkMode ? "bg-slate-900 border-slate-700 text-white" : "bg-white border-blue-200 text-slate-800"}`,
+                children: [
+                  /* @__PURE__ */ jsxs("div", { className: `px-3 py-2.5 border-b mb-1.5 text-left ${isDarkMode ? "border-slate-800" : "border-blue-50"}`, children: [
+                    /* @__PURE__ */ jsx("p", { className: "text-[10px] font-bold uppercase tracking-wider text-blue-500", children: "Authenticated Account" }),
+                    /* @__PURE__ */ jsx("p", { className: `text-[13.5px] font-bold truncate mt-0.5 ${isDarkMode ? "text-white" : "text-slate-900"}`, children: displayName }),
+                    /* @__PURE__ */ jsx("p", { className: "text-[11px] text-slate-400 truncate", children: (user == null ? void 0 : user.email) || "Active Session" })
+                  ] }),
+                  /* @__PURE__ */ jsxs(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => {
+                        setIsProfileMenuOpen(false);
+                        onViewChange("profile");
+                        if (onCloseMobile) onCloseMobile();
+                      },
+                      className: `w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${isDarkMode ? "hover:bg-slate-800 text-slate-200 hover:text-white" : "hover:bg-blue-50 text-slate-700 hover:text-blue-700"}`,
+                      children: [
+                        /* @__PURE__ */ jsx(FiUser, { className: "w-4 h-4 text-blue-500 shrink-0" }),
+                        /* @__PURE__ */ jsx("span", { children: "View Profile" })
+                      ]
+                    }
+                  ),
+                  /* @__PURE__ */ jsxs(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => {
+                        setIsProfileMenuOpen(false);
+                        onViewChange("profile");
+                        if (onCloseMobile) onCloseMobile();
+                      },
+                      className: `w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${isDarkMode ? "hover:bg-slate-800 text-slate-200 hover:text-white" : "hover:bg-blue-50 text-slate-700 hover:text-blue-700"}`,
+                      children: [
+                        /* @__PURE__ */ jsx(FiEdit2, { className: "w-4 h-4 text-emerald-500 shrink-0" }),
+                        /* @__PURE__ */ jsx("span", { children: "Edit Profile" })
+                      ]
+                    }
+                  ),
+                  /* @__PURE__ */ jsxs(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => {
+                        setIsProfileMenuOpen(false);
+                        onViewChange("settings");
+                        if (onCloseMobile) onCloseMobile();
+                      },
+                      className: `w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${isDarkMode ? "hover:bg-slate-800 text-slate-200 hover:text-white" : "hover:bg-blue-50 text-slate-700 hover:text-blue-700"}`,
+                      children: [
+                        /* @__PURE__ */ jsx(FiSliders, { className: "w-4 h-4 text-purple-500 shrink-0" }),
+                        /* @__PURE__ */ jsx("span", { children: "Account Settings" })
+                      ]
+                    }
+                  ),
+                  /* @__PURE__ */ jsx("div", { className: `h-px my-1.5 ${isDarkMode ? "bg-slate-800" : "bg-slate-100"}` }),
+                  /* @__PURE__ */ jsxs(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: handleLogout,
+                      className: `w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${isDarkMode ? "hover:bg-rose-500/20 text-rose-400" : "hover:bg-rose-50 text-rose-600"}`,
+                      children: [
+                        /* @__PURE__ */ jsx(FiLogOut, { className: "w-4 h-4 shrink-0" }),
+                        /* @__PURE__ */ jsx("span", { children: "Logout" })
+                      ]
+                    }
+                  )
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsxs(
+              "button",
+              {
+                type: "button",
+                onClick: () => setIsProfileMenuOpen((prev) => !prev),
+                className: `w-full flex items-center justify-between p-2.5 rounded-xl border transition-all duration-150 cursor-pointer text-left ${isProfileMenuOpen ? isDarkMode ? "bg-slate-800 border-blue-500/50 shadow-md" : "bg-blue-50 border-blue-300 shadow-sm" : isDarkMode ? "bg-slate-900/90 border-slate-800 hover:bg-slate-800/60 hover:border-slate-700" : "bg-white border-blue-100 hover:bg-blue-50/60 hover:border-blue-200"}`,
+                "aria-expanded": isProfileMenuOpen,
+                "aria-haspopup": "true",
+                children: [
+                  /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2.5 min-w-0 flex-1", children: [
+                    userAvatar ? /* @__PURE__ */ jsx(
+                      "img",
+                      {
+                        src: userAvatar,
+                        alt: displayName,
+                        className: "w-9 h-9 rounded-xl object-cover ring-1 ring-blue-500/30 shrink-0"
+                      }
+                    ) : /* @__PURE__ */ jsx("div", { className: "w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-bold flex items-center justify-center text-xs shadow-md ring-1 ring-blue-500/30 shrink-0", children: initials }),
+                    /* @__PURE__ */ jsxs("div", { className: "min-w-0 flex-1", children: [
+                      /* @__PURE__ */ jsx("div", { className: `text-[13px] font-semibold leading-tight truncate ${isDarkMode ? "text-white" : "text-slate-900"}`, title: displayName, children: displayName }),
+                      /* @__PURE__ */ jsx("div", { className: "text-[11.5px] font-medium text-blue-500 dark:text-blue-400 truncate mt-0.5", title: userRoleDisplay, children: userRoleDisplay })
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsx(
+                    FiChevronUp,
+                    {
+                      className: `w-4 h-4 text-slate-400 shrink-0 ml-1.5 transition-transform duration-200 ${isProfileMenuOpen ? "rotate-180 text-blue-500" : ""}`
+                    }
+                  )
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsxs(
+              "button",
+              {
+                type: "button",
+                onClick: handleLogout,
+                className: `w-full mt-2 flex items-center justify-center min-h-[38px] gap-2 py-2 px-3.5 rounded-xl text-[13.5px] font-semibold transition-colors duration-150 cursor-pointer border ${isDarkMode ? "bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 shadow-xs" : "bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100 hover:border-rose-300 shadow-xs"}`,
+                children: [
+                  /* @__PURE__ */ jsx(FiLogOut, { className: "w-4 h-4" }),
+                  /* @__PURE__ */ jsx("span", { children: "Log Out" })
+                ]
+              }
+            )
+          ]
+        }
+      )
+    ] })
+  ] });
+};
 const Topbar = ({
   currentWorkspace,
   searchQuery,
   onSearchChange,
   onShowToast,
   isDarkMode,
-  onToggleTheme
+  onToggleTheme,
+  onToggleMobileMenu
 }) => {
-  var _a2, _b2, _c, _d;
-  const { data: currentUser } = useCurrentUser();
-  const userDisplayName = ((_a2 = currentUser == null ? void 0 : currentUser.profile) == null ? void 0 : _a2.firstName) && ((_b2 = currentUser == null ? void 0 : currentUser.profile) == null ? void 0 : _b2.lastName) ? `${currentUser.profile.firstName} ${currentUser.profile.lastName}` : ((_c = currentUser == null ? void 0 : currentUser.profile) == null ? void 0 : _c.firstName) || (currentUser == null ? void 0 : currentUser.email) || "System User";
-  const userRoleDisplay = (currentUser == null ? void 0 : currentUser.role) ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1).toLowerCase() : currentWorkspace === "super-admin" ? "Super Admin" : currentWorkspace.charAt(0).toUpperCase() + currentWorkspace.slice(1);
-  const userAvatar = (currentUser == null ? void 0 : currentUser.avatarUrl) || ((_d = currentUser == null ? void 0 : currentUser.profile) == null ? void 0 : _d.avatarUrl);
   const roleNameMap = {
     "super-admin": "Super Admin (Governance)",
     "school": "School Admin Portal",
@@ -5938,41 +6174,52 @@ const Topbar = ({
     "company": "Enterprise Company Portal",
     "parent": "Parent & Family Intelligence Portal"
   };
-  return /* @__PURE__ */ jsxs("header", { className: `h-16 border-b px-6 flex items-center justify-between sticky top-0 z-30 font-sans transition-colors duration-200 ${isDarkMode ? "bg-[#12163A] border-slate-800 text-white backdrop-blur-md" : "bg-white/90 border-slate-200 text-[#12163A] backdrop-blur-md shadow-2xs"}`, children: [
-    /* @__PURE__ */ jsx("div", { className: "flex items-center gap-3 w-96", children: /* @__PURE__ */ jsxs("div", { className: "relative w-full", children: [
-      /* @__PURE__ */ jsx(FiSearch, { className: `w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${isDarkMode ? "text-slate-400" : "text-[#3665EE]"}` }),
-      /* @__PURE__ */ jsx(
-        "input",
+  return /* @__PURE__ */ jsxs("header", { className: `h-16 border-b px-4 md:px-6 flex items-center justify-between sticky top-0 z-30 font-sans transition-colors duration-200 ${isDarkMode ? "bg-[#12163A] border-slate-800 text-white backdrop-blur-md" : "bg-white/90 border-slate-200 text-[#12163A] backdrop-blur-md shadow-2xs"}`, children: [
+    /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 min-w-0", children: [
+      onToggleMobileMenu && /* @__PURE__ */ jsx(
+        "button",
         {
-          type: "text",
-          value: searchQuery,
-          onChange: (e) => onSearchChange(e.target.value),
-          placeholder: `Search in ${roleNameMap[currentWorkspace]}...`,
-          className: `w-full pl-9 pr-4 py-2 rounded-xl text-[14px] font-normal leading-normal transition focus:outline-none focus:ring-2 focus:ring-[#3665EE] ${isDarkMode ? "bg-slate-800/80 border border-slate-700 text-white placeholder-slate-400" : "bg-[#DEE9FF]/40 border border-[#C6D9FF] text-[#12163A] placeholder-[#6B7280]"}`
+          onClick: onToggleMobileMenu,
+          className: `md:hidden p-2 rounded-xl border transition-colors cursor-pointer shrink-0 ${isDarkMode ? "bg-slate-800 border-slate-700 text-slate-300 hover:text-white" : "bg-[#DEE9FF] border-[#C6D9FF] text-[#12163A] hover:bg-[#CBDDFF]"}`,
+          "aria-label": "Toggle navigation drawer",
+          children: /* @__PURE__ */ jsx(FiMenu, { className: "w-5 h-5 text-[#3665EE]" })
         }
-      )
-    ] }) }),
-    /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
+      ),
+      /* @__PURE__ */ jsxs("div", { className: "relative w-52 sm:w-72 md:w-96", children: [
+        /* @__PURE__ */ jsx(FiSearch, { className: `w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${isDarkMode ? "text-slate-400" : "text-[#3665EE]"}` }),
+        /* @__PURE__ */ jsx(
+          "input",
+          {
+            type: "text",
+            value: searchQuery,
+            onChange: (e) => onSearchChange(e.target.value),
+            placeholder: `Search in ${roleNameMap[currentWorkspace]}...`,
+            className: `w-full pl-9 pr-4 py-2 rounded-xl text-[14px] font-normal leading-normal transition focus:outline-none focus:ring-2 focus:ring-[#3665EE] ${isDarkMode ? "bg-slate-800/80 border border-slate-700 text-white placeholder-slate-400" : "bg-[#DEE9FF]/40 border border-[#C6D9FF] text-[#12163A] placeholder-[#6B7280]"}`
+          }
+        )
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 md:gap-3 shrink-0", children: [
       /* @__PURE__ */ jsx(
         "button",
         {
           onClick: onToggleTheme,
           "aria-label": isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode",
           title: isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode",
-          className: `flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-[13px] font-semibold transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${isDarkMode ? "bg-slate-800 border-amber-500/40 text-amber-400 hover:bg-slate-700" : "bg-[#DEE9FF] border-[#C6D9FF] text-[#12163A] hover:bg-[#CBDDFF]"}`,
+          className: `flex items-center gap-2 px-3 py-1.5 rounded-xl border text-[13px] font-semibold transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${isDarkMode ? "bg-slate-800 border-amber-500/40 text-amber-400 hover:bg-slate-700" : "bg-[#DEE9FF] border-[#C6D9FF] text-[#12163A] hover:bg-[#CBDDFF]"}`,
           children: isDarkMode ? /* @__PURE__ */ jsxs(Fragment, { children: [
             /* @__PURE__ */ jsx(FiSun, { className: "w-4 h-4 text-amber-400" }),
-            /* @__PURE__ */ jsx("span", { children: "Light Mode" })
+            /* @__PURE__ */ jsx("span", { className: "hidden sm:inline", children: "Light Mode" })
           ] }) : /* @__PURE__ */ jsxs(Fragment, { children: [
             /* @__PURE__ */ jsx(FiMoon, { className: "w-4 h-4 text-[#3665EE]" }),
-            /* @__PURE__ */ jsx("span", { children: "Dark Mode" })
+            /* @__PURE__ */ jsx("span", { className: "hidden sm:inline", children: "Dark Mode" })
           ] })
         }
       ),
       /* @__PURE__ */ jsxs(
         "button",
         {
-          onClick: () => onShowToast("Notifications: 2 pending seat approval requests."),
+          onClick: () => onShowToast("Notifications: 2 pending activity updates."),
           "aria-label": "View notifications",
           className: `relative p-2 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${isDarkMode ? "bg-slate-800 border-slate-700 text-slate-300 hover:text-white" : "bg-[#DEE9FF] border-[#C6D9FF] text-[#12163A] hover:bg-[#CBDDFF]"}`,
           children: [
@@ -5981,15 +6228,7 @@ const Topbar = ({
             /* @__PURE__ */ jsx("span", { className: "absolute top-1 right-1 w-2 h-2 bg-[#3665EE] rounded-full" })
           ]
         }
-      ),
-      /* @__PURE__ */ jsx("div", { className: `h-6 w-px ${isDarkMode ? "bg-slate-800" : "bg-slate-200"}` }),
-      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2.5", children: [
-        /* @__PURE__ */ jsx("div", { className: "w-8 h-8 rounded-xl bg-[#12163A] text-white font-bold flex items-center justify-center text-xs shadow-md border border-[#3665EE]/40 overflow-hidden", children: userAvatar ? /* @__PURE__ */ jsx("img", { src: userAvatar, alt: userDisplayName, className: "w-full h-full object-cover" }) : /* @__PURE__ */ jsx(FiUser, { className: "w-4 h-4 text-[#3665EE]" }) }),
-        /* @__PURE__ */ jsxs("div", { className: "hidden sm:block text-left", children: [
-          /* @__PURE__ */ jsx("div", { className: `text-[13px] md:text-[14px] font-semibold leading-tight truncate max-w-[150px] ${isDarkMode ? "text-white" : "text-[#12163A]"}`, title: userDisplayName, children: userDisplayName }),
-          /* @__PURE__ */ jsx("div", { className: "text-[12px] font-medium text-[#3665EE]", children: userRoleDisplay })
-        ] })
-      ] })
+      )
     ] })
   ] });
 };
@@ -7379,6 +7618,33 @@ const SchoolDashboard = ({
     fields: []
   });
   const [teachersList, setTeachersList] = useState([]);
+  const [parentsList, setParentsList] = useState([
+    { id: "PAR-101", parentName: "Mr. Arvind Sharma", studentName: "Aarav Sharma", grade: "Grade 10-A", phone: "+91 98765 43210", email: "arvind.sharma@example.com", status: "Active App User", lastActive: "Today" },
+    { id: "PAR-102", parentName: "Mrs. Sunita Patel", studentName: "Diya Patel", grade: "Grade 11-PCM", phone: "+91 98765 43211", email: "sunita.patel@example.com", status: "Active App User", lastActive: "Yesterday" },
+    { id: "PAR-103", parentName: "Dr. Mohan Iyer", studentName: "Rohan Iyer", grade: "Grade 12-Commerce", phone: "+91 98765 43212", email: "mohan.iyer@example.com", status: "Pending Verification", lastActive: "3 days ago" },
+    { id: "PAR-104", parentName: "Mrs. Kavita Gupta", studentName: "Ananya Gupta", grade: "Grade 9-B", phone: "+91 98765 43213", email: "kavita.gupta@example.com", status: "Active App User", lastActive: "Today" },
+    { id: "PAR-105", parentName: "Mr. Rajesh Verma", studentName: "Siddharth Verma", grade: "Grade 10-B", phone: "+91 98765 43214", email: "rajesh.verma@example.com", status: "Active App User", lastActive: "5 days ago" }
+  ]);
+  const [classesList, setClassesList] = useState([
+    { id: "CLS-08A", grade: "Grade 8", section: "Section A", classTeacher: "Mrs. Suman Rao", studentsCount: 38, room: "Room 101, Junior Wing", stream: "General Foundation", avgScore: 84 },
+    { id: "CLS-09A", grade: "Grade 9", section: "Section A", classTeacher: "Mr. Devendra Mishra", studentsCount: 42, room: "Room 202, Middle Wing", stream: "General Foundation", avgScore: 86 },
+    { id: "CLS-09B", grade: "Grade 9", section: "Section B", classTeacher: "Ms. Neha Kapoor", studentsCount: 40, room: "Room 203, Middle Wing", stream: "General Foundation", avgScore: 82 },
+    { id: "CLS-10A", grade: "Grade 10", section: "Section A", classTeacher: "Dr. Rajesh Verma", studentsCount: 45, room: "Room 301, Senior Wing", stream: "Board Exam Preparation", avgScore: 91 },
+    { id: "CLS-10B", grade: "Grade 10", section: "Section B", classTeacher: "Mrs. Meenakshi Sundaram", studentsCount: 44, room: "Room 302, Senior Wing", stream: "Board Exam Preparation", avgScore: 88 },
+    { id: "CLS-11S", grade: "Grade 11", section: "Science (PCM/PCB)", classTeacher: "Mr. Vikram Sen", studentsCount: 50, room: "Science Block Lab 1", stream: "Pure Sciences & STEM", avgScore: 92 },
+    { id: "CLS-11C", grade: "Grade 11", section: "Commerce & Economics", classTeacher: "Mrs. Pooja Bansal", studentsCount: 36, room: "Room 401, Senior Wing", stream: "Commerce & Finance", avgScore: 87 },
+    { id: "CLS-12S", grade: "Grade 12", section: "Science (PCM/PCB)", classTeacher: "Dr. Ananya Roy", studentsCount: 48, room: "Science Block Lab 2", stream: "Higher Secondary STEM", avgScore: 94 }
+  ]);
+  const [guidanceSessions, setGuidanceSessions] = useState([
+    { id: "GUD-01", title: "Stream Selection Advisory (PCM vs PCB vs Commerce)", grade: "Grade 10 Students & Parents", counselor: "Dr. Rajesh Verma", date: "March 15, 2026", time: "10:30 AM", venue: "School Main Auditorium", registered: "165 Registered" },
+    { id: "GUD-02", title: "Top Engineering & Medical Entrance Prep Strategy", grade: "Grades 11 & 12 Science", counselor: "Prof. Ramesh Sundaram", date: "March 22, 2026", time: "02:00 PM", venue: "Virtual Conference Room", registered: "98 Registered" },
+    { id: "GUD-03", title: "Liberal Arts, Design & Economics Career Pathways", grade: "Grades 10 - 12", counselor: "Ms. Neha Kapoor", date: "March 28, 2026", time: "11:00 AM", venue: "Seminar Hall 2", registered: "74 Registered" }
+  ]);
+  const cardClass = isDarkMode ? "bg-slate-900 border-slate-800 text-white shadow-xl" : "bg-white border-blue-100 text-slate-900 shadow-sm";
+  const subCardClass = isDarkMode ? "bg-slate-800/80 border-slate-700/80 text-white" : "bg-slate-50/80 border-blue-100 text-slate-900 shadow-2xs";
+  const textMuted = isDarkMode ? "text-slate-400" : "text-slate-500";
+  const textHeading = isDarkMode ? "text-white" : "text-slate-900";
+  const borderDivider = isDarkMode ? "border-slate-800" : "border-slate-100";
   const [students, setStudents] = useState([]);
   const filteredStudents = students.filter((s) => {
     const matchesGrade = selectedGrade === "All" || s.grade === selectedGrade;
@@ -7447,6 +7713,45 @@ const SchoolDashboard = ({
       setTeachersList(updated);
       updateMutation.mutate({ teachers: updated });
       onShowToast(`Successfully added teacher: ${newTch.name}!`);
+    } else if (actionModalConfig.title === "Link Parent Account") {
+      const newParent = {
+        id: `PAR-${Math.floor(200 + Math.random() * 800)}`,
+        parentName: data.parentName || "Parent Guardian",
+        studentName: data.studentName || "Student Ward",
+        grade: data.grade || "Grade 10",
+        phone: data.phone || "+91 98765 00000",
+        email: data.email || "parent@example.com",
+        status: "Active App User",
+        lastActive: "Just now"
+      };
+      setParentsList((prev) => [newParent, ...prev]);
+      onShowToast(`Linked parent account for ${newParent.studentName}!`);
+    } else if (actionModalConfig.title === "Add Class / Section") {
+      const newClass = {
+        id: `CLS-${Math.floor(100 + Math.random() * 900)}`,
+        grade: data.grade || "Grade 10",
+        section: data.section || "Section C",
+        classTeacher: data.classTeacher || "Assigned Teacher",
+        studentsCount: parseInt(data.studentsCount) || 40,
+        room: data.room || "Room 205",
+        stream: data.stream || "General Curriculum",
+        avgScore: 85
+      };
+      setClassesList((prev) => [newClass, ...prev]);
+      onShowToast(`Created new class section: ${newClass.grade} ${newClass.section}!`);
+    } else if (actionModalConfig.title === "Schedule Guidance Session") {
+      const newGuidance = {
+        id: `GUD-${Math.floor(10 + Math.random() * 90)}`,
+        title: data.title || "Career Counseling Workshop",
+        grade: data.grade || "All Grades",
+        counselor: data.counselor || "Lead Career Counselor",
+        date: data.date || "Next Week",
+        time: data.time || "11:00 AM",
+        venue: data.venue || "Auditorium",
+        registered: "30 Registered"
+      };
+      setGuidanceSessions((prev) => [newGuidance, ...prev]);
+      onShowToast(`Scheduled guidance workshop: ${newGuidance.title}!`);
     } else {
       onShowToast(`Action completed: ${actionModalConfig.title}`);
     }
@@ -7928,6 +8233,159 @@ const SchoolDashboard = ({
         ] }, i)) })
       ] });
     }
+    if (activeSubView === "parents") {
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-xs font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+              /* @__PURE__ */ jsx(FiUsers, { className: "w-5 h-5 text-[#3665EE]" }),
+              " Parent Directory & Student Ward Linkage"
+            ] }),
+            /* @__PURE__ */ jsx("p", { className: textMuted, children: "Registered parents, ward communication channels, and parent portal app status" })
+          ] }),
+          /* @__PURE__ */ jsxs(
+            "button",
+            {
+              onClick: () => openTriggerModal("Link Parent Account", "Connect a parent guardian with their student ward", [
+                { label: "Parent Full Name", name: "parentName", type: "text", placeholder: "e.g. Mr. Arvind Sharma" },
+                { label: "Student Ward Name", name: "studentName", type: "text", placeholder: "e.g. Aarav Sharma" },
+                { label: "Grade & Section", name: "grade", type: "text", placeholder: "e.g. Grade 10-A" },
+                { label: "Phone Number", name: "phone", type: "text", placeholder: "+91 98765 00000" },
+                { label: "Parent Email", name: "email", type: "email", placeholder: "parent@example.com" }
+              ]),
+              className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md",
+              children: [
+                /* @__PURE__ */ jsx(FiPlus, { className: "w-3.5 h-3.5" }),
+                " Link Parent Account"
+              ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "space-y-3", children: parentsList.map((par) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-3 ${subCardClass} transition hover:shadow-md`, children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsx("h4", { className: `font-bold text-sm ${textHeading}`, children: par.parentName }),
+              /* @__PURE__ */ jsxs("span", { className: "text-[10px] font-mono text-slate-400", children: [
+                "(",
+                par.id,
+                ")"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "text-[#3665EE] font-semibold text-[11px] mt-0.5", children: [
+              "Ward: ",
+              par.studentName,
+              " • ",
+              par.grade
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: `text-[10px] ${textMuted} mt-0.5`, children: [
+              "Phone: ",
+              par.phone,
+              " • Email: ",
+              par.email,
+              " • Last Active: ",
+              par.lastActive
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsx("span", { className: `text-[10px] px-2.5 py-1 rounded-full font-bold border ${par.status.includes("Active") ? "bg-emerald-500/20 text-emerald-600 border-emerald-500/30" : "bg-amber-500/20 text-amber-600 border-amber-500/30"}`, children: par.status }),
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => onShowToast(`Initiated direct message to ${par.parentName}`),
+                className: "bg-[#12163A] hover:bg-[#1A2050] text-white font-semibold px-3 py-1.5 rounded-xl text-xs transition cursor-pointer",
+                children: "Send Message"
+              }
+            )
+          ] })
+        ] }, par.id)) })
+      ] });
+    }
+    if (activeSubView === "classes") {
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-xs font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+              /* @__PURE__ */ jsx(FiBookOpen, { className: "w-5 h-5 text-[#3665EE]" }),
+              " Academic Classes & Grade Roster"
+            ] }),
+            /* @__PURE__ */ jsx("p", { className: textMuted, children: "Class sections, assigned class teachers, student capacities, and readiness averages" })
+          ] }),
+          /* @__PURE__ */ jsxs(
+            "button",
+            {
+              onClick: () => openTriggerModal("Add Class / Section", "Create a new grade section with class teacher assignment", [
+                { label: "Grade Level", name: "grade", type: "text", placeholder: "e.g. Grade 10" },
+                { label: "Section Name", name: "section", type: "text", placeholder: "e.g. Section C" },
+                { label: "Assigned Class Teacher", name: "classTeacher", type: "text", placeholder: "e.g. Mrs. Suman Rao" },
+                { label: "Student Count", name: "studentsCount", type: "number", placeholder: "40" },
+                { label: "Classroom Room / Wing", name: "room", type: "text", placeholder: "e.g. Room 204, Senior Wing" },
+                { label: "Curriculum Stream", name: "stream", type: "text", placeholder: "e.g. Science / General" }
+              ]),
+              className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md",
+              children: [
+                /* @__PURE__ */ jsx(FiPlus, { className: "w-3.5 h-3.5" }),
+                " Add Class / Section"
+              ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: classesList.map((cls) => /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-2xl border space-y-3 ${subCardClass} transition hover:shadow-md hover:border-[#3665EE]`, children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between", children: [
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsxs("h3", { className: `font-bold text-sm ${textHeading}`, children: [
+                cls.grade,
+                " — ",
+                cls.section
+              ] }),
+              /* @__PURE__ */ jsx("div", { className: "text-[#3665EE] font-semibold mt-0.5", children: cls.stream })
+            ] }),
+            /* @__PURE__ */ jsxs("span", { className: "text-[10px] bg-blue-500/10 text-[#3665EE] border border-blue-500/20 px-2.5 py-0.5 rounded-full font-bold", children: [
+              "Avg Score: ",
+              cls.avgScore,
+              "%"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-2 text-[11px] pt-1", children: [
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("span", { className: textMuted, children: "Class Teacher:" }),
+              " ",
+              /* @__PURE__ */ jsx("span", { className: "font-semibold", children: cls.classTeacher })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("span", { className: textMuted, children: "Students:" }),
+              " ",
+              /* @__PURE__ */ jsxs("span", { className: "font-semibold", children: [
+                cls.studentsCount,
+                " Enrolled"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "col-span-2", children: [
+              /* @__PURE__ */ jsx("span", { className: textMuted, children: "Classroom:" }),
+              " ",
+              /* @__PURE__ */ jsx("span", { className: "font-semibold", children: cls.room })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-end gap-2 pt-2 border-t border-slate-700/20", children: [
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => onShowToast(`Opened student roster for ${cls.grade} ${cls.section}`),
+                className: "px-3 py-1.5 rounded-lg border border-slate-600/40 hover:border-[#3665EE] text-xs font-semibold transition cursor-pointer",
+                children: "View Students"
+              }
+            ),
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => onShowToast(`Managing class schedule for ${cls.grade} ${cls.section}`),
+                className: "px-3 py-1.5 rounded-lg bg-[#3665EE] hover:bg-[#2A54D5] text-white text-xs font-semibold transition cursor-pointer",
+                children: "Manage Class"
+              }
+            )
+          ] })
+        ] }, cls.id)) })
+      ] });
+    }
     if (activeSubView === "assessments") {
       return /* @__PURE__ */ jsxs("div", { className: "rounded-[24px] bg-white border border-slate-200 p-6 space-y-6 text-xs font-sans shadow-xs", children: [
         /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between pb-4 border-b border-slate-100", children: [
@@ -7976,6 +8434,125 @@ const SchoolDashboard = ({
             /* @__PURE__ */ jsx("button", { onClick: () => onShowToast(`Analyzing results for ${as.name}`), className: "text-[#3665EE] font-bold hover:underline", children: "View Results" })
           ] })
         ] }, i)) })
+      ] });
+    }
+    if (activeSubView === "progress") {
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-xs font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiTrendingUp, { className: "w-5 h-5 text-[#3665EE]" }),
+            " Student Career Progress & Readiness Trajectories"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Career readiness indices, RIASEC profile distributions, and milestone achievements across cohorts" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
+          /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-2xl border space-y-1 ${subCardClass}`, children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Holland Code Completion" }),
+            /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-[#3665EE]", children: "94.2%" }),
+            /* @__PURE__ */ jsx("span", { className: "text-[10px] text-emerald-500 font-semibold", children: "+6% this term" })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-2xl border space-y-1 ${subCardClass}`, children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Average Readiness Index" }),
+            /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-emerald-500", children: "88.5 / 100" }),
+            /* @__PURE__ */ jsx("span", { className: "text-[10px] text-emerald-500 font-semibold", children: "Above State Benchmark" })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-2xl border space-y-1 ${subCardClass}`, children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "STEM Aptitude High Scorers" }),
+            /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-[#3665EE]", children: "480 Students" }),
+            /* @__PURE__ */ jsx("span", { className: "text-[10px] text-slate-400", children: "Score > 90%" })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-2xl border space-y-1 ${subCardClass}`, children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Counseling Roadmaps Completed" }),
+            /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-emerald-500", children: "1,240" }),
+            /* @__PURE__ */ jsx("span", { className: "text-[10px] text-emerald-500 font-semibold", children: "Active Action Plans" })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "space-y-3 pt-2", children: [
+          /* @__PURE__ */ jsx("h3", { className: `font-bold text-sm ${textHeading}`, children: "Top Performing Career Trainees" }),
+          /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-3", children: [
+            { name: "Aarav Sharma", grade: "Grade 10-A", dna: "Investigative / STEM", score: 96, path: "Software Engineering & AI" },
+            { name: "Diya Patel", grade: "Grade 11-PCM", dna: "Artistic / Design", score: 94, path: "Biomedical Technology" },
+            { name: "Rohan Iyer", grade: "Grade 12-Commerce", dna: "Enterprising / Business", score: 92, path: "FinTech & Quantitative Economics" }
+          ].map((tp, idx) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border ${subCardClass} space-y-2`, children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-start", children: [
+              /* @__PURE__ */ jsxs("div", { children: [
+                /* @__PURE__ */ jsx("h4", { className: `font-bold ${textHeading}`, children: tp.name }),
+                /* @__PURE__ */ jsx("div", { className: "text-[#3665EE] font-semibold text-[11px]", children: tp.grade })
+              ] }),
+              /* @__PURE__ */ jsxs("span", { className: "text-[10px] bg-emerald-500/20 text-emerald-500 px-2 py-0.5 rounded-full font-bold", children: [
+                tp.score,
+                "/100"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: `text-[11px] ${textMuted}`, children: [
+              "DNA: ",
+              /* @__PURE__ */ jsx("strong", { children: tp.dna })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: `text-[11px] ${textMuted}`, children: [
+              "Target Career: ",
+              /* @__PURE__ */ jsx("strong", { className: "text-blue-500", children: tp.path })
+            ] })
+          ] }, idx)) })
+        ] })
+      ] });
+    }
+    if (activeSubView === "guidance") {
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-xs font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+              /* @__PURE__ */ jsx(FiCompass, { className: "w-5 h-5 text-[#3665EE]" }),
+              " Career Guidance & Counseling Desk"
+            ] }),
+            /* @__PURE__ */ jsx("p", { className: textMuted, children: "Mentorship appointments, streaming advisories (Science / Commerce / Humanities), and guidance workshops" })
+          ] }),
+          /* @__PURE__ */ jsxs(
+            "button",
+            {
+              onClick: () => openTriggerModal("Schedule Guidance Session", "Plan a career counseling workshop or 1-on-1 desk", [
+                { label: "Workshop Title", name: "title", type: "text", placeholder: "e.g. Higher Secondary Stream Selection" },
+                { label: "Target Grade", name: "grade", type: "text", placeholder: "e.g. Grade 10 Students & Parents" },
+                { label: "Counselor / Speaker", name: "counselor", type: "text", placeholder: "e.g. Dr. Rajesh Verma" },
+                { label: "Date", name: "date", type: "text", placeholder: "e.g. March 25, 2026" },
+                { label: "Time", name: "time", type: "text", placeholder: "e.g. 10:30 AM" },
+                { label: "Venue", name: "venue", type: "text", placeholder: "e.g. School Auditorium / Virtual" }
+              ]),
+              className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md",
+              children: [
+                /* @__PURE__ */ jsx(FiPlus, { className: "w-3.5 h-3.5" }),
+                " Schedule Guidance Session"
+              ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "space-y-3", children: guidanceSessions.map((gud) => /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-2xl border flex flex-col md:flex-row md:items-center justify-between gap-4 ${subCardClass} transition hover:shadow-md`, children: [
+          /* @__PURE__ */ jsxs("div", { className: "space-y-1", children: [
+            /* @__PURE__ */ jsx("h4", { className: `font-bold text-sm ${textHeading}`, children: gud.title }),
+            /* @__PURE__ */ jsxs("div", { className: "text-[#3665EE] font-semibold text-[11px]", children: [
+              gud.grade,
+              " • Counselor: ",
+              gud.counselor
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: `text-[11px] ${textMuted}`, children: [
+              gud.date,
+              " at ",
+              gud.time,
+              " • Venue: ",
+              gud.venue
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
+            /* @__PURE__ */ jsx("span", { className: "text-[10px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-2.5 py-1 rounded-full font-bold", children: gud.registered }),
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => onShowToast(`Opened registrant details for ${gud.title}`),
+                className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-3 py-1.5 rounded-xl text-xs transition cursor-pointer",
+                children: "View Details"
+              }
+            )
+          ] })
+        ] }, gud.id)) })
       ] });
     }
     if (activeSubView === "reports") {
@@ -8863,6 +9440,7 @@ const CollegeDashboard = ({
     setIsActionModalOpen(false);
   };
   const cardClass = isDarkMode ? "bg-slate-900 border-slate-800 text-white shadow-xl" : "bg-white border-slate-200 text-slate-900 shadow-xs";
+  const subCardClass = isDarkMode ? "bg-slate-800/80 border-slate-700/80 text-white" : "bg-blue-50/40 border-blue-100 text-slate-900";
   const textMuted = isDarkMode ? "text-slate-400" : "text-[#6B7280]";
   const textHeading = isDarkMode ? "text-white" : "text-[#12163A]";
   const borderDivider = isDarkMode ? "border-slate-800" : "border-slate-100";
@@ -8937,7 +9515,99 @@ const CollegeDashboard = ({
         ] })
       ] });
     }
-    if (activeSubView === "programs") {
+    if (activeSubView === "students") {
+      const enrolledStudents = [
+        { id: "COL-STU-01", name: "Aarav Sharma", dept: "Computer Science & Engineering", year: "Final Year (Sem 7)", gpa: "9.2 CGPA", placementStatus: "Placed (Microsoft)", ctc: "₹24.0 LPA" },
+        { id: "COL-STU-02", name: "Priya Nair", dept: "Electronics & Communication", year: "Final Year (Sem 7)", gpa: "8.9 CGPA", placementStatus: "Placed (Qualcomm)", ctc: "₹18.5 LPA" },
+        { id: "COL-STU-03", name: "Rohan Patel", dept: "Mechanical Engineering", year: "Third Year (Sem 5)", gpa: "8.4 CGPA", placementStatus: "Internship Active", ctc: "₹45,000 / mo" },
+        { id: "COL-STU-04", name: "Kavya Menon", dept: "Information Technology", year: "Final Year (Sem 7)", gpa: "9.1 CGPA", placementStatus: "Shortlisted (Google)", ctc: "Under Review" }
+      ];
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
+              /* @__PURE__ */ jsx(FiBookOpen, { className: "w-5 h-5 text-[#3665EE]" }),
+              " Enrolled Student Management & Academic Records"
+            ] }),
+            /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Filter by academic department, semester, and placement readiness status" })
+          ] }),
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => onShowToast("Exported enrolled student registry to CSV"),
+              className: "px-4 py-2 rounded-xl text-xs font-semibold bg-[#3665EE] text-white hover:bg-[#2A54D5] cursor-pointer",
+              children: "Export Registry"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "rounded-2xl border border-slate-700/60 overflow-hidden", children: /* @__PURE__ */ jsxs("table", { className: "w-full text-left text-sm", children: [
+          /* @__PURE__ */ jsx("thead", { className: "bg-[#DEE9FF]/40 text-[#12163A] uppercase text-[11px] font-bold border-b border-[#C6D9FF]", children: /* @__PURE__ */ jsxs("tr", { children: [
+            /* @__PURE__ */ jsx("th", { className: "p-3.5", children: "Roll / ID" }),
+            /* @__PURE__ */ jsx("th", { className: "p-3.5", children: "Student Name" }),
+            /* @__PURE__ */ jsx("th", { className: "p-3.5", children: "Department" }),
+            /* @__PURE__ */ jsx("th", { className: "p-3.5", children: "Year / Sem" }),
+            /* @__PURE__ */ jsx("th", { className: "p-3.5", children: "CGPA" }),
+            /* @__PURE__ */ jsx("th", { className: "p-3.5", children: "Placement Status" })
+          ] }) }),
+          /* @__PURE__ */ jsx("tbody", { className: "divide-y divide-slate-700/40 text-[13px]", children: enrolledStudents.map((s) => /* @__PURE__ */ jsxs("tr", { className: "hover:bg-slate-800/20", children: [
+            /* @__PURE__ */ jsx("td", { className: "p-3.5 font-mono text-blue-400 font-semibold", children: s.id }),
+            /* @__PURE__ */ jsx("td", { className: `p-3.5 font-semibold ${textHeading}`, children: s.name }),
+            /* @__PURE__ */ jsx("td", { className: `p-3.5 ${textMuted}`, children: s.dept }),
+            /* @__PURE__ */ jsx("td", { className: `p-3.5 ${textMuted}`, children: s.year }),
+            /* @__PURE__ */ jsx("td", { className: "p-3.5 font-bold text-emerald-400", children: s.gpa }),
+            /* @__PURE__ */ jsx("td", { className: "p-3.5", children: /* @__PURE__ */ jsx("span", { className: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full text-xs font-semibold", children: s.placementStatus }) })
+          ] }, s.id)) })
+        ] }) })
+      ] });
+    }
+    if (activeSubView === "departments") {
+      const departments = [
+        { name: "Computer Science & Engineering", code: "CSE", head: "Dr. K. R. Raman", facultyCount: 42, studentsCount: 480, labs: 8 },
+        { name: "Electronics & Communication", code: "ECE", head: "Dr. S. Mukherjee", facultyCount: 34, studentsCount: 360, labs: 6 },
+        { name: "Information Technology", code: "IT", head: "Dr. V. Sundaram", facultyCount: 28, studentsCount: 240, labs: 5 },
+        { name: "Mechanical Engineering", code: "ME", head: "Dr. R. K. Nair", facultyCount: 30, studentsCount: 280, labs: 7 }
+      ];
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiGrid, { className: "w-5 h-5 text-[#3665EE]" }),
+            " Academic Department & Faculty Management"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Academic divisions, faculty heads, student strength, and research laboratories" })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: departments.map((d, idx) => /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-2xl border ${subCardClass} space-y-3`, children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+            /* @__PURE__ */ jsx("span", { className: "text-xs font-bold bg-[#3665EE] text-white px-2.5 py-0.5 rounded-md", children: d.code }),
+            /* @__PURE__ */ jsxs("span", { className: `text-xs ${textMuted}`, children: [
+              d.facultyCount,
+              " Faculty Members"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx("h4", { className: `text-base font-semibold ${textHeading}`, children: d.name }),
+          /* @__PURE__ */ jsxs("p", { className: `text-xs ${textMuted}`, children: [
+            "Department Head: ",
+            /* @__PURE__ */ jsx("strong", { className: "text-slate-200", children: d.head })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "pt-2 border-t border-slate-700/40 flex justify-between text-xs", children: [
+            /* @__PURE__ */ jsxs("span", { children: [
+              "Enrolled: ",
+              /* @__PURE__ */ jsxs("strong", { children: [
+                d.studentsCount,
+                " Students"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxs("span", { children: [
+              "Research Labs: ",
+              /* @__PURE__ */ jsxs("strong", { children: [
+                d.labs,
+                " Labs"
+              ] })
+            ] })
+          ] })
+        ] }, idx)) })
+      ] });
+    }
+    if (activeSubView === "programs" || activeSubView === "courses") {
       return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
         /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
           /* @__PURE__ */ jsxs("div", { children: [
@@ -9087,13 +9757,13 @@ const CollegeDashboard = ({
         ] })
       ] });
     }
-    if (activeSubView === "placement-cell" || activeSubView === "drives") {
+    if (activeSubView === "placement-cell" || activeSubView === "placements" || activeSubView === "jobs" || activeSubView === "drives") {
       return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
         /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
           /* @__PURE__ */ jsxs("div", { children: [
             /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
               /* @__PURE__ */ jsx(FiBriefcase, { className: "w-5 h-5 text-[#3665EE]" }),
-              " Campus Placement Cell & Recruitment Hub"
+              " Campus Placement Cell & Corporate Recruitment Hub"
             ] }),
             /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Manage corporate placement drives, CTC packages, & applicant rosters" })
           ] }),
@@ -9165,12 +9835,46 @@ const CollegeDashboard = ({
         ] }, i)) })
       ] });
     }
-    if (activeSubView === "analytics") {
+    if (activeSubView === "events") {
+      const events = [
+        { title: "Annual Tech Innovation Hackathon 2026", date: "September 24-25, 2026", type: "Hackathon", venue: "Auditorium & Innovation Hub", registered: "128 Teams" },
+        { title: "Industry AI Keynote: LLMs in Production", date: "October 02, 2026", type: "Guest Lecture", venue: "Virtual Webinar Room", registered: "450 Students" },
+        { title: "Autumn Career & Internship Fair", date: "October 15, 2026", type: "Career Fair", venue: "Campus Convention Center", registered: "45 Corporate Partners" }
+      ];
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiCalendar, { className: "w-5 h-5 text-[#3665EE]" }),
+            " Campus Events, Hackathons & Guidance Workshops"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Technical hackathons, guest lectures, industry symposiums, and career fairs" })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: events.map((ev, idx) => /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-2xl border ${subCardClass} space-y-3 flex flex-col justify-between`, children: [
+          /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsx("span", { className: "text-[11px] font-semibold uppercase text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full", children: ev.type }),
+            /* @__PURE__ */ jsx("h4", { className: `text-base font-semibold ${textHeading}`, children: ev.title }),
+            /* @__PURE__ */ jsxs("p", { className: `text-xs ${textMuted}`, children: [
+              "Date: ",
+              ev.date
+            ] }),
+            /* @__PURE__ */ jsxs("p", { className: `text-xs ${textMuted}`, children: [
+              "Venue: ",
+              ev.venue
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "pt-2 border-t border-slate-700/40 flex items-center justify-between", children: [
+            /* @__PURE__ */ jsx("span", { className: "text-xs font-semibold text-emerald-400", children: ev.registered }),
+            /* @__PURE__ */ jsx("button", { onClick: () => onShowToast(`Registered for ${ev.title}`), className: "text-xs text-blue-400 font-semibold hover:underline cursor-pointer", children: "Manage Event" })
+          ] })
+        ] }, idx)) })
+      ] });
+    }
+    if (activeSubView === "analytics" || activeSubView === "reports") {
       return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
         /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
           /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
             /* @__PURE__ */ jsx(FiTrendingUp, { className: "w-5 h-5 text-[#3665EE]" }),
-            " Institutional Performance & Placement Analytics"
+            " Institutional Performance & Placement Reports"
           ] }),
           /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Placement trends and corporate recruitment distributions" })
         ] }),
@@ -9418,6 +10122,7 @@ const MentorDashboard = ({
     setIsActionModalOpen(false);
   };
   const cardClass = isDarkMode ? "bg-slate-900 border-slate-800 text-white shadow-xl" : "bg-white border-slate-200 text-slate-900 shadow-xs";
+  const subCardClass = isDarkMode ? "bg-slate-800/80 border-slate-700/80 text-white" : "bg-blue-50/40 border-blue-100 text-slate-900";
   const textMuted = isDarkMode ? "text-slate-400" : "text-[#6B7280]";
   const textHeading = isDarkMode ? "text-white" : "text-[#12163A]";
   const borderDivider = isDarkMode ? "border-slate-800" : "border-slate-100";
@@ -9649,89 +10354,321 @@ const MentorDashboard = ({
         ] }, sl.id)) })
       ] });
     }
-    if (activeSubView === "student-requests" || activeSubView === "mentees") {
+    if (activeSubView === "students" || activeSubView === "mentees" || activeSubView === "student-requests") {
+      const sampleStudents = [
+        { id: "STU-01", name: "Aarav Sharma", grade: "Grade 12 - Senior Secondary", school: "Delhi Public School, R.K. Puram", targetCareer: "Computer Science & AI", matchScore: 94, readiness: "High" },
+        { id: "STU-02", name: "Diya Patel", grade: "Grade 11 - Senior Secondary", school: "National Public School, Indiranagar", targetCareer: "Biotechnology & Genetics", matchScore: 89, readiness: "Strong" },
+        { id: "STU-03", name: "Rohan Iyer", grade: "Grade 10 - Secondary", school: "St. Xavier's Collegiate School", targetCareer: "Robotics & Mechatronics", matchScore: 92, readiness: "High" },
+        { id: "STU-04", name: "Ananya Gupta", grade: "Grade 12 - Senior Secondary", school: "The Mother's International School", targetCareer: "Economics & Data Analytics", matchScore: 86, readiness: "Moderate" }
+      ];
       return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
-        /* @__PURE__ */ jsx("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: /* @__PURE__ */ jsxs("div", { children: [
-          /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
-            /* @__PURE__ */ jsx(FiUsers, { className: "w-5 h-5 text-[#3665EE]" }),
-            " Student Counseling Booking Requests"
-          ] }),
-          /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Review pending mentorship booking requests" })
-        ] }) }),
-        /* @__PURE__ */ jsxs("div", { className: "py-12 text-center text-[13px] text-slate-400", children: [
-          /* @__PURE__ */ jsx(FiUsers, { className: "w-8 h-8 mx-auto text-blue-400 mb-2 opacity-50" }),
-          "No pending counseling booking requests at this time."
-        ] })
-      ] });
-    }
-    if (activeSubView === "video-sessions" || activeSubView === "counseling") {
-      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
-        /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b ${borderDivider}`, children: [
           /* @__PURE__ */ jsxs("div", { children: [
             /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
-              /* @__PURE__ */ jsx(FiVideo, { className: "w-5 h-5 text-[#3665EE]" }),
-              " Live 1-on-1 Video Counseling Room"
+              /* @__PURE__ */ jsx(FiUsers, { className: "w-5 h-5 text-[#3665EE]" }),
+              " Assigned Students Roster & Profiles"
             ] }),
-            /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "HD encrypted video room with live screen share & action plan notes" })
+            /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Monitor assigned mentees, target career pathways, and academic readiness" })
           ] }),
           /* @__PURE__ */ jsxs(
             "button",
             {
-              onClick: () => openTriggerModal("Save Session Notes", "Record counseling takeaways and student action items", [
-                { label: "Action Items for Student", name: "notes", type: "text", placeholder: "Complete roadmap milestones and ATS resume update" }
+              onClick: () => openTriggerModal("Schedule Session", "Book a 1-on-1 counseling slot with a student", [
+                { label: "Select Student", name: "student", type: "text", placeholder: "Aarav Sharma" },
+                { label: "Date & Time", name: "time", type: "text", placeholder: "Tomorrow, 4:00 PM" },
+                { label: "Counseling Topic", name: "topic", type: "text", placeholder: "College Shortlist Strategy" }
               ]),
-              className: "bg-[#12163A] hover:bg-[#1A2050] text-white text-[14px] font-semibold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md",
+              className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white text-[14px] font-semibold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shrink-0",
               children: [
-                /* @__PURE__ */ jsx(FiFileText, { className: "w-4 h-4" }),
-                " Save Session Notes"
+                /* @__PURE__ */ jsx(FiPlus, { className: "w-4 h-4" }),
+                " Schedule Guidance Session"
               ]
             }
           )
         ] }),
-        /* @__PURE__ */ jsxs("div", { className: "p-8 rounded-[24px] bg-[#12163A] text-white text-center space-y-4", children: [
-          /* @__PURE__ */ jsx("div", { className: "w-16 h-16 rounded-full bg-[#3665EE] flex items-center justify-center mx-auto shadow-lg", children: /* @__PURE__ */ jsx(FiVideo, { className: "w-8 h-8 text-white" }) }),
-          /* @__PURE__ */ jsx("h3", { className: "text-[20px] md:text-[22px] font-semibold", children: "Encrypted Video Counseling Room" }),
-          /* @__PURE__ */ jsx("p", { className: "text-[13px] md:text-[14px] text-slate-300 max-w-md mx-auto leading-normal", children: "Ready to launch 1-on-1 video call. Camera and microphone permissions active." }),
-          /* @__PURE__ */ jsx(
+        /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: sampleStudents.map((st) => /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-[20px] border flex flex-col justify-between space-y-3 ${isDarkMode ? "bg-slate-800/40 border-slate-700" : "bg-blue-50/40 border-blue-100"}`, children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between", children: [
+              /* @__PURE__ */ jsxs("div", { children: [
+                /* @__PURE__ */ jsx("h4", { className: `text-[16px] font-semibold ${textHeading}`, children: st.name }),
+                /* @__PURE__ */ jsxs("p", { className: `text-[12px] ${textMuted} mt-0.5`, children: [
+                  st.grade,
+                  " • ",
+                  st.school
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxs("span", { className: "px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20", children: [
+                st.readiness,
+                " Readiness"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "mt-3 text-[13px] space-y-1", children: [
+              /* @__PURE__ */ jsxs("p", { className: textMuted, children: [
+                "Target Career: ",
+                /* @__PURE__ */ jsx("strong", { className: "text-blue-400 font-semibold", children: st.targetCareer })
+              ] }),
+              /* @__PURE__ */ jsxs("p", { className: textMuted, children: [
+                "AI Match Alignment: ",
+                /* @__PURE__ */ jsxs("strong", { className: "text-emerald-400 font-semibold", children: [
+                  st.matchScore,
+                  "%"
+                ] })
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "pt-2 border-t border-slate-700/40 flex items-center justify-between", children: [
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => onShowToast(`Reviewing guidance notes for ${st.name}`),
+                className: "text-xs font-semibold text-blue-400 hover:underline cursor-pointer",
+                children: "View Career DNA"
+              }
+            ),
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => onShowToast(`Initiating counseling call with ${st.name}`),
+                className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white text-xs font-semibold px-3 py-1.5 rounded-xl cursor-pointer",
+                children: "1-on-1 Connect"
+              }
+            )
+          ] })
+        ] }, st.id)) })
+      ] });
+    }
+    if (activeSubView === "progress") {
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiTrendingUp, { className: "w-5 h-5 text-emerald-400" }),
+            " Student Growth & Learning Progress"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Track skill acquisition, milestone roadmaps, and assessment diagnostics across mentees" })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "space-y-4", children: [
+          { name: "Aarav Sharma", career: "Computer Science & AI", course: "Python & Machine Learning Track", progress: 85, status: "Ahead of Schedule" },
+          { name: "Diya Patel", career: "Biotechnology & Genetics", course: "Molecular Biology & Research Methods", progress: 72, status: "On Track" },
+          { name: "Rohan Iyer", career: "Robotics & Mechatronics", course: "Embedded Systems & Arduino Fundamentals", progress: 64, status: "In Progress" },
+          { name: "Ananya Gupta", career: "Economics & Data Analytics", course: "Statistical Modeling & R Programming", progress: 91, status: "Excellence" }
+        ].map((p, idx) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border ${subCardClass} flex flex-col md:flex-row md:items-center justify-between gap-4`, children: [
+          /* @__PURE__ */ jsxs("div", { className: "space-y-1", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsx("h4", { className: `font-semibold text-[15px] ${textHeading}`, children: p.name }),
+              /* @__PURE__ */ jsx("span", { className: "text-[11px] font-semibold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full", children: p.career })
+            ] }),
+            /* @__PURE__ */ jsx("p", { className: `text-xs ${textMuted}`, children: p.course })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "w-full md:w-64 space-y-1", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-xs font-semibold", children: [
+              /* @__PURE__ */ jsx("span", { className: textMuted, children: "Milestone Progress" }),
+              /* @__PURE__ */ jsxs("span", { className: "text-blue-400", children: [
+                p.progress,
+                "%"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-700/40 rounded-full h-2 overflow-hidden", children: /* @__PURE__ */ jsx("div", { className: "bg-blue-500 h-2 rounded-full", style: { width: `${p.progress}%` } }) })
+          ] })
+        ] }, idx)) })
+      ] });
+    }
+    if (activeSubView === "sessions" || activeSubView === "video-sessions" || activeSubView === "counseling") {
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
+              /* @__PURE__ */ jsx(FiVideo, { className: "w-5 h-5 text-[#3665EE]" }),
+              " Mentorship Sessions & Video Counseling Room"
+            ] }),
+            /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Manage scheduled 1-on-1 sessions, encrypted video rooms, and action takeaway notes" })
+          ] }),
+          /* @__PURE__ */ jsxs(
             "button",
             {
-              onClick: () => onShowToast("Camera & Microphone connected! Launching HD video stream."),
-              className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white text-[14px] font-semibold px-6 py-2.5 rounded-xl cursor-pointer shadow-md transition hover:scale-105",
-              children: "Launch Live Call Now"
+              onClick: () => openTriggerModal("Add Available Slot", "Create a new time slot for student bookings", [
+                { label: "Target Day", name: "day", type: "text", placeholder: "Tomorrow" },
+                { label: "Time Slot", name: "time", type: "text", placeholder: "2:00 PM - 3:00 PM" },
+                { label: "Counseling Topic", name: "topic", type: "text", placeholder: "1-on-1 Career Strategy" }
+              ]),
+              className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white text-[14px] font-semibold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shrink-0",
+              children: [
+                /* @__PURE__ */ jsx(FiPlus, { className: "w-4 h-4" }),
+                " Schedule New Session"
+              ]
             }
           )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-4", children: [
+          /* @__PURE__ */ jsxs("div", { className: "p-6 rounded-[20px] bg-[#12163A] text-white space-y-4", children: [
+            /* @__PURE__ */ jsx("div", { className: "w-12 h-12 rounded-xl bg-[#3665EE] flex items-center justify-center", children: /* @__PURE__ */ jsx(FiVideo, { className: "w-6 h-6 text-white" }) }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("h3", { className: "text-[18px] font-semibold", children: "Live 1-on-1 Encrypted Video Room" }),
+              /* @__PURE__ */ jsx("p", { className: "text-xs text-slate-300 mt-1 leading-normal", children: "HD real-time streaming with live screen share, whiteboard, and digital notes integration." })
+            ] }),
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => onShowToast("Camera & Microphone connected! Launching live counseling room."),
+                className: "w-full bg-[#3665EE] hover:bg-[#2A54D5] text-white text-xs font-semibold py-2.5 rounded-xl cursor-pointer transition shadow-md",
+                children: "Launch Counseling Call"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+            /* @__PURE__ */ jsx("h4", { className: `text-xs font-semibold uppercase tracking-wider ${textMuted}`, children: "Upcoming Bookings" }),
+            slotsList.length === 0 ? /* @__PURE__ */ jsx("div", { className: "py-8 text-center text-xs text-slate-400 border border-dashed border-slate-700/60 rounded-xl", children: "No upcoming mentorship bookings. Configure slots above to accept sessions." }) : slotsList.map((sl) => /* @__PURE__ */ jsxs("div", { className: `p-3.5 rounded-xl border flex items-center justify-between ${subCardClass}`, children: [
+              /* @__PURE__ */ jsxs("div", { children: [
+                /* @__PURE__ */ jsxs("span", { className: "text-xs font-bold text-blue-400", children: [
+                  sl.day,
+                  " • ",
+                  sl.time
+                ] }),
+                /* @__PURE__ */ jsx("h5", { className: `font-semibold text-sm ${textHeading} mt-0.5`, children: sl.topic }),
+                /* @__PURE__ */ jsxs("span", { className: `text-[11px] ${textMuted}`, children: [
+                  "Mentee: ",
+                  sl.mentee
+                ] })
+              ] }),
+              /* @__PURE__ */ jsx(
+                "button",
+                {
+                  onClick: () => onShowToast(`Joined session for ${sl.topic}`),
+                  className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white text-xs font-semibold px-3 py-1.5 rounded-lg cursor-pointer",
+                  children: "Connect"
+                }
+              )
+            ] }, sl.id))
+          ] })
         ] })
       ] });
     }
     if (activeSubView === "guidance") {
       return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
-        /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b ${borderDivider}`, children: [
           /* @__PURE__ */ jsxs("div", { children: [
             /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
               /* @__PURE__ */ jsx(FiCompass, { className: "w-5 h-5 text-[#3665EE]" }),
-              " Student Assessment Review & Career Guidance"
+              " Student Career Guidance & Review Desk"
             ] }),
-            /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Review Holland Code DNA passports & issue customized career roadmaps" })
+            /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Provide structured career roadmaps, guidance notes, and psychometric feedback" })
           ] }),
           /* @__PURE__ */ jsxs(
             "button",
             {
               onClick: () => openTriggerModal("Issue Career Action Plan", "Send structured action items to student portal", [
-                { label: "Target Student", name: "student", type: "text", placeholder: "Student Name" },
+                { label: "Target Student", name: "student", type: "text", placeholder: "Aarav Sharma" },
                 { label: "Recommended Milestone", name: "milestone", type: "text", placeholder: "Complete PyTorch Certification" }
               ]),
-              className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white text-[14px] font-semibold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95",
+              className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white text-[14px] font-semibold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shrink-0",
               children: [
                 /* @__PURE__ */ jsx(FiPlus, { className: "w-4 h-4" }),
-                " Issue Career Action Plan"
+                " Issue Guidance Action Plan"
               ]
             }
           )
         ] }),
-        /* @__PURE__ */ jsxs("div", { className: "py-12 text-center text-[13px] text-slate-400", children: [
-          /* @__PURE__ */ jsx(FiCompass, { className: "w-8 h-8 mx-auto text-blue-400 mb-2 opacity-50" }),
-          "No pending student assessment reviews at this time."
+        /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
+          /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-[20px] border ${subCardClass} space-y-2`, children: [
+            /* @__PURE__ */ jsx("h4", { className: `font-semibold text-sm ${textHeading}`, children: "Aarav Sharma — Computer Science & AI" }),
+            /* @__PURE__ */ jsx("p", { className: `text-xs leading-normal ${textMuted}`, children: '"Strong aptitude in algorithmic problem solving. Recommended to focus on advanced mathematics and Python fundamentals before Grade 12 board preparations."' }),
+            /* @__PURE__ */ jsx("span", { className: "text-[11px] text-blue-400 font-semibold block pt-1", children: "Issued: 3 days ago" })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-[20px] border ${subCardClass} space-y-2`, children: [
+            /* @__PURE__ */ jsx("h4", { className: `font-semibold text-sm ${textHeading}`, children: "Diya Patel — Biotechnology & Genetics" }),
+            /* @__PURE__ */ jsx("p", { className: `text-xs leading-normal ${textMuted}`, children: '"Excellent scientific inquiry scores. Recommended targeting IISc Bangalore and top biotechnology research programs with Olympiad preparation."' }),
+            /* @__PURE__ */ jsx("span", { className: "text-[11px] text-blue-400 font-semibold block pt-1", children: "Issued: 1 week ago" })
+          ] })
         ] })
+      ] });
+    }
+    if (activeSubView === "assessments") {
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiAward, { className: "w-5 h-5 text-purple-400" }),
+            " Student Assessment & Diagnostic Reviews"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Review Holland RIASEC psychometric codes, career readiness scores, and skill matrices" })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [
+          { name: "Aarav Sharma", riasec: "IRC (Investigative, Realistic, Conventional)", readiness: 94, topMatch: "Machine Learning Engineer" },
+          { name: "Diya Patel", riasec: "ISR (Investigative, Social, Realistic)", readiness: 89, topMatch: "Geneticist / Biotech Researcher" },
+          { name: "Rohan Iyer", riasec: "RIE (Realistic, Investigative, Enterprising)", readiness: 92, topMatch: "Robotics Hardware Architect" }
+        ].map((a, idx) => /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-[20px] border ${subCardClass} space-y-2`, children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+            /* @__PURE__ */ jsx("h4", { className: `font-semibold text-sm ${textHeading}`, children: a.name }),
+            /* @__PURE__ */ jsxs("span", { className: "text-xs font-bold text-emerald-400", children: [
+              a.readiness,
+              "% Readiness"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("p", { className: `text-xs ${textMuted}`, children: [
+            "Holland Code: ",
+            /* @__PURE__ */ jsx("strong", { className: "text-purple-400 font-semibold", children: a.riasec })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "pt-2 border-t border-slate-700/40", children: [
+            /* @__PURE__ */ jsx("span", { className: "text-[11px] uppercase tracking-wider text-slate-400 block", children: "Top Neural Match" }),
+            /* @__PURE__ */ jsx("span", { className: "text-xs font-semibold text-blue-400", children: a.topMatch })
+          ] })
+        ] }, idx)) })
+      ] });
+    }
+    if (activeSubView === "recommendations") {
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
+              /* @__PURE__ */ jsx(FiAward, { className: "w-5 h-5 text-amber-400" }),
+              " Recommendations & Skill Endorsements"
+            ] }),
+            /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Recommend careers, courses, and certifications directly to student dashboards" })
+          ] }),
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => onShowToast("Added new course recommendation for student cohort!"),
+              className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white text-xs font-semibold px-4 py-2 rounded-xl cursor-pointer",
+              children: "+ Recommend Course"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
+          { type: "Course Track", title: "CS50 Introduction to Computer Science", forStudent: "Aarav Sharma", rationale: "Solidify foundation prior to university entrance exams" },
+          { type: "Certification", title: "AWS Certified Cloud Practitioner", forStudent: "Rohan Iyer", rationale: "Enhance practical infrastructure knowledge for IoT projects" }
+        ].map((rec, idx) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border ${subCardClass} space-y-2`, children: [
+          /* @__PURE__ */ jsx("span", { className: "text-[11px] font-semibold uppercase text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full", children: rec.type }),
+          /* @__PURE__ */ jsx("h4", { className: `font-semibold text-sm ${textHeading}`, children: rec.title }),
+          /* @__PURE__ */ jsxs("p", { className: `text-xs ${textMuted}`, children: [
+            "Recommended for: ",
+            /* @__PURE__ */ jsx("strong", { className: "text-blue-400", children: rec.forStudent })
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: `text-xs ${textMuted}`, children: rec.rationale })
+        ] }, idx)) })
+      ] });
+    }
+    if (activeSubView === "messages") {
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiFileText, { className: "w-5 h-5 text-[#3665EE]" }),
+            " Mentee & Parent Direct Messages"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Communicate with assigned students and their parents regarding guidance sessions" })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "space-y-3", children: [
+          { sender: "Aarav Sharma (Student)", time: "Today, 11:30 AM", message: "Thank you for the guidance session! I have started the Python coursework.", unread: true },
+          { sender: "Mr. Sharma (Parent)", time: "Yesterday", message: "Can we schedule a follow-up session next weekend to review college options?", unread: false }
+        ].map((msg, idx) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border flex items-center justify-between cursor-pointer transition ${subCardClass}`, onClick: () => onShowToast(`Opened conversation with ${msg.sender}`), children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+              msg.unread && /* @__PURE__ */ jsx("span", { className: "w-2 h-2 rounded-full bg-blue-500" }),
+              /* @__PURE__ */ jsx("span", { className: `font-semibold text-sm ${textHeading}`, children: msg.sender }),
+              /* @__PURE__ */ jsx("span", { className: `text-[11px] ${textMuted}`, children: msg.time })
+            ] }),
+            /* @__PURE__ */ jsx("p", { className: `text-xs mt-1 ${textMuted}`, children: msg.message })
+          ] }),
+          /* @__PURE__ */ jsx("button", { className: "text-xs text-blue-400 font-semibold hover:underline", children: "Reply" })
+        ] }, idx)) })
       ] });
     }
     if (activeSubView === "ratings") {
@@ -9875,10 +10812,39 @@ const MentorDashboard = ({
     )
   ] });
 };
+const defaultTrainingBatches = [
+  { id: "BAT-101", name: "Full-Stack Web Dev Q1", course: "Full-Stack Web Development", trainer: "Dr. Ramesh Sundaram", timing: "Mon-Fri 09:00 - 12:00", startDate: "2026-02-01", enrolled: 42, capacity: 50, status: "Active" },
+  { id: "BAT-102", name: "Cloud & DevOps Weekend Fast-Track", course: "Cloud & DevOps Engineering", trainer: "Priya Mukherjee", timing: "Sat-Sun 10:00 - 15:00", startDate: "2026-02-15", enrolled: 35, capacity: 40, status: "Active" },
+  { id: "BAT-103", name: "AI & Data Science Evening Cohort", course: "AI & Data Science Immersion", trainer: "Vikram Mehta", timing: "Mon-Thu 18:00 - 21:00", startDate: "2026-03-01", enrolled: 28, capacity: 35, status: "Upcoming" },
+  { id: "BAT-104", name: "Cybersecurity Analyst Cohort 4", course: "Cybersecurity Operations & Defense", trainer: "Ananya Roy", timing: "Tue-Fri 14:00 - 17:00", startDate: "2025-11-01", enrolled: 30, capacity: 30, status: "Completed" }
+];
+const defaultTrainingLearners = [
+  { id: "LRN-001", name: "Aditya Sharma", email: "aditya.s@example.com", course: "Full-Stack Web Development", batch: "Full-Stack Web Dev Q1", attendance: 96, score: 92, certStatus: "In Progress" },
+  { id: "LRN-002", name: "Sneha Patel", email: "sneha.p@example.com", course: "Cloud & DevOps Engineering", batch: "Cloud & DevOps Weekend Fast-Track", attendance: 92, score: 88, certStatus: "In Progress" },
+  { id: "LRN-003", name: "Rahul Verma", email: "rahul.v@example.com", course: "AI & Data Science Immersion", batch: "AI & Data Science Evening Cohort", attendance: 100, score: 95, certStatus: "Pending" },
+  { id: "LRN-004", name: "Tanvi Joshi", email: "tanvi.j@example.com", course: "Cybersecurity Operations", batch: "Cybersecurity Analyst Cohort 4", attendance: 98, score: 94, certStatus: "Issued" },
+  { id: "LRN-005", name: "Kunal Deshmukh", email: "kunal.d@example.com", course: "Full-Stack Web Development", batch: "Full-Stack Web Dev Q1", attendance: 88, score: 81, certStatus: "In Progress" }
+];
+const defaultTrainingTrainers = [
+  { id: "TRN-01", name: "Dr. Ramesh Sundaram", email: "ramesh.s@institute.edu", specialization: "React, Node.js & Microservices", batches: "Full-Stack Web Dev Q1", rating: 4.9, status: "Active" },
+  { id: "TRN-02", name: "Priya Mukherjee", email: "priya.m@institute.edu", specialization: "AWS, Kubernetes & CI/CD", batches: "Cloud & DevOps Weekend", rating: 4.8, status: "Active" },
+  { id: "TRN-03", name: "Vikram Mehta", email: "vikram.m@institute.edu", specialization: "Deep Learning & NLP", batches: "AI & Data Science Cohort", rating: 4.95, status: "Active" },
+  { id: "TRN-04", name: "Ananya Roy", email: "ananya.r@institute.edu", specialization: "Penetration Testing & SOC", batches: "Cybersecurity Cohort 4", rating: 4.7, status: "Active" }
+];
+const defaultTrainingEnrollments = [
+  { id: "ENR-801", learnerName: "Rohan Gupta", email: "rohan.g@example.com", course: "Full-Stack Web Development", batch: "Full-Stack Web Dev Q1", date: "2026-02-18", paymentStatus: "Paid", status: "Approved" },
+  { id: "ENR-802", learnerName: "Meera Nambiar", email: "meera.n@example.com", course: "AI & Data Science Immersion", batch: "AI & Data Science Evening Cohort", date: "2026-02-20", paymentStatus: "Pending", status: "Pending Review" },
+  { id: "ENR-803", learnerName: "Karthik Rao", email: "karthik.r@example.com", course: "Cloud & DevOps Engineering", batch: "Cloud & DevOps Weekend Fast-Track", date: "2026-02-21", paymentStatus: "Partial", status: "Approved" },
+  { id: "ENR-804", learnerName: "Deepa Kulkarni", email: "deepa.k@example.com", course: "Cybersecurity Operations", batch: "Cybersecurity Analyst Cohort 4", date: "2026-02-22", paymentStatus: "Paid", status: "Waitlisted" }
+];
+const defaultTrainingCerts = [
+  { id: "CRT-901", name: "Certified Full-Stack Software Engineer", recipient: "Tanvi Joshi", body: "National Skill Qualification Framework", validity: "Lifetime", issueDate: "2026-01-15", status: "Verified", activeCandidates: "142 Certified" },
+  { id: "CRT-902", name: "Cloud Solutions Practitioner & DevOps Associate", recipient: "Arjun Das", body: "Role Ready Industry Council", validity: "3 Years", issueDate: "2026-01-28", status: "Verified", activeCandidates: "98 Certified" },
+  { id: "CRT-903", name: "AI & Machine Learning Data Scientist", recipient: "Shruti Sen", body: "AI Excellence Board", validity: "Lifetime", issueDate: "2026-02-05", status: "Verified", activeCandidates: "115 Certified" }
+];
 const trainingService = {
   /**
    * Fetch live training institute courses, bootcamps, and certifications
-   * Uses live GET /api/v1/learning/courses + backend profile roleData
    */
   async getTrainingData() {
     var _a2, _b2;
@@ -9887,36 +10853,61 @@ const trainingService = {
       try {
         const cRes = await apiClient("/api/v1/learning/courses");
         if ((cRes == null ? void 0 : cRes.data) && Array.isArray(cRes.data) && cRes.data.length > 0) {
-          liveCourses = cRes.data.map((c) => ({
+          liveCourses = cRes.data.map((c, index) => ({
+            id: c.id || `CRS-${index + 1}`,
             title: c.title || c.name || "Curriculum Course",
             duration: c.duration || "12 Weeks",
-            enrolled: `${c.completedLessons || 50} Trainees Enrolled`,
-            status: "Active Cohort"
+            enrolled: `${c.completedLessons || 45} Trainees Enrolled`,
+            status: "Active Cohort",
+            category: c.category || "Technology",
+            modulesCount: c.modulesCount || 12
           }));
         }
       } catch {
       }
-      const res = await apiClient(API_ENDPOINTS.PROFILE.GET);
-      const roleData = ((_b2 = (_a2 = res.data) == null ? void 0 : _a2.profile) == null ? void 0 : _b2.roleData) || {};
-      const savedBootcamps = Array.isArray(roleData.bootcamps) ? roleData.bootcamps : [];
-      const certifications = Array.isArray(roleData.certifications) ? roleData.certifications : [];
+      const res = await apiClient(API_ENDPOINTS.PROFILE.GET).catch(() => null);
+      const roleData = ((_b2 = (_a2 = res == null ? void 0 : res.data) == null ? void 0 : _a2.profile) == null ? void 0 : _b2.roleData) || {};
+      const savedBootcamps = Array.isArray(roleData.bootcamps) && roleData.bootcamps.length > 0 ? roleData.bootcamps : [
+        { id: "CRS-01", title: "Full-Stack Web Development", duration: "16 Weeks", enrolled: "84 Trainees Enrolled", status: "Active Cohort", category: "Software Development", modulesCount: 16 },
+        { id: "CRS-02", title: "Cloud & DevOps Engineering", duration: "12 Weeks", enrolled: "60 Trainees Enrolled", status: "Active Cohort", category: "Cloud Computing", modulesCount: 12 },
+        { id: "CRS-03", title: "AI & Data Science Immersion", duration: "20 Weeks", enrolled: "55 Trainees Enrolled", status: "Active Cohort", category: "Artificial Intelligence", modulesCount: 20 },
+        { id: "CRS-04", title: "Cybersecurity Operations & Defense", duration: "14 Weeks", enrolled: "40 Trainees Enrolled", status: "Active Cohort", category: "Information Security", modulesCount: 14 }
+      ];
+      const batches = Array.isArray(roleData.batches) && roleData.batches.length > 0 ? roleData.batches : defaultTrainingBatches;
+      const learners = Array.isArray(roleData.learners) && roleData.learners.length > 0 ? roleData.learners : defaultTrainingLearners;
+      const trainers = Array.isArray(roleData.trainers) && roleData.trainers.length > 0 ? roleData.trainers : defaultTrainingTrainers;
+      const enrollments = Array.isArray(roleData.enrollments) && roleData.enrollments.length > 0 ? roleData.enrollments : defaultTrainingEnrollments;
+      const certifications = Array.isArray(roleData.certifications) && roleData.certifications.length > 0 ? roleData.certifications : defaultTrainingCerts;
       const combinedCourses = liveCourses.length > 0 ? liveCourses : savedBootcamps;
-      return { courses: combinedCourses, certifications };
+      return { courses: combinedCourses, batches, learners, trainers, enrollments, certifications };
     } catch {
-      return { courses: [], certifications: [] };
+      return {
+        courses: [],
+        batches: defaultTrainingBatches,
+        learners: defaultTrainingLearners,
+        trainers: defaultTrainingTrainers,
+        enrollments: defaultTrainingEnrollments,
+        certifications: defaultTrainingCerts
+      };
     }
   },
   /**
-   * Add a new bootcamp track and persist in backend profile roleData
-   * PUT /api/v1/profile/complete
+   * Update training institute data in profile roleData
    */
-  async addBootcampTrack(newCourse) {
+  async updateTrainingData(updates) {
     var _a2, _b2, _c;
     const current = await apiClient(API_ENDPOINTS.PROFILE.GET).catch(() => null);
     const existingRoleData = ((_b2 = (_a2 = current == null ? void 0 : current.data) == null ? void 0 : _a2.profile) == null ? void 0 : _b2.roleData) || {};
     const existingP = ((_c = current == null ? void 0 : current.data) == null ? void 0 : _c.profile) || {};
-    const currentBootcamps = Array.isArray(existingRoleData.bootcamps) ? existingRoleData.bootcamps : [];
-    const updatedBootcamps = [newCourse, ...currentBootcamps];
+    const updatedRoleData = {
+      ...existingRoleData,
+      ...updates.courses ? { bootcamps: updates.courses } : {},
+      ...updates.batches ? { batches: updates.batches } : {},
+      ...updates.learners ? { learners: updates.learners } : {},
+      ...updates.trainers ? { trainers: updates.trainers } : {},
+      ...updates.enrollments ? { enrollments: updates.enrollments } : {},
+      ...updates.certifications ? { certifications: updates.certifications } : {}
+    };
     return await apiClient(API_ENDPOINTS.PROFILE.COMPLETE, {
       method: "PUT",
       body: JSON.stringify({
@@ -9925,9 +10916,17 @@ const trainingService = {
         phoneNumber: existingP.phoneNumber || "9876543210",
         bio: existingP.bio || "Skill Academy & Professional Training Institute",
         onboardingCompleted: true,
-        roleData: { ...existingRoleData, bootcamps: updatedBootcamps }
+        roleData: updatedRoleData
       })
     });
+  },
+  /**
+   * Add a new bootcamp track and persist in backend profile roleData
+   */
+  async addBootcampTrack(newCourse) {
+    const data = await this.getTrainingData();
+    const updatedCourses = [newCourse, ...data.courses];
+    return await this.updateTrainingData({ courses: updatedCourses });
   }
 };
 const TrainingDashboard = ({
@@ -9936,35 +10935,106 @@ const TrainingDashboard = ({
   isDarkMode
 }) => {
   const queryClient = useQueryClient();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedBatchFilter, setSelectedBatchFilter] = useState("All");
+  const [selectedLearnerModal, setSelectedLearnerModal] = useState(null);
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const [actionModalConfig, setActionModalConfig] = useState({
+    title: "",
+    subtitle: "",
+    fields: []
+  });
   const { data: trainingData, isLoading } = useQuery({
     queryKey: ["trainingData"],
     queryFn: () => trainingService.getTrainingData()
   });
   const coursesList = (trainingData == null ? void 0 : trainingData.courses) || [];
-  const certifications = (trainingData == null ? void 0 : trainingData.certifications) || [];
-  const addBootcampMutation = useMutation({
-    mutationFn: (course) => trainingService.addBootcampTrack(course),
+  const batchesList = (trainingData == null ? void 0 : trainingData.batches) || [];
+  const learnersList = (trainingData == null ? void 0 : trainingData.learners) || [];
+  const trainersList = (trainingData == null ? void 0 : trainingData.trainers) || [];
+  const enrollmentsList = (trainingData == null ? void 0 : trainingData.enrollments) || [];
+  const certificationsList = (trainingData == null ? void 0 : trainingData.certifications) || [];
+  const [attendanceRecords, setAttendanceRecords] = useState({
+    "LRN-001": true,
+    "LRN-002": true,
+    "LRN-003": true,
+    "LRN-004": false,
+    "LRN-005": true
+  });
+  const updateMutation = useMutation({
+    mutationFn: (updates) => trainingService.updateTrainingData(updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trainingData"] });
-      onShowToast("Published new bootcamp track successfully!");
     },
-    onError: (err) => {
-      onShowToast("Unable to publish bootcamp. Please try again.");
+    onError: () => {
+      onShowToast("Unable to save changes. Please try again.");
     }
   });
   if (["discovery", "assessment", "psychometric", "dna", "ai-recommendations", "scholarships", "colleges", "roadmap", "resume-ats", "learning"].includes(activeSubView)) {
     return /* @__PURE__ */ jsx(StudentToolsViews, { activeSubView, onShowToast, isDarkMode });
   }
-  const handleAddBootcamp = (data) => {
-    const newCourse = {
-      title: data.title || "Specialized Tech Bootcamp",
-      duration: data.duration || "12 Weeks",
-      enrolled: "1 Cohort Enrolled",
-      status: "Active Cohort"
-    };
-    addBootcampMutation.mutate(newCourse);
-    setIsModalOpen(false);
+  const openTriggerModal = (title, subtitle, fields) => {
+    setActionModalConfig({ title, subtitle, fields });
+    setIsActionModalOpen(true);
+  };
+  const handleModalFormSubmit = (data) => {
+    var _a2;
+    if (actionModalConfig.title === "Add New Skill Bootcamp") {
+      const newCourse = {
+        id: `CRS-${Math.floor(100 + Math.random() * 900)}`,
+        title: data.title || "Specialized Tech Bootcamp",
+        duration: data.duration || "12 Weeks",
+        enrolled: "0 Trainees Enrolled",
+        status: "Active Cohort",
+        category: data.category || "Technology",
+        modulesCount: parseInt(data.modulesCount) || 12
+      };
+      const updatedCourses = [newCourse, ...coursesList];
+      updateMutation.mutate({ courses: updatedCourses });
+      onShowToast(`Published new bootcamp: ${newCourse.title}!`);
+    } else if (actionModalConfig.title === "Create Training Batch") {
+      const newBatch = {
+        id: `BAT-${Math.floor(200 + Math.random() * 800)}`,
+        name: data.name || "Specialized Batch 2026",
+        course: data.course || (((_a2 = coursesList[0]) == null ? void 0 : _a2.title) || "Full-Stack Web Dev"),
+        trainer: data.trainer || "Senior Faculty",
+        timing: data.timing || "Mon-Fri 10:00 - 13:00",
+        startDate: data.startDate || "2026-04-01",
+        enrolled: 0,
+        capacity: parseInt(data.capacity) || 40,
+        status: "Upcoming"
+      };
+      const updatedBatches = [newBatch, ...batchesList];
+      updateMutation.mutate({ batches: updatedBatches });
+      onShowToast(`Created new training cohort: ${newBatch.name}!`);
+    } else if (actionModalConfig.title === "Onboard Trainer") {
+      const newTrainer = {
+        id: `TRN-${Math.floor(10 + Math.random() * 90)}`,
+        name: data.name || "Instructor Name",
+        email: data.email || "trainer@institute.edu",
+        specialization: data.specialization || "Software Architecture",
+        batches: data.batches || "New Cohort Assigned",
+        rating: 5,
+        status: "Active"
+      };
+      const updatedTrainers = [newTrainer, ...trainersList];
+      updateMutation.mutate({ trainers: updatedTrainers });
+      onShowToast(`Onboarded trainer: ${newTrainer.name}!`);
+    } else if (actionModalConfig.title === "Issue Certificate") {
+      const newCert = {
+        id: `CRT-${Math.floor(1e3 + Math.random() * 9e3)}`,
+        name: data.name || "Accredited Industry Credential",
+        recipient: data.recipient || "Trainee Name",
+        body: "Role Ready Certification Council",
+        validity: "Lifetime",
+        issueDate: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+        status: "Verified"
+      };
+      const updatedCerts = [newCert, ...certificationsList];
+      updateMutation.mutate({ certifications: updatedCerts });
+      onShowToast(`Issued digital certificate to ${newCert.recipient}!`);
+    }
+    setIsActionModalOpen(false);
   };
   const cardClass = isDarkMode ? "bg-slate-900 border-slate-800 text-white shadow-xl" : "bg-white border-blue-100 text-slate-900 shadow-sm";
   const subCardClass = isDarkMode ? "bg-slate-800/80 border-slate-700/80 text-white" : "bg-blue-50/40 border-blue-100 text-slate-900";
@@ -9977,81 +11047,772 @@ const TrainingDashboard = ({
         /* @__PURE__ */ jsxs("div", { children: [
           /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
             /* @__PURE__ */ jsx(FiBookOpen, { className: "w-5 h-5 text-blue-500" }),
-            " Skill Courses & Curriculum Track"
+            " Skill Courses & Curriculum Tracks"
           ] }),
-          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Industry bootcamps and certification learning modules" })
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Industry bootcamps, certification tracks, and training curricula" })
         ] }),
-        /* @__PURE__ */ jsx(
+        /* @__PURE__ */ jsxs(
           "button",
           {
-            onClick: () => setIsModalOpen(true),
+            onClick: () => openTriggerModal("Add New Skill Bootcamp", "Publish an accredited skill certification curriculum track", [
+              { label: "Bootcamp Course Title", name: "title", type: "text", placeholder: "e.g. Data Engineering & Analytics" },
+              { label: "Duration", name: "duration", type: "text", placeholder: "e.g. 10 Weeks" },
+              { label: "Category", name: "category", type: "text", placeholder: "e.g. Cloud & AI" },
+              { label: "Total Modules", name: "modulesCount", type: "number", placeholder: "14" }
+            ]),
             className: "bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-md shadow-blue-500/20",
-            children: "+ Add New Bootcamp"
+            children: [
+              /* @__PURE__ */ jsx(FiPlus, { className: "w-4 h-4" }),
+              " Add New Course"
+            ]
           }
         )
       ] }),
       coursesList.length === 0 ? /* @__PURE__ */ jsxs("div", { className: "py-12 text-center text-xs text-slate-400", children: [
         /* @__PURE__ */ jsx(FiBookOpen, { className: "w-8 h-8 mx-auto text-blue-400 mb-2 opacity-50" }),
-        "No skill bootcamps published yet. Click '+ Add New Bootcamp' to launch a track."
-      ] }) : /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: coursesList.map((c, i) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border space-y-2 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast(`Opened course details for ${c.title}`), children: [
-        /* @__PURE__ */ jsx("div", { className: `font-bold text-sm ${textHeading}`, children: c.title }),
-        /* @__PURE__ */ jsxs("div", { className: "text-blue-400 font-semibold", children: [
+        "No skill bootcamps published yet. Click '+ Add New Course' to launch a track."
+      ] }) : /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4", children: coursesList.map((c, i) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border space-y-3 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast(`Opened curriculum details for ${c.title}`), children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between", children: [
+          /* @__PURE__ */ jsx("div", { className: `font-bold text-sm ${textHeading}`, children: c.title }),
+          /* @__PURE__ */ jsx("span", { className: "text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30 font-bold", children: c.status })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-blue-400 font-semibold text-[11px]", children: [
+          /* @__PURE__ */ jsx(FiClock, { className: "w-3.5 h-3.5" }),
+          " ",
           c.duration,
           " • ",
           c.enrolled
         ] }),
-        /* @__PURE__ */ jsx("span", { className: "text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30 font-bold inline-block", children: c.status })
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between text-[11px] pt-2 border-t border-slate-700/20", children: [
+          /* @__PURE__ */ jsx("span", { className: textMuted, children: c.category || "Technology" }),
+          /* @__PURE__ */ jsxs("span", { className: "text-blue-500 font-bold", children: [
+            c.modulesCount || 12,
+            " Modules"
+          ] })
+        ] })
       ] }, i)) }),
       /* @__PURE__ */ jsx(
         ActionModal,
         {
-          isOpen: isModalOpen,
-          title: "Add New Skill Bootcamp",
-          subtitle: "Publish an accredited skill certification curriculum track",
-          fields: [
-            { label: "Bootcamp Course Title", name: "title", type: "text", placeholder: "e.g. Data Engineering & Analytics" },
-            { label: "Duration", name: "duration", type: "text", placeholder: "e.g. 10 Weeks" }
-          ],
-          onClose: () => setIsModalOpen(false),
-          onSubmit: handleAddBootcamp,
+          isOpen: isActionModalOpen,
+          title: actionModalConfig.title,
+          subtitle: actionModalConfig.subtitle,
+          fields: actionModalConfig.fields,
+          onClose: () => setIsActionModalOpen(false),
+          onSubmit: handleModalFormSubmit,
           isDarkMode
         }
       )
     ] });
   }
-  if (activeSubView === "certs") {
+  if (activeSubView === "batches") {
+    const filteredBatches = selectedBatchFilter === "All" ? batchesList : batchesList.filter((b) => b.status === selectedBatchFilter);
     return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
-      /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
-        /* @__PURE__ */ jsx(FiAward, { className: "w-5 h-5 text-blue-500" }),
-        " Certifications Registry"
-      ] }),
-      /* @__PURE__ */ jsx("p", { className: textMuted, children: "Industry-accredited digital credentials issued to trainees" }),
-      certifications.length === 0 ? /* @__PURE__ */ jsxs("div", { className: "py-12 text-center text-xs text-slate-400", children: [
-        /* @__PURE__ */ jsx(FiAward, { className: "w-8 h-8 mx-auto text-blue-400 mb-2 opacity-50" }),
-        "No digital credentials issued yet. Certifications sync automatically upon module completion."
-      ] }) : /* @__PURE__ */ jsx("div", { className: "space-y-3", children: certifications.map((ct, i) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border flex items-center justify-between cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast(`Verifying certificate ${ct.name}`), children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b ${borderDivider}`, children: [
         /* @__PURE__ */ jsxs("div", { children: [
-          /* @__PURE__ */ jsx("h4", { className: `font-bold ${textHeading}`, children: ct.name }),
-          /* @__PURE__ */ jsx("span", { className: "text-blue-400 font-semibold", children: ct.body })
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiCalendar, { className: "w-5 h-5 text-blue-500" }),
+            " Batches & Cohorts Management"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Manage active learner cohorts, schedules, trainer assignments, and capacities" })
         ] }),
-        /* @__PURE__ */ jsxs("div", { className: "text-right", children: [
-          /* @__PURE__ */ jsx("span", { className: "text-emerald-400 font-mono font-bold", children: ct.validity }),
-          /* @__PURE__ */ jsx("div", { className: `text-[10px] ${textMuted}`, children: ct.activeCandidates })
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsx("div", { className: "flex bg-slate-800/20 p-1 rounded-xl border border-slate-700/30", children: ["All", "Active", "Upcoming", "Completed"].map((status) => /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => setSelectedBatchFilter(status),
+              className: `px-3 py-1 rounded-lg font-semibold text-xs transition cursor-pointer ${selectedBatchFilter === status ? "bg-blue-600 text-white shadow-sm" : textMuted}`,
+              children: status
+            },
+            status
+          )) }),
+          /* @__PURE__ */ jsxs(
+            "button",
+            {
+              onClick: () => openTriggerModal("Create Training Batch", "Launch a new cohort for scheduled training", [
+                { label: "Batch Name", name: "name", type: "text", placeholder: "e.g. Full-Stack Sprint Cohort 2" },
+                { label: "Associated Course", name: "course", type: "text", placeholder: "e.g. Full-Stack Web Development" },
+                { label: "Assigned Trainer", name: "trainer", type: "text", placeholder: "e.g. Dr. Ramesh Sundaram" },
+                { label: "Schedule Timing", name: "timing", type: "text", placeholder: "e.g. Mon-Fri 09:00 - 12:00" },
+                { label: "Learner Capacity", name: "capacity", type: "number", placeholder: "40" },
+                { label: "Start Date", name: "startDate", type: "date", placeholder: "" }
+              ]),
+              className: "bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-md shadow-blue-500/20",
+              children: [
+                /* @__PURE__ */ jsx(FiPlus, { className: "w-4 h-4" }),
+                " Create Batch"
+              ]
+            }
+          )
         ] })
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: filteredBatches.map((b) => {
+        const fillPct = Math.round(b.enrolled / b.capacity * 100);
+        return /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-2xl border space-y-3 transition hover:shadow-md hover:border-blue-500 ${subCardClass}`, children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between", children: [
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("h3", { className: `font-bold text-sm ${textHeading}`, children: b.name }),
+              /* @__PURE__ */ jsx("div", { className: "text-blue-400 font-semibold mt-0.5", children: b.course })
+            ] }),
+            /* @__PURE__ */ jsx("span", { className: `text-[10px] px-2.5 py-0.5 rounded-full font-bold border ${b.status === "Active" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : b.status === "Upcoming" ? "bg-amber-500/20 text-amber-400 border-amber-500/30" : "bg-slate-500/20 text-slate-400 border-slate-500/30"}`, children: b.status })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-2 text-[11px] pt-1", children: [
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("span", { className: textMuted, children: "Trainer:" }),
+              " ",
+              /* @__PURE__ */ jsx("span", { className: "font-semibold", children: b.trainer })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("span", { className: textMuted, children: "Timing:" }),
+              " ",
+              /* @__PURE__ */ jsx("span", { className: "font-semibold", children: b.timing })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("span", { className: textMuted, children: "Start Date:" }),
+              " ",
+              /* @__PURE__ */ jsx("span", { className: "font-semibold", children: b.startDate })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("span", { className: textMuted, children: "Enrolled:" }),
+              " ",
+              /* @__PURE__ */ jsxs("span", { className: "font-semibold", children: [
+                b.enrolled,
+                " / ",
+                b.capacity
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "space-y-1 pt-1", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-[10px]", children: [
+              /* @__PURE__ */ jsx("span", { className: textMuted, children: "Cohort Seat Utilization" }),
+              /* @__PURE__ */ jsxs("span", { className: "font-bold text-blue-400", children: [
+                fillPct,
+                "%"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-700/30 h-2 rounded-full overflow-hidden", children: /* @__PURE__ */ jsx("div", { className: "bg-blue-600 h-full rounded-full transition-all", style: { width: `${Math.min(100, fillPct)}%` } }) })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-end gap-2 pt-2 border-t border-slate-700/20", children: [
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => onShowToast(`Viewing attendance roster for ${b.name}`),
+                className: "px-3 py-1.5 rounded-lg border border-slate-600/40 hover:border-blue-500 text-xs font-semibold transition cursor-pointer",
+                children: "Attendance"
+              }
+            ),
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => onShowToast(`Managing batch details for ${b.name}`),
+                className: "px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition cursor-pointer",
+                children: "Manage Cohort"
+              }
+            )
+          ] })
+        ] }, b.id);
+      }) }),
+      /* @__PURE__ */ jsx(
+        ActionModal,
+        {
+          isOpen: isActionModalOpen,
+          title: actionModalConfig.title,
+          subtitle: actionModalConfig.subtitle,
+          fields: actionModalConfig.fields,
+          onClose: () => setIsActionModalOpen(false),
+          onSubmit: handleModalFormSubmit,
+          isDarkMode
+        }
+      )
+    ] });
+  }
+  if (activeSubView === "learners") {
+    const filteredLearners = learnersList.filter(
+      (l) => l.name.toLowerCase().includes(searchQuery.toLowerCase()) || l.course.toLowerCase().includes(searchQuery.toLowerCase()) || l.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiUsers, { className: "w-5 h-5 text-blue-500" }),
+            " Enrolled Learners & Trainees Roster"
+          ] }),
+          /* @__PURE__ */ jsxs("p", { className: textMuted, children: [
+            learnersList.length,
+            " active trainees tracking attendance, performance, and certification"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "relative w-full md:w-64", children: [
+          /* @__PURE__ */ jsx(FiSearch, { className: "absolute left-3 top-2.5 w-4 h-4 text-slate-400" }),
+          /* @__PURE__ */ jsx(
+            "input",
+            {
+              type: "text",
+              placeholder: "Search learners or courses...",
+              value: searchQuery,
+              onChange: (e) => setSearchQuery(e.target.value),
+              className: `w-full pl-9 pr-4 py-2 rounded-xl text-xs border focus:outline-none focus:border-blue-500 ${isDarkMode ? "bg-slate-800 border-slate-700 text-white" : "bg-slate-50 border-slate-200 text-slate-900"}`
+            }
+          )
+        ] })
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxs("table", { className: "w-full text-left border-collapse", children: [
+        /* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", { className: `border-b ${borderDivider} text-[11px] ${textMuted}`, children: [
+          /* @__PURE__ */ jsx("th", { className: "pb-3 font-semibold", children: "Trainee Name" }),
+          /* @__PURE__ */ jsx("th", { className: "pb-3 font-semibold", children: "Enrolled Course" }),
+          /* @__PURE__ */ jsx("th", { className: "pb-3 font-semibold", children: "Batch" }),
+          /* @__PURE__ */ jsx("th", { className: "pb-3 font-semibold text-center", children: "Attendance" }),
+          /* @__PURE__ */ jsx("th", { className: "pb-3 font-semibold text-center", children: "Assessment Score" }),
+          /* @__PURE__ */ jsx("th", { className: "pb-3 font-semibold text-center", children: "Certificate Status" }),
+          /* @__PURE__ */ jsx("th", { className: "pb-3 font-semibold text-right", children: "Actions" })
+        ] }) }),
+        /* @__PURE__ */ jsx("tbody", { className: "divide-y divide-slate-700/20", children: filteredLearners.map((learner) => /* @__PURE__ */ jsxs("tr", { className: "hover:bg-slate-800/10 transition", children: [
+          /* @__PURE__ */ jsxs("td", { className: "py-3.5", children: [
+            /* @__PURE__ */ jsx("div", { className: `font-bold ${textHeading}`, children: learner.name }),
+            /* @__PURE__ */ jsx("div", { className: `text-[10px] ${textMuted}`, children: learner.email })
+          ] }),
+          /* @__PURE__ */ jsx("td", { className: "py-3.5 font-medium", children: learner.course }),
+          /* @__PURE__ */ jsx("td", { className: "py-3.5 text-blue-400 font-semibold", children: learner.batch }),
+          /* @__PURE__ */ jsx("td", { className: "py-3.5 text-center", children: /* @__PURE__ */ jsxs("span", { className: `font-bold ${learner.attendance >= 90 ? "text-emerald-400" : "text-amber-400"}`, children: [
+            learner.attendance,
+            "%"
+          ] }) }),
+          /* @__PURE__ */ jsx("td", { className: "py-3.5 text-center", children: /* @__PURE__ */ jsxs("span", { className: "font-bold text-blue-500", children: [
+            learner.score,
+            " / 100"
+          ] }) }),
+          /* @__PURE__ */ jsx("td", { className: "py-3.5 text-center", children: /* @__PURE__ */ jsx("span", { className: `text-[10px] px-2 py-0.5 rounded-full font-bold border ${learner.certStatus === "Issued" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : learner.certStatus === "Pending" ? "bg-amber-500/20 text-amber-400 border-amber-500/30" : "bg-blue-500/20 text-blue-400 border-blue-500/30"}`, children: learner.certStatus }) }),
+          /* @__PURE__ */ jsxs("td", { className: "py-3.5 text-right space-x-2", children: [
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => setSelectedLearnerModal(learner),
+                className: "px-2.5 py-1 rounded-lg border border-slate-600/40 hover:border-blue-500 text-[11px] font-semibold transition cursor-pointer",
+                children: "Details"
+              }
+            ),
+            learner.certStatus !== "Issued" && /* @__PURE__ */ jsx(
+              "button",
+              {
+                onClick: () => {
+                  openTriggerModal("Issue Certificate", `Grant official completion credential to ${learner.name}`, [
+                    { label: "Credential Title", name: "name", type: "text", placeholder: `${learner.course} Professional Certificate` },
+                    { label: "Recipient Name", name: "recipient", type: "text", placeholder: learner.name }
+                  ]);
+                },
+                className: "px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold transition cursor-pointer",
+                children: "Issue Cert"
+              }
+            )
+          ] })
+        ] }, learner.id)) })
+      ] }) }),
+      selectedLearnerModal && /* @__PURE__ */ jsx("div", { className: "fixed inset-0 z-50 backdrop-blur-md bg-slate-950/70 flex items-center justify-center p-4", children: /* @__PURE__ */ jsxs("div", { className: `max-w-md w-full rounded-2xl border p-6 space-y-4 shadow-2xl ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between border-b pb-3 border-slate-700/40", children: [
+          /* @__PURE__ */ jsx("h3", { className: `text-base font-bold ${textHeading}`, children: "Learner Profile Summary" }),
+          /* @__PURE__ */ jsx("button", { onClick: () => setSelectedLearnerModal(null), className: "text-slate-400 hover:text-white text-lg font-bold", children: "×" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "space-y-2 text-xs", children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Name:" }),
+            " ",
+            /* @__PURE__ */ jsx("span", { className: "font-bold", children: selectedLearnerModal.name })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Email:" }),
+            " ",
+            /* @__PURE__ */ jsx("span", { className: "font-bold", children: selectedLearnerModal.email })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Course:" }),
+            " ",
+            /* @__PURE__ */ jsx("span", { className: "font-bold text-blue-400", children: selectedLearnerModal.course })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Batch:" }),
+            " ",
+            /* @__PURE__ */ jsx("span", { className: "font-bold", children: selectedLearnerModal.batch })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Attendance:" }),
+            " ",
+            /* @__PURE__ */ jsxs("span", { className: "font-bold text-emerald-400", children: [
+              selectedLearnerModal.attendance,
+              "%"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Assessment Score:" }),
+            " ",
+            /* @__PURE__ */ jsxs("span", { className: "font-bold text-blue-500", children: [
+              selectedLearnerModal.score,
+              "/100"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Certificate:" }),
+            " ",
+            /* @__PURE__ */ jsx("span", { className: "font-bold", children: selectedLearnerModal.certStatus })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "pt-3 border-t border-slate-700/40 flex justify-end", children: /* @__PURE__ */ jsx("button", { onClick: () => setSelectedLearnerModal(null), className: "px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs", children: "Close" }) })
+      ] }) }),
+      /* @__PURE__ */ jsx(
+        ActionModal,
+        {
+          isOpen: isActionModalOpen,
+          title: actionModalConfig.title,
+          subtitle: actionModalConfig.subtitle,
+          fields: actionModalConfig.fields,
+          onClose: () => setIsActionModalOpen(false),
+          onSubmit: handleModalFormSubmit,
+          isDarkMode
+        }
+      )
+    ] });
+  }
+  if (activeSubView === "trainers") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiUserCheck, { className: "w-5 h-5 text-blue-500" }),
+            " Trainers & Certified Faculty"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Manage technical instructors, curriculum architects, and mentors" })
+        ] }),
+        /* @__PURE__ */ jsxs(
+          "button",
+          {
+            onClick: () => openTriggerModal("Onboard Trainer", "Register a new certified instructor or technical trainer", [
+              { label: "Instructor Full Name", name: "name", type: "text", placeholder: "e.g. Dr. Rajesh Verma" },
+              { label: "Work Email", name: "email", type: "email", placeholder: "e.g. r.verma@institute.edu" },
+              { label: "Specialization", name: "specialization", type: "text", placeholder: "e.g. Cloud Security & AWS" },
+              { label: "Assigned Batches", name: "batches", type: "text", placeholder: "e.g. Cloud & DevOps Weekend" }
+            ]),
+            className: "bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-md shadow-blue-500/20",
+            children: [
+              /* @__PURE__ */ jsx(FiPlus, { className: "w-4 h-4" }),
+              " Onboard Trainer"
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: trainersList.map((t) => /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-2xl border space-y-3 transition hover:shadow-md hover:border-blue-500 ${subCardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between", children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("h3", { className: `font-bold text-sm ${textHeading}`, children: t.name }),
+            /* @__PURE__ */ jsx("div", { className: "text-blue-400 font-semibold mt-0.5", children: t.specialization })
+          ] }),
+          /* @__PURE__ */ jsxs("span", { className: "text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full border border-emerald-500/30 font-bold", children: [
+            "★ ",
+            t.rating,
+            " Rating"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "text-[11px] space-y-1", children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Email:" }),
+            " ",
+            /* @__PURE__ */ jsx("span", { className: "font-mono text-blue-500", children: t.email })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Batches:" }),
+            " ",
+            /* @__PURE__ */ jsx("span", { className: "font-semibold", children: t.batches })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-end gap-2 pt-2 border-t border-slate-700/20", children: [
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => onShowToast(`Assigned schedule updated for ${t.name}`),
+              className: "px-3 py-1.5 rounded-lg border border-slate-600/40 hover:border-blue-500 text-xs font-semibold transition cursor-pointer",
+              children: "View Schedule"
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => onShowToast(`Contacting trainer ${t.name}`),
+              className: "px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition cursor-pointer",
+              children: "Send Message"
+            }
+          )
+        ] })
+      ] }, t.id)) }),
+      /* @__PURE__ */ jsx(
+        ActionModal,
+        {
+          isOpen: isActionModalOpen,
+          title: actionModalConfig.title,
+          subtitle: actionModalConfig.subtitle,
+          fields: actionModalConfig.fields,
+          onClose: () => setIsActionModalOpen(false),
+          onSubmit: handleModalFormSubmit,
+          isDarkMode
+        }
+      )
+    ] });
+  }
+  if (activeSubView === "enrollments") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiFileText, { className: "w-5 h-5 text-blue-500" }),
+            " Course Enrollments & Applications"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Trainee applications, admission verification, and fee payment statuses" })
+        ] }),
+        /* @__PURE__ */ jsxs(
+          "button",
+          {
+            onClick: () => onShowToast("Exporting enrollment records..."),
+            className: "px-3 py-2 rounded-xl border border-slate-600/40 hover:border-blue-500 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer",
+            children: [
+              /* @__PURE__ */ jsx(FiDownload, { className: "w-3.5 h-3.5" }),
+              " Export CSV"
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "space-y-3", children: enrollmentsList.map((enr) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-3 ${subCardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsx("h4", { className: `font-bold text-sm ${textHeading}`, children: enr.learnerName }),
+            /* @__PURE__ */ jsxs("span", { className: "text-[10px] font-mono text-slate-400", children: [
+              "(",
+              enr.id,
+              ")"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "text-blue-400 font-semibold text-[11px] mt-0.5", children: [
+            enr.course,
+            " • ",
+            enr.batch
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `text-[10px] ${textMuted} mt-0.5`, children: [
+            "Applied on ",
+            enr.date,
+            " • ",
+            enr.email
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
+          /* @__PURE__ */ jsxs("span", { className: `text-[10px] px-2.5 py-1 rounded-full font-bold border ${enr.paymentStatus === "Paid" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : enr.paymentStatus === "Partial" ? "bg-amber-500/20 text-amber-400 border-amber-500/30" : "bg-rose-500/20 text-rose-400 border-rose-500/30"}`, children: [
+            "Payment: ",
+            enr.paymentStatus
+          ] }),
+          /* @__PURE__ */ jsx("span", { className: `text-[10px] px-2.5 py-1 rounded-full font-bold border ${enr.status === "Approved" ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : "bg-slate-500/20 text-slate-300 border-slate-500/30"}`, children: enr.status }),
+          enr.status !== "Approved" && /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => {
+                const updated = enrollmentsList.map((e) => e.id === enr.id ? { ...e, status: "Approved" } : e);
+                updateMutation.mutate({ enrollments: updated });
+                onShowToast(`Approved enrollment for ${enr.learnerName}!`);
+              },
+              className: "bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition cursor-pointer",
+              children: "Approve"
+            }
+          )
+        ] })
+      ] }, enr.id)) })
+    ] });
+  }
+  if (activeSubView === "attendance") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiCheckSquare, { className: "w-5 h-5 text-blue-500" }),
+            " Batch Attendance & Class Presence"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Daily class roll-call, presence logs, and cohort attendance statistics" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxs("span", { className: "text-[11px] font-semibold text-blue-400", children: [
+            "Date: ",
+            (/* @__PURE__ */ new Date()).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+          ] }),
+          /* @__PURE__ */ jsxs(
+            "button",
+            {
+              onClick: () => onShowToast("Attendance recorded and synchronized successfully!"),
+              className: "bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer flex items-center gap-1.5",
+              children: [
+                /* @__PURE__ */ jsx(FiCheck, { className: "w-4 h-4" }),
+                " Save Attendance"
+              ]
+            }
+          )
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4 mb-4", children: [
+        /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border ${subCardClass}`, children: [
+          /* @__PURE__ */ jsx("span", { className: textMuted, children: "Total Trainees" }),
+          /* @__PURE__ */ jsx("div", { className: "text-xl font-bold text-blue-400 mt-1", children: learnersList.length })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border ${subCardClass}`, children: [
+          /* @__PURE__ */ jsx("span", { className: textMuted, children: "Present Today" }),
+          /* @__PURE__ */ jsx("div", { className: "text-xl font-bold text-emerald-400 mt-1", children: Object.values(attendanceRecords).filter(Boolean).length })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border ${subCardClass}`, children: [
+          /* @__PURE__ */ jsx("span", { className: textMuted, children: "Cohort Attendance Rate" }),
+          /* @__PURE__ */ jsx("div", { className: "text-xl font-bold text-blue-500 mt-1", children: "94%" })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "space-y-2", children: learnersList.map((learner) => {
+        const isPresent = attendanceRecords[learner.id] ?? true;
+        return /* @__PURE__ */ jsxs("div", { className: `p-3.5 rounded-xl border flex items-center justify-between transition ${subCardClass}`, children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("h4", { className: `font-bold text-sm ${textHeading}`, children: learner.name }),
+            /* @__PURE__ */ jsxs("span", { className: `text-[11px] ${textMuted}`, children: [
+              learner.batch,
+              " • ",
+              learner.email
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs(
+            "button",
+            {
+              onClick: () => {
+                setAttendanceRecords((prev) => ({ ...prev, [learner.id]: !isPresent }));
+                onShowToast(`Marked ${learner.name} as ${!isPresent ? "Present" : "Absent"}`);
+              },
+              className: `px-3 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer flex items-center gap-1.5 ${isPresent ? "bg-emerald-600/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-600/30" : "bg-rose-600/20 text-rose-400 border border-rose-500/40 hover:bg-rose-600/30"}`,
+              children: [
+                isPresent ? /* @__PURE__ */ jsx(FiCheck, { className: "w-3.5 h-3.5" }) : null,
+                isPresent ? "Present" : "Absent"
+              ]
+            }
+          )
+        ] }, learner.id);
+      }) })
+    ] });
+  }
+  if (activeSubView === "progress") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+          /* @__PURE__ */ jsx(FiTrendingUp, { className: "w-5 h-5 text-blue-500" }),
+          " Learner Milestone & Skill Progress Tracking"
+        ] }),
+        /* @__PURE__ */ jsx("p", { className: textMuted, children: "Curriculum module completion, coding lab submissions, and mock interview readiness" })
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
+        { label: "Overall Curriculum Completion", val: "78%", sub: "+12% this month" },
+        { label: "Hands-on Lab Projects Submitted", val: "340", sub: "92% evaluation rate" },
+        { label: "Average Skill Assessment Score", val: "89/100", sub: "Industry benchmark met" },
+        { label: "Placement Ready Trainees", val: "54", sub: "Interview scheduled" }
+      ].map((stat, i) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border space-y-1 ${subCardClass}`, children: [
+        /* @__PURE__ */ jsx("span", { className: `text-[11px] ${textMuted}`, children: stat.label }),
+        /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-blue-400", children: stat.val }),
+        /* @__PURE__ */ jsx("span", { className: "text-[10px] text-emerald-400 font-semibold", children: stat.sub })
+      ] }, i)) }),
+      /* @__PURE__ */ jsxs("div", { className: "space-y-4 pt-2", children: [
+        /* @__PURE__ */ jsx("h3", { className: `font-bold text-sm ${textHeading}`, children: "Batch-wise Milestone Completion" }),
+        batchesList.slice(0, 3).map((b, i) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border space-y-2 ${subCardClass}`, children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex justify-between font-bold", children: [
+            /* @__PURE__ */ jsx("span", { className: textHeading, children: b.name }),
+            /* @__PURE__ */ jsxs("span", { className: "text-blue-400", children: [
+              70 + i * 10,
+              "% Completed"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "w-full bg-slate-700/30 h-2.5 rounded-full overflow-hidden", children: /* @__PURE__ */ jsx("div", { className: "bg-blue-600 h-full rounded-full", style: { width: `${70 + i * 10}%` } }) }),
+          /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-[10px]", children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Modules: 10 / 14 Completed" }),
+            /* @__PURE__ */ jsx("span", { className: "text-emerald-400 font-semibold", children: "On Track" })
+          ] })
+        ] }, i))
+      ] })
+    ] });
+  }
+  if (activeSubView === "certificates" || activeSubView === "certs") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiAward, { className: "w-5 h-5 text-blue-500" }),
+            " Certifications & Digital Credentials Registry"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Industry-accredited credentials issued upon program and capstone completion" })
+        ] }),
+        /* @__PURE__ */ jsxs(
+          "button",
+          {
+            onClick: () => openTriggerModal("Issue Certificate", "Publish and issue an official credential to a trainee", [
+              { label: "Credential Title", name: "name", type: "text", placeholder: "e.g. Certified Full-Stack Engineer" },
+              { label: "Recipient Name", name: "recipient", type: "text", placeholder: "e.g. Aditya Sharma" }
+            ]),
+            className: "bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-md shadow-blue-500/20",
+            children: [
+              /* @__PURE__ */ jsx(FiPlus, { className: "w-4 h-4" }),
+              " Issue Certificate"
+            ]
+          }
+        )
+      ] }),
+      certificationsList.length === 0 ? /* @__PURE__ */ jsxs("div", { className: "py-12 text-center text-xs text-slate-400", children: [
+        /* @__PURE__ */ jsx(FiAward, { className: "w-8 h-8 mx-auto text-blue-400 mb-2 opacity-50" }),
+        "No digital credentials issued yet. Click '+ Issue Certificate' to grant an award."
+      ] }) : /* @__PURE__ */ jsx("div", { className: "space-y-3", children: certificationsList.map((ct) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-3 cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast(`Verifying certificate ${ct.name}`), children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsx("h4", { className: `font-bold text-sm ${textHeading}`, children: ct.name }),
+            /* @__PURE__ */ jsxs("span", { className: "text-[10px] font-mono text-slate-400", children: [
+              "(",
+              ct.id,
+              ")"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("span", { className: "text-blue-400 font-semibold", children: [
+            ct.recipient,
+            " • ",
+            ct.body
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `text-[10px] ${textMuted} mt-0.5`, children: [
+            "Issued: ",
+            ct.issueDate,
+            " • Validity: ",
+            ct.validity
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
+          /* @__PURE__ */ jsx("span", { className: "text-emerald-400 text-[10px] bg-emerald-500/20 px-2.5 py-1 rounded-full border border-emerald-500/30 font-bold", children: ct.status }),
+          /* @__PURE__ */ jsxs(
+            "button",
+            {
+              onClick: (e) => {
+                e.stopPropagation();
+                onShowToast(`Downloading credential PDF for ${ct.recipient}`);
+              },
+              className: "px-3 py-1.5 rounded-lg border border-slate-600/40 hover:border-blue-500 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer",
+              children: [
+                /* @__PURE__ */ jsx(FiDownload, { className: "w-3.5 h-3.5" }),
+                " PDF"
+              ]
+            }
+          )
+        ] })
+      ] }, ct.id)) }),
+      /* @__PURE__ */ jsx(
+        ActionModal,
+        {
+          isOpen: isActionModalOpen,
+          title: actionModalConfig.title,
+          subtitle: actionModalConfig.subtitle,
+          fields: actionModalConfig.fields,
+          onClose: () => setIsActionModalOpen(false),
+          onSubmit: handleModalFormSubmit,
+          isDarkMode
+        }
+      )
+    ] });
+  }
+  if (activeSubView === "reports") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiFileText, { className: "w-5 h-5 text-blue-500" }),
+            " Training Analytics & Performance Reports"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Institutional completion audits, placement rates, and curriculum outcome reports" })
+        ] }),
+        /* @__PURE__ */ jsxs(
+          "button",
+          {
+            onClick: () => onShowToast("Downloading comprehensive quarterly report..."),
+            className: "bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer flex items-center gap-1.5 shadow-md",
+            children: [
+              /* @__PURE__ */ jsx(FiDownload, { className: "w-4 h-4" }),
+              " Download Performance Report"
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [
+        /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-xl border space-y-2 ${subCardClass}`, children: [
+          /* @__PURE__ */ jsx("span", { className: `text-[11px] font-semibold ${textMuted}`, children: "Cohort Completion Rate" }),
+          /* @__PURE__ */ jsx("div", { className: "text-3xl font-bold text-blue-400", children: "92.4%" }),
+          /* @__PURE__ */ jsx("p", { className: `text-[10px] ${textMuted}`, children: "Trainees who completed all lab assignments & capstone" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-xl border space-y-2 ${subCardClass}`, children: [
+          /* @__PURE__ */ jsx("span", { className: `text-[11px] font-semibold ${textMuted}`, children: "Certification Exam Pass Rate" }),
+          /* @__PURE__ */ jsx("div", { className: "text-3xl font-bold text-emerald-400", children: "88.7%" }),
+          /* @__PURE__ */ jsx("p", { className: `text-[10px] ${textMuted}`, children: "First-attempt clearance rate on accredited assessments" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-xl border space-y-2 ${subCardClass}`, children: [
+          /* @__PURE__ */ jsx("span", { className: `text-[11px] font-semibold ${textMuted}`, children: "Placement Conversion Rate" }),
+          /* @__PURE__ */ jsx("div", { className: "text-3xl font-bold text-blue-500", children: "81.0%" }),
+          /* @__PURE__ */ jsx("p", { className: `text-[10px] ${textMuted}`, children: "Trainees hired by corporate partners within 90 days" })
+        ] })
+      ] })
+    ] });
+  }
+  if (activeSubView === "notifications") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiBell, { className: "w-5 h-5 text-blue-500" }),
+            " Notifications & Academy Alerts"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Batch kickoffs, certification approvals, and enrollment updates" })
+        ] }),
+        /* @__PURE__ */ jsx("button", { onClick: () => onShowToast("Marked all notifications as read"), className: "text-blue-400 font-bold hover:underline cursor-pointer", children: "Mark All as Read" })
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "space-y-3", children: [
+        { title: "New Batch Kickoff: Full-Stack Web Dev Q1 starts this Monday", time: "25 mins ago", tag: "Batch Alert" },
+        { title: "3 Trainees cleared the Cloud & DevOps Final Certification Exam", time: "2 hours ago", tag: "Assessment" },
+        { title: "New Enrollment Application received from Deepa Kulkarni", time: "5 hours ago", tag: "Enrollment" }
+      ].map((nt, i) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border flex items-center justify-between ${subCardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx("h4", { className: `font-bold ${textHeading}`, children: nt.title }),
+          /* @__PURE__ */ jsxs("span", { className: "text-blue-400 font-semibold", children: [
+            nt.tag,
+            " • ",
+            nt.time
+          ] })
+        ] }),
+        /* @__PURE__ */ jsx("span", { className: "text-[10px] bg-blue-600/20 text-blue-400 px-2.5 py-0.5 rounded-full font-bold border border-blue-500/30", children: "New" })
       ] }, i)) })
     ] });
   }
-  if (activeSubView === "hiring") {
+  if (activeSubView === "settings") {
     return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
-      /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
-        /* @__PURE__ */ jsx(FiBriefcase, { className: "w-5 h-5 text-blue-500" }),
-        " Hiring Partner Enterprises"
+      /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiSliders, { className: "w-5 h-5 text-blue-500" }),
+            " Training Institute Governance & Settings"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Configure institute accreditation profile, default cohort limits, and LMS synchronization" })
+        ] }),
+        /* @__PURE__ */ jsx(
+          "button",
+          {
+            onClick: () => onShowToast("Training institute settings saved successfully!"),
+            className: "bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer",
+            children: "Save Settings"
+          }
+        )
       ] }),
-      /* @__PURE__ */ jsx("p", { className: textMuted, children: "Corporate partners recruiting directly from institute bootcamps" }),
-      /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: ["Infosys", "TCS", "Accenture", "Cognizant", "Capgemini", "Wipro", "HCL Tech", "Tech Mahindra"].map((hp, i) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border font-bold flex items-center justify-between cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast(`Opened MoU details for ${hp}`), children: [
-        /* @__PURE__ */ jsx("span", { className: textHeading, children: hp }),
-        /* @__PURE__ */ jsx("span", { className: "text-emerald-400 text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/30", children: "MoU Active" })
-      ] }, i)) })
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
+        /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-xl border space-y-2 ${subCardClass}`, children: [
+          /* @__PURE__ */ jsx("h4", { className: `font-bold text-sm ${textHeading}`, children: "Institute Accreditation" }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "National Skill Council Accredited Center • Code: TI-98421" }),
+          /* @__PURE__ */ jsx("div", { className: "text-[11px] font-mono text-blue-400 font-bold", children: "LMS Sync: Active" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-xl border space-y-2 ${subCardClass}`, children: [
+          /* @__PURE__ */ jsx("h4", { className: `font-bold text-sm ${textHeading}`, children: "Default Cohort Limits" }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Maximum 50 Trainees per Batch • Minimum Attendance Threshold: 80%" }),
+          /* @__PURE__ */ jsx("div", { className: "text-[11px] font-bold text-emerald-400", children: "Rules Applied to All Bootcamps" })
+        ] })
+      ] })
     ] });
   }
   return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
@@ -10060,32 +11821,65 @@ const TrainingDashboard = ({
         /* @__PURE__ */ jsx(FiGrid, { className: "w-5 h-5 text-blue-500" }),
         " Training Institute Portal Overview"
       ] }),
-      /* @__PURE__ */ jsx("p", { className: textMuted, children: "Skill bootcamps, certified trainees, accreditation tracks, and hiring enterprise ties" })
+      /* @__PURE__ */ jsx("p", { className: textMuted, children: "Skill bootcamps, certified trainees, scheduled cohorts, and placement conversion tracks" })
     ] }),
     /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
-      /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast("Viewing Trainee Cohorts"), children: [
-        /* @__PURE__ */ jsx("span", { className: `font-semibold block ${textMuted}`, children: "Active Tracks" }),
+      /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast("Viewing Courses"), children: [
+        /* @__PURE__ */ jsx("span", { className: `font-semibold block ${textMuted}`, children: "Active Courses" }),
         /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-blue-400 mt-1", children: coursesList.length }),
         /* @__PURE__ */ jsx("span", { className: `text-[10px] ${textMuted}`, children: coursesList.length > 0 ? "Live Bootcamps" : "No active bootcamps" })
       ] }),
-      /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast("Viewing Certification Rates"), children: [
+      /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast("Viewing Batches"), children: [
+        /* @__PURE__ */ jsx("span", { className: `font-semibold block ${textMuted}`, children: "Active Batches" }),
+        /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-emerald-400 mt-1", children: batchesList.filter((b) => b.status === "Active").length }),
+        /* @__PURE__ */ jsxs("span", { className: `text-[10px] ${textMuted}`, children: [
+          batchesList.length,
+          " Total Cohorts"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast("Viewing Learners"), children: [
+        /* @__PURE__ */ jsx("span", { className: `font-semibold block ${textMuted}`, children: "Enrolled Learners" }),
+        /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-blue-400 mt-1", children: learnersList.length }),
+        /* @__PURE__ */ jsx("span", { className: `text-[10px] ${textMuted}`, children: "Across All Tracks" })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast("Viewing Digital Certifications"), children: [
         /* @__PURE__ */ jsx("span", { className: `font-semibold block ${textMuted}`, children: "Digital Credentials" }),
-        /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-emerald-400 mt-1", children: certifications.length }),
-        /* @__PURE__ */ jsx("span", { className: `text-[10px] ${textMuted}`, children: "Industry Accredited" })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast("Viewing Hiring Partners"), children: [
-        /* @__PURE__ */ jsx("span", { className: `font-semibold block ${textMuted}`, children: "Corporate Placement" }),
-        /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-blue-400 mt-1", children: "8 Partners" }),
-        /* @__PURE__ */ jsx("span", { className: `text-[10px] ${textMuted}`, children: "MoU Signed" })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast("Viewing Employment Index"), children: [
-        /* @__PURE__ */ jsx("span", { className: `font-semibold block ${textMuted}`, children: "Platform Status" }),
-        /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-emerald-400 mt-1", children: "Connected" }),
+        /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-emerald-400 mt-1", children: certificationsList.length }),
         /* @__PURE__ */ jsxs("span", { className: "text-[10px] text-emerald-400 flex items-center gap-1 mt-1 font-bold", children: [
           /* @__PURE__ */ jsx(FiTrendingUp, { className: "w-3 h-3" }),
-          " System Synchronized"
+          " Industry Accredited"
         ] })
       ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "space-y-3 pt-2", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ jsx("h3", { className: `font-bold text-sm ${textHeading}`, children: "Active Cohorts & Batches" }),
+        /* @__PURE__ */ jsxs("span", { className: `text-[11px] ${textMuted}`, children: [
+          batchesList.length,
+          " Batches Running"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: batchesList.slice(0, 4).map((batch) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border space-y-2 ${subCardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-start", children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("h4", { className: `font-bold ${textHeading}`, children: batch.name }),
+            /* @__PURE__ */ jsx("div", { className: "text-blue-400 text-[11px] font-semibold", children: batch.course })
+          ] }),
+          /* @__PURE__ */ jsx("span", { className: "text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30 font-bold", children: batch.status })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-[11px] pt-1", children: [
+          /* @__PURE__ */ jsxs("span", { className: textMuted, children: [
+            "Trainer: ",
+            batch.trainer
+          ] }),
+          /* @__PURE__ */ jsxs("span", { className: "font-semibold text-blue-500", children: [
+            batch.enrolled,
+            " / ",
+            batch.capacity,
+            " Enrolled"
+          ] })
+        ] })
+      ] }, batch.id)) })
     ] })
   ] });
 };
@@ -10243,6 +12037,7 @@ const RecruiterDashboard = ({
     setIsActionModalOpen(false);
   };
   const cardClass = isDarkMode ? "bg-slate-900 border-slate-800 text-white shadow-xl" : "bg-white border-slate-200 text-slate-900 shadow-xs";
+  const subCardClass = isDarkMode ? "bg-slate-800/80 border-slate-700/80 text-white" : "bg-blue-50/40 border-blue-100 text-slate-900";
   const textMuted = isDarkMode ? "text-slate-400" : "text-[#6B7280]";
   const textHeading = isDarkMode ? "text-white" : "text-[#12163A]";
   const borderDivider = isDarkMode ? "border-slate-800" : "border-slate-100";
@@ -10422,6 +12217,64 @@ const RecruiterDashboard = ({
         ] }, j.id)) })
       ] });
     }
+    if (activeSubView === "create-job") {
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiPlus, { className: "w-5 h-5 text-[#3665EE]" }),
+            " Create & Publish Job Requisition"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Broadcast new job opening to student talent pools across partner universities" })
+        ] }),
+        /* @__PURE__ */ jsxs("form", { onSubmit: (e) => {
+          var _a2, _b2, _c;
+          e.preventDefault();
+          const form = e.currentTarget;
+          const title = ((_a2 = form.elements.namedItem("title")) == null ? void 0 : _a2.value) || "Software Engineer";
+          const ctc = ((_b2 = form.elements.namedItem("ctc")) == null ? void 0 : _b2.value) || "₹18.0 LPA";
+          const location = ((_c = form.elements.namedItem("location")) == null ? void 0 : _c.value) || "Bengaluru / Remote";
+          const newJob = {
+            id: `JOB-${Math.floor(100 + Math.random() * 900)}`,
+            title,
+            ctc,
+            location,
+            applicants: 0,
+            status: "Active Requisition"
+          };
+          const updated = [newJob, ...jobsList];
+          updateMutation.mutate({ jobs: updated });
+          onShowToast(`Published new job requisition: ${title} (${ctc})!`);
+        }, className: "space-y-4 max-w-2xl", children: [
+          /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("label", { className: "block text-xs font-semibold text-slate-300 mb-1", children: "Job Title" }),
+              /* @__PURE__ */ jsx("input", { name: "title", required: true, placeholder: "e.g. Cloud Infrastructure Engineer", className: "w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/60 text-white text-sm" })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("label", { className: "block text-xs font-semibold text-slate-300 mb-1", children: "Annual CTC Range" }),
+              /* @__PURE__ */ jsx("input", { name: "ctc", required: true, placeholder: "e.g. ₹18.0 - 24.0 LPA", className: "w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/60 text-white text-sm" })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("label", { className: "block text-xs font-semibold text-slate-300 mb-1", children: "Job Location" }),
+              /* @__PURE__ */ jsx("input", { name: "location", required: true, placeholder: "e.g. Bengaluru / Pune / Remote", className: "w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/60 text-white text-sm" })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("label", { className: "block text-xs font-semibold text-slate-300 mb-1", children: "Experience Level" }),
+              /* @__PURE__ */ jsx("input", { name: "experience", placeholder: "e.g. Entry Level (0-2 Years)", className: "w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/60 text-white text-sm" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("label", { className: "block text-xs font-semibold text-slate-300 mb-1", children: "Skills Required (Comma-separated)" }),
+            /* @__PURE__ */ jsx("input", { name: "skills", placeholder: "e.g. Python, Docker, Kubernetes, AWS, PostgreSQL", className: "w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/60 text-white text-sm" })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("label", { className: "block text-xs font-semibold text-slate-300 mb-1", children: "Job Description & Responsibilities" }),
+            /* @__PURE__ */ jsx("textarea", { name: "description", rows: 4, placeholder: "Describe core responsibilities, key qualifications, and compensation perks...", className: "w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/60 text-white text-sm" })
+          ] }),
+          /* @__PURE__ */ jsx("button", { type: "submit", className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white font-semibold text-sm px-6 py-2.5 rounded-xl transition cursor-pointer shadow-md", children: "Publish Job Requisition" })
+        ] })
+      ] });
+    }
     if (activeSubView === "campus-hiring") {
       return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
         /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
@@ -10466,33 +12319,142 @@ const RecruiterDashboard = ({
         ] }, i)) })
       ] });
     }
-    if (activeSubView === "student-search") {
+    if (activeSubView === "student-search" || activeSubView === "candidates") {
+      const candidates = [
+        { name: "Aarav Sharma", college: "IIT Delhi", branch: "Computer Science", gpa: "9.2 CGPA", skills: ["Python", "PyTorch", "System Design"], atsMatch: 95 },
+        { name: "Priya Nair", college: "BITS Pilani", branch: "Electronics & Communication", gpa: "8.9 CGPA", skills: ["C++", "Embedded Linux", "Verilog"], atsMatch: 91 },
+        { name: "Kavya Menon", college: "NIT Surathkal", branch: "Information Technology", gpa: "9.0 CGPA", skills: ["React", "TypeScript", "Node.js", "Docker"], atsMatch: 88 }
+      ];
       return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
-        /* @__PURE__ */ jsx("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
           /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
             /* @__PURE__ */ jsx(FiSearch, { className: "w-5 h-5 text-[#3665EE]" }),
-            " Global Student Talent Search Engine"
+            " Candidate Talent Pool & Resume Search"
           ] }),
-          /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Search verified student talent by skills, ATS fit, and qualifications" })
-        ] }) }),
-        /* @__PURE__ */ jsx("div", { className: "p-6 rounded-[24px] bg-[#DEE9FF] border border-[#C6D9FF] space-y-4", children: /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row gap-3", children: [
+          /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Search verified university candidates by skills, GPA, & ATS score" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "p-4 rounded-xl bg-[#DEE9FF]/40 border border-[#C6D9FF] flex flex-col sm:flex-row gap-3", children: [
           /* @__PURE__ */ jsx(
             "input",
             {
               type: "text",
-              placeholder: "Search candidates by skill e.g. Python, Cloud, Full-Stack...",
-              className: "flex-1 px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-[#12163A] text-[14px] focus:outline-none focus:ring-2 focus:ring-[#3665EE]"
+              placeholder: "Search by skill e.g. Python, Docker, React, AWS...",
+              className: "flex-1 px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-[#12163A] text-sm focus:outline-none"
             }
           ),
           /* @__PURE__ */ jsx(
             "button",
             {
-              onClick: () => onShowToast("Executed search query across live candidate database!"),
-              className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white text-[14px] font-semibold px-6 py-2.5 rounded-xl transition cursor-pointer shadow-md",
-              children: "Search Talent Database"
+              onClick: () => onShowToast("Executed search across verified student candidate pool!"),
+              className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white text-sm font-semibold px-6 py-2.5 rounded-xl cursor-pointer",
+              children: "Search Candidates"
             }
           )
-        ] }) })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: candidates.map((c, idx) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border ${subCardClass} space-y-3 flex flex-col justify-between`, children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between", children: [
+              /* @__PURE__ */ jsxs("div", { children: [
+                /* @__PURE__ */ jsx("h4", { className: `font-semibold text-[15px] ${textHeading}`, children: c.name }),
+                /* @__PURE__ */ jsxs("p", { className: `text-xs ${textMuted}`, children: [
+                  c.college,
+                  " • ",
+                  c.branch
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxs("span", { className: "px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400", children: [
+                c.atsMatch,
+                "% Fit"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsx("p", { className: "text-xs font-semibold text-blue-400 mt-2", children: c.gpa }),
+            /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-1 mt-2", children: c.skills.map((s, si) => /* @__PURE__ */ jsx("span", { className: "text-[10px] bg-slate-700/40 text-slate-300 px-2 py-0.5 rounded-md", children: s }, si)) })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "pt-2 border-t border-slate-700/40 flex items-center justify-between", children: [
+            /* @__PURE__ */ jsx("button", { onClick: () => onShowToast(`Downloaded resume for ${c.name}`), className: "text-xs text-blue-400 font-semibold hover:underline", children: "Download Resume" }),
+            /* @__PURE__ */ jsx("button", { onClick: () => onShowToast(`Shortlisted ${c.name}!`), className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white text-xs font-semibold px-3 py-1.5 rounded-lg cursor-pointer", children: "Shortlist" })
+          ] })
+        ] }, idx)) })
+      ] });
+    }
+    if (activeSubView === "applications") {
+      const apps = [
+        { id: "APP-101", candidate: "Aarav Sharma", role: "AI & MLOps Scientist", college: "IIT Delhi", appliedDate: "2 days ago", matchScore: 95, status: "Under Review" },
+        { id: "APP-102", candidate: "Priya Nair", role: "Software Engineer", college: "BITS Pilani", appliedDate: "3 days ago", matchScore: 91, status: "Shortlisted" },
+        { id: "APP-103", candidate: "Rohan Patel", role: "Cloud Solutions Architect", college: "NIT Trichy", appliedDate: "4 days ago", matchScore: 84, status: "Applied" }
+      ];
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiFileText, { className: "w-5 h-5 text-[#3665EE]" }),
+            " Candidate Applications Pipeline"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Review incoming applications, evaluate ATS match scores, and progress candidate stages" })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "divide-y divide-slate-800 border border-slate-700 rounded-2xl overflow-hidden text-sm", children: apps.map((a) => /* @__PURE__ */ jsxs("div", { className: "p-4 flex flex-col md:flex-row md:items-center justify-between gap-4", children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsx("span", { className: "font-semibold text-white", children: a.candidate }),
+              /* @__PURE__ */ jsxs("span", { className: "text-xs text-slate-400", children: [
+                "(",
+                a.college,
+                ")"
+              ] }),
+              /* @__PURE__ */ jsx("span", { className: "px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400", children: a.role })
+            ] }),
+            /* @__PURE__ */ jsxs("p", { className: "text-xs text-slate-400 mt-1", children: [
+              "Applied: ",
+              a.appliedDate,
+              " • ATS Alignment: ",
+              /* @__PURE__ */ jsxs("strong", { className: "text-emerald-400", children: [
+                a.matchScore,
+                "%"
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
+            /* @__PURE__ */ jsx("span", { className: "text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300", children: a.status }),
+            /* @__PURE__ */ jsx("button", { onClick: () => onShowToast(`Moved ${a.candidate} to Shortlist!`), className: "bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 rounded-xl cursor-pointer", children: "Shortlist" })
+          ] })
+        ] }, a.id)) })
+      ] });
+    }
+    if (activeSubView === "shortlisted") {
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiUserCheck, { className: "w-5 h-5 text-emerald-400" }),
+            " Shortlisted Candidates Pool"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Candidates approved for technical evaluation and interviews" })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "space-y-3", children: [
+          { name: "Priya Nair", role: "Software Engineer", college: "BITS Pilani", ctc: "₹20.0 LPA", match: 91 },
+          { name: "Aarav Sharma", role: "AI & MLOps Scientist", college: "IIT Delhi", ctc: "₹28.0 LPA", match: 95 }
+        ].map((sc, idx) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border ${subCardClass} flex items-center justify-between`, children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("h4", { className: `font-semibold text-sm ${textHeading}`, children: sc.name }),
+            /* @__PURE__ */ jsxs("p", { className: `text-xs ${textMuted}`, children: [
+              sc.role,
+              " • ",
+              sc.college,
+              " • Target CTC: ",
+              sc.ctc
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => openTriggerModal("Schedule Candidate Interview", "Set up interview round", [
+                { label: "Candidate Name", name: "candidate", type: "text", placeholder: sc.name },
+                { label: "Job Role", name: "role", type: "text", placeholder: sc.role },
+                { label: "Date & Time", name: "time", type: "text", placeholder: "Tomorrow, 2:00 PM" }
+              ]),
+              className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white text-xs font-semibold px-3 py-1.5 rounded-lg cursor-pointer",
+              children: "Schedule Interview"
+            }
+          )
+        ] }, idx)) })
       ] });
     }
     if (activeSubView === "ai-match" || activeSubView === "matcher") {
@@ -10568,7 +12530,7 @@ const RecruiterDashboard = ({
         ] }, int.id)) })
       ] });
     }
-    if (activeSubView === "offers") {
+    if (activeSubView === "offers" || activeSubView === "selected") {
       return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
         /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
           /* @__PURE__ */ jsxs("div", { children: [
@@ -10638,6 +12600,31 @@ const RecruiterDashboard = ({
         ] })
       ] });
     }
+    if (activeSubView === "messages") {
+      return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiFileText, { className: "w-5 h-5 text-[#3665EE]" }),
+            " Candidate & University Placement Cell Messages"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Direct communication with job applicants and college placement officers" })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "space-y-3", children: [
+          { sender: "Aarav Sharma (Candidate - AI Engineer)", time: "10:15 AM", message: "Thank you for the interview confirmation! I have accepted the calendar invite.", unread: true },
+          { sender: "Placement Cell (IIT Delhi)", time: "Yesterday", message: "The registered student list for your upcoming campus drive has been finalized.", unread: false }
+        ].map((m, idx) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border flex items-center justify-between cursor-pointer transition ${subCardClass}`, onClick: () => onShowToast(`Opened message with ${m.sender}`), children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+              m.unread && /* @__PURE__ */ jsx("span", { className: "w-2 h-2 rounded-full bg-blue-500" }),
+              /* @__PURE__ */ jsx("span", { className: `font-semibold text-sm ${textHeading}`, children: m.sender }),
+              /* @__PURE__ */ jsx("span", { className: `text-[11px] ${textMuted}`, children: m.time })
+            ] }),
+            /* @__PURE__ */ jsx("p", { className: `text-xs mt-1 ${textMuted}`, children: m.message })
+          ] }),
+          /* @__PURE__ */ jsx("button", { className: "text-xs text-blue-400 font-semibold hover:underline", children: "Reply" })
+        ] }, idx)) })
+      ] });
+    }
     if (activeSubView === "notifications") {
       return /* @__PURE__ */ jsxs("div", { className: `rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`, children: [
         /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
@@ -10698,45 +12685,108 @@ const RecruiterDashboard = ({
     )
   ] });
 };
+const defaultCompanyJobs = [
+  { id: "JOB-501", title: "Graduate Software Development Engineer (SDE-1)", department: "Core Engineering", location: "Bengaluru / Hybrid", type: "Full-time", openings: 12, applicants: 184, status: "Active", postedDate: "2026-02-15" },
+  { id: "JOB-502", title: "AI & Data Science Engineering Intern", department: "Applied Machine Learning", location: "Hyderabad / On-site", type: "Internship", openings: 8, applicants: 210, status: "Active", postedDate: "2026-02-20" },
+  { id: "JOB-503", title: "Cloud Infrastructure & DevOps Engineer", department: "Platform Reliability", location: "Pune / Remote", type: "Full-time", openings: 5, applicants: 92, status: "Active", postedDate: "2026-02-22" },
+  { id: "JOB-504", title: "Associate Product Analyst", department: "Product & Growth", location: "Gurugram / Hybrid", type: "Full-time", openings: 4, applicants: 115, status: "Active", postedDate: "2026-02-25" }
+];
+const defaultCompanyCandidates = [
+  { id: "CND-101", name: "Arjun Das", email: "arjun.das@example.com", college: "IIT Bombay", degree: "B.Tech Computer Science (2026)", skills: ["Python", "PyTorch", "Distributed Systems", "Go"], matchScore: 96, experience: "Final Year Student", status: "Shortlisted" },
+  { id: "CND-102", name: "Sneha Kulkarni", email: "sneha.k@example.com", college: "BITS Pilani", degree: "B.E. Computer Science (2026)", skills: ["React", "Node.js", "PostgreSQL", "AWS"], matchScore: 94, experience: "Summer Intern at Tech Labs", status: "Shortlisted" },
+  { id: "CND-103", name: "Rohan Mehra", email: "rohan.m@example.com", college: "NIT Trichy", degree: "B.Tech IT (2026)", skills: ["Kubernetes", "Docker", "Terraform", "CI/CD"], matchScore: 91, experience: "Final Year Student", status: "In Review" },
+  { id: "CND-104", name: "Tanvi Iyer", email: "tanvi.i@example.com", college: "DTU Delhi", degree: "B.Tech Software Engineering (2026)", skills: ["Data Analytics", "SQL", "Tableau", "Python"], matchScore: 89, experience: "Final Year Student", status: "Interviewed" }
+];
+const defaultCompanyApplications = [
+  { id: "APP-901", applicantName: "Arjun Das", email: "arjun.das@example.com", position: "Graduate Software Development Engineer", appliedDate: "2026-02-28", stage: "Technical Round", score: "95/100" },
+  { id: "APP-902", applicantName: "Sneha Kulkarni", email: "sneha.k@example.com", position: "AI & Data Science Engineering Intern", appliedDate: "2026-03-01", stage: "HR Round", score: "92/100" },
+  { id: "APP-903", applicantName: "Rohan Mehra", email: "rohan.m@example.com", position: "Cloud Infrastructure Engineer", appliedDate: "2026-03-02", stage: "Screening", score: "88/100" },
+  { id: "APP-904", applicantName: "Tanvi Iyer", email: "tanvi.i@example.com", position: "Associate Product Analyst", appliedDate: "2026-03-03", stage: "Offer Sent", score: "94/100" }
+];
+const defaultCompanyInterviews = [
+  { id: "INT-301", candidateName: "Arjun Das", role: "Graduate SDE-1", round: "System Design & Algorithms", interviewer: "Vikram Mehta (Principal Architect)", date: "Tomorrow", time: "14:30 PM", status: "Scheduled", meetLink: "https://meet.role-ready.com/int-301" },
+  { id: "INT-302", candidateName: "Sneha Kulkarni", role: "AI Engineering Intern", round: "Machine Learning Deep Dive", interviewer: "Dr. Ananya Roy (Lead Scientist)", date: "March 14, 2026", time: "11:00 AM", status: "Scheduled", meetLink: "https://meet.role-ready.com/int-302" },
+  { id: "INT-303", candidateName: "Tanvi Iyer", role: "Product Analyst", round: "Executive Leadership Round", interviewer: "Siddharth Rao (VP Product)", date: "March 10, 2026", time: "16:00 PM", status: "Completed", meetLink: "https://meet.role-ready.com/int-303" }
+];
+const defaultCompanyEmployees = [
+  { id: "EMP-01", name: "Vikram Mehta", department: "Core Engineering", designation: "Principal Architect", joinedDate: "2022-04-01", email: "v.mehta@enterprise.com", status: "Active" },
+  { id: "EMP-02", name: "Dr. Ananya Roy", department: "Applied Machine Learning", designation: "Lead Data Scientist", joinedDate: "2023-08-15", email: "a.roy@enterprise.com", status: "Active" },
+  { id: "EMP-03", name: "Priya Sharma", department: "Human Resources", designation: "Head of Campus Recruitment", joinedDate: "2021-01-10", email: "p.sharma@enterprise.com", status: "Active" },
+  { id: "EMP-04", name: "Aditya Verma", department: "Platform Engineering", designation: "Senior DevOps Engineer", joinedDate: "2024-02-01", email: "a.verma@enterprise.com", status: "Active" }
+];
 const companyService = {
   /**
-   * Fetch live company internships and campus partnerships
-   * GET /api/v1/profile/
+   * Fetch live company internships, jobs, candidates, applications, and campus partnerships
    */
   async getCompanyData() {
     var _a2, _b2;
     try {
-      const res = await apiClient(API_ENDPOINTS.PROFILE.GET);
-      const roleData = ((_b2 = (_a2 = res.data) == null ? void 0 : _a2.profile) == null ? void 0 : _b2.roleData) || {};
-      const internships = Array.isArray(roleData.internships) ? roleData.internships : [];
-      const partnerships = Array.isArray(roleData.partnerships) ? roleData.partnerships : [];
-      return { internships, partnerships };
+      const res = await apiClient(API_ENDPOINTS.PROFILE.GET).catch(() => null);
+      const roleData = ((_b2 = (_a2 = res == null ? void 0 : res.data) == null ? void 0 : _a2.profile) == null ? void 0 : _b2.roleData) || {};
+      const jobs = Array.isArray(roleData.jobs) && roleData.jobs.length > 0 ? roleData.jobs : defaultCompanyJobs;
+      const candidates = Array.isArray(roleData.candidates) && roleData.candidates.length > 0 ? roleData.candidates : defaultCompanyCandidates;
+      const applications = Array.isArray(roleData.applications) && roleData.applications.length > 0 ? roleData.applications : defaultCompanyApplications;
+      const interviews = Array.isArray(roleData.interviews) && roleData.interviews.length > 0 ? roleData.interviews : defaultCompanyInterviews;
+      const employees = Array.isArray(roleData.employees) && roleData.employees.length > 0 ? roleData.employees : defaultCompanyEmployees;
+      const internships = Array.isArray(roleData.internships) && roleData.internships.length > 0 ? roleData.internships : [
+        { cohort: "Summer AI Innovation Cohort 2026", duration: "6 Months", stipend: "₹45,000 / mo", interns: "18 Candidates Active", ppo: "Direct PPO Track" },
+        { cohort: "Core Systems Engineering Fellowship", duration: "4 Months", stipend: "₹40,000 / mo", interns: "12 Candidates Active", ppo: "Pre-Placement Offer" }
+      ];
+      const partnerships = Array.isArray(roleData.partnerships) && roleData.partnerships.length > 0 ? roleData.partnerships : [
+        { college: "IIT Bombay", type: "Tier-1 Campus Hiring MoU", mouYear: "2026-2029", studentsHired: "14 Hires", status: "Active MoU" },
+        { college: "BITS Pilani", type: "Joint R&D Internship Track", mouYear: "2025-2028", studentsHired: "10 Hires", status: "Active MoU" },
+        { college: "NIT Trichy", type: "Campus Placement Partner", mouYear: "2026-2027", studentsHired: "8 Hires", status: "Active MoU" }
+      ];
+      return { jobs, candidates, applications, interviews, employees, internships, partnerships };
     } catch {
-      return { internships: [], partnerships: [] };
+      return {
+        jobs: defaultCompanyJobs,
+        candidates: defaultCompanyCandidates,
+        applications: defaultCompanyApplications,
+        interviews: defaultCompanyInterviews,
+        employees: defaultCompanyEmployees,
+        internships: [],
+        partnerships: []
+      };
     }
   },
   /**
-   * Launch a new internship cohort and persist in backend profile roleData
-   * PUT /api/v1/profile/complete
+   * Update enterprise company data in backend profile roleData
    */
-  async launchInternshipCohort(newCohort) {
+  async updateCompanyData(updates) {
     var _a2, _b2, _c;
     const current = await apiClient(API_ENDPOINTS.PROFILE.GET).catch(() => null);
     const existingRoleData = ((_b2 = (_a2 = current == null ? void 0 : current.data) == null ? void 0 : _a2.profile) == null ? void 0 : _b2.roleData) || {};
     const existingP = ((_c = current == null ? void 0 : current.data) == null ? void 0 : _c.profile) || {};
-    const currentInternships = Array.isArray(existingRoleData.internships) ? existingRoleData.internships : [];
-    const updatedInternships = [newCohort, ...currentInternships];
+    const updatedRoleData = {
+      ...existingRoleData,
+      ...updates.jobs ? { jobs: updates.jobs } : {},
+      ...updates.candidates ? { candidates: updates.candidates } : {},
+      ...updates.applications ? { applications: updates.applications } : {},
+      ...updates.interviews ? { interviews: updates.interviews } : {},
+      ...updates.employees ? { employees: updates.employees } : {},
+      ...updates.internships ? { internships: updates.internships } : {},
+      ...updates.partnerships ? { partnerships: updates.partnerships } : {}
+    };
     return await apiClient(API_ENDPOINTS.PROFILE.COMPLETE, {
       method: "PUT",
       body: JSON.stringify({
         firstName: existingP.firstName || "Enterprise",
         lastName: existingP.lastName || "Partner",
         phoneNumber: existingP.phoneNumber || "9876543210",
-        bio: existingP.bio || "Enterprise Corporate Partner",
+        bio: existingP.bio || "Enterprise Corporate Partner & Employer Portal",
         onboardingCompleted: true,
-        roleData: { ...existingRoleData, internships: updatedInternships }
+        roleData: updatedRoleData
       })
     });
+  },
+  /**
+   * Launch a new internship cohort and persist in backend profile roleData
+   */
+  async launchInternshipCohort(newCohort) {
+    const data = await this.getCompanyData();
+    const updatedInternships = [newCohort, ...data.internships];
+    return await this.updateCompanyData({ internships: updatedInternships });
   }
 };
 const CompanyDashboard = ({
@@ -10745,162 +12795,810 @@ const CompanyDashboard = ({
   isDarkMode
 }) => {
   const queryClient = useQueryClient();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [candidateSearchQuery, setCandidateSearchQuery] = useState("");
+  const [selectedStageFilter, setSelectedStageFilter] = useState("All");
+  const [selectedCandidateModal, setSelectedCandidateModal] = useState(null);
+  const [messageInput, setMessageInput] = useState("");
+  const [chatMessages, setChatMessages] = useState([
+    { id: 1, sender: "Placement Officer (IIT Bombay)", text: "Hello, the shortlist for the Summer 2026 AI Innovation drive is confirmed.", time: "10:30 AM", isMe: false },
+    { id: 2, sender: "Company Talent Lead", text: "Thank you! We will conduct technical rounds tomorrow starting at 14:00 PM.", time: "11:15 AM", isMe: true },
+    { id: 3, sender: "Candidate: Arjun Das", text: "Confirmed receipt of the system design interview invitation.", time: "12:00 PM", isMe: false }
+  ]);
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const [actionModalConfig, setActionModalConfig] = useState({
+    title: "",
+    subtitle: "",
+    fields: []
+  });
   const { data: companyData, isLoading } = useQuery({
     queryKey: ["companyData"],
     queryFn: () => companyService.getCompanyData()
   });
-  const internshipsList = (companyData == null ? void 0 : companyData.internships) || [];
-  (companyData == null ? void 0 : companyData.partnerships) || [];
-  const launchCohortMutation = useMutation({
-    mutationFn: (cohort) => companyService.launchInternshipCohort(cohort),
+  const jobsList = (companyData == null ? void 0 : companyData.jobs) || [];
+  const candidatesList = (companyData == null ? void 0 : companyData.candidates) || [];
+  const applicationsList = (companyData == null ? void 0 : companyData.applications) || [];
+  const interviewsList = (companyData == null ? void 0 : companyData.interviews) || [];
+  const employeesList = (companyData == null ? void 0 : companyData.employees) || [];
+  (companyData == null ? void 0 : companyData.internships) || [];
+  const partnershipsList = (companyData == null ? void 0 : companyData.partnerships) || [];
+  const updateMutation = useMutation({
+    mutationFn: (updates) => companyService.updateCompanyData(updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companyData"] });
-      onShowToast("Published new corporate internship cohort successfully!");
     },
-    onError: (err) => {
-      onShowToast("Unable to launch cohort. Please try again.");
+    onError: () => {
+      onShowToast("Unable to save changes. Please try again.");
     }
   });
   if (["discovery", "assessment", "psychometric", "dna", "ai-recommendations", "scholarships", "colleges", "roadmap", "resume-ats", "learning"].includes(activeSubView)) {
     return /* @__PURE__ */ jsx(StudentToolsViews, { activeSubView, onShowToast, isDarkMode });
   }
-  const handleLaunchInternship = (data) => {
-    const newCohort = {
-      cohort: data.cohort || "Enterprise Internship Track",
-      duration: data.duration || "6 Months",
-      stipend: data.stipend || "₹35,000 / mo",
-      interns: "1 Cohort Enrolled",
-      ppo: "Registrations Open"
+  const openTriggerModal = (title, subtitle, fields) => {
+    setActionModalConfig({ title, subtitle, fields });
+    setIsActionModalOpen(true);
+  };
+  const handleModalFormSubmit = (data) => {
+    if (actionModalConfig.title === "Post Job Requisition") {
+      const newJob = {
+        id: `JOB-${Math.floor(500 + Math.random() * 500)}`,
+        title: data.title || "Full-Stack Software Engineer",
+        department: data.department || "Core Engineering",
+        location: data.location || "Bengaluru / Hybrid",
+        type: data.type || "Full-time",
+        openings: parseInt(data.openings) || 5,
+        applicants: 0,
+        status: "Active",
+        postedDate: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+      };
+      const updated = [newJob, ...jobsList];
+      updateMutation.mutate({ jobs: updated });
+      onShowToast(`Posted new job requisition: ${newJob.title}!`);
+    } else if (actionModalConfig.title === "Schedule Interview") {
+      const newInt = {
+        id: `INT-${Math.floor(300 + Math.random() * 700)}`,
+        candidateName: data.candidateName || "Candidate Name",
+        role: data.role || "Software Engineer",
+        round: data.round || "Technical Interview Round",
+        interviewer: data.interviewer || "Technical Lead",
+        date: data.date || "Tomorrow",
+        time: data.time || "14:00 PM",
+        status: "Scheduled",
+        meetLink: "https://meet.role-ready.com/interview"
+      };
+      const updated = [newInt, ...interviewsList];
+      updateMutation.mutate({ interviews: updated });
+      onShowToast(`Scheduled interview with ${newInt.candidateName}!`);
+    } else if (actionModalConfig.title === "Onboard Employee") {
+      const newEmp = {
+        id: `EMP-${Math.floor(10 + Math.random() * 90)}`,
+        name: data.name || "Employee Name",
+        department: data.department || "Engineering",
+        designation: data.designation || "Associate Engineer",
+        joinedDate: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+        email: data.email || "employee@enterprise.com",
+        status: "Active"
+      };
+      const updated = [newEmp, ...employeesList];
+      updateMutation.mutate({ employees: updated });
+      onShowToast(`Onboarded team member: ${newEmp.name}!`);
+    } else if (actionModalConfig.title === "Register Campus Drive") {
+      const newPartner = {
+        college: data.college || "Partner University",
+        type: data.type || "Campus Placement Drive 2026",
+        mouYear: "2026-2027",
+        studentsHired: "Planning Stage",
+        status: "Active MoU"
+      };
+      const updated = [newPartner, ...partnershipsList];
+      updateMutation.mutate({ partnerships: updated });
+      onShowToast(`Registered campus drive for ${newPartner.college}!`);
+    }
+    setIsActionModalOpen(false);
+  };
+  const handleSendMessage = () => {
+    if (!messageInput.trim()) return;
+    const newMsg = {
+      id: Date.now(),
+      sender: "Company Talent Lead",
+      text: messageInput.trim(),
+      time: "Just now",
+      isMe: true
     };
-    launchCohortMutation.mutate(newCohort);
-    setIsModalOpen(false);
+    setChatMessages((prev) => [...prev, newMsg]);
+    setMessageInput("");
+    onShowToast("Message sent successfully!");
   };
   const cardClass = isDarkMode ? "bg-slate-900 border-slate-800 text-white shadow-xl" : "bg-white border-blue-100 text-slate-900 shadow-sm";
   const subCardClass = isDarkMode ? "bg-slate-800/80 border-slate-700/80 text-white" : "bg-blue-50/40 border-blue-100 text-slate-900";
   const textMuted = isDarkMode ? "text-slate-400" : "text-slate-500";
   const textHeading = isDarkMode ? "text-white" : "text-slate-900";
   const borderDivider = isDarkMode ? "border-slate-800" : "border-slate-100";
-  if (activeSubView === "internships") {
-    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-[14px] font-sans transition-colors duration-200 ${cardClass}`, children: [
+  if (activeSubView === "jobs") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
       /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
         /* @__PURE__ */ jsxs("div", { children: [
-          /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
-            /* @__PURE__ */ jsx(FiBriefcase, { className: "w-5 h-5 text-[#3665EE]" }),
-            " Corporate Internship Programs"
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiBriefcase, { className: "w-5 h-5 text-blue-500" }),
+            " Enterprise Job & Internship Requisitions"
           ] }),
-          /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Summer & Winter internship cohorts for university engineering students" })
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Manage active job postings, graduate campus roles, and university openings" })
         ] }),
-        /* @__PURE__ */ jsx(
+        /* @__PURE__ */ jsxs(
           "button",
           {
-            onClick: () => setIsModalOpen(true),
-            className: "bg-[#3665EE] hover:bg-[#2A54D5] text-white text-[14px] font-semibold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-md",
-            children: "+ Launch Internship Drive"
+            onClick: () => openTriggerModal("Post Job Requisition", "Create a new graduate or lateral job posting", [
+              { label: "Job Title", name: "title", type: "text", placeholder: "e.g. Associate Cloud Engineer" },
+              { label: "Department", name: "department", type: "text", placeholder: "e.g. Platform Infrastructure" },
+              { label: "Location", name: "location", type: "text", placeholder: "e.g. Bengaluru / Hybrid" },
+              { label: "Employment Type", name: "type", type: "text", placeholder: "e.g. Full-time / Internship" },
+              { label: "Number of Openings", name: "openings", type: "number", placeholder: "10" }
+            ]),
+            className: "bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-md shadow-blue-500/20",
+            children: [
+              /* @__PURE__ */ jsx(FiPlus, { className: "w-4 h-4" }),
+              " Post New Job"
+            ]
           }
         )
       ] }),
-      internshipsList.length === 0 ? /* @__PURE__ */ jsxs("div", { className: "py-12 text-center text-[13px] text-slate-400", children: [
-        /* @__PURE__ */ jsx(FiBriefcase, { className: "w-8 h-8 mx-auto text-blue-400 mb-2 opacity-50" }),
-        "No corporate internship cohorts active yet. Click '+ Launch Internship Drive' to publish a program."
-      ] }) : /* @__PURE__ */ jsx("div", { className: "space-y-3", children: internshipsList.map((inProg, i) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border flex items-center justify-between transition-all duration-200 hover:-translate-y-0.5 hover:border-[#3665EE] ${subCardClass}`, children: [
+      /* @__PURE__ */ jsx("div", { className: "space-y-3", children: jobsList.map((job) => /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-2xl border flex flex-col md:flex-row md:items-center justify-between gap-4 ${subCardClass} transition hover:shadow-md hover:border-blue-500`, children: [
         /* @__PURE__ */ jsxs("div", { children: [
-          /* @__PURE__ */ jsx("h4", { className: `text-[16px] font-semibold ${textHeading}`, children: inProg.cohort }),
-          /* @__PURE__ */ jsxs("span", { className: "text-[#3665EE] font-medium text-[13px]", children: [
-            inProg.duration,
-            " • Stipend: ",
-            inProg.stipend
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsx("h4", { className: `font-bold text-sm ${textHeading}`, children: job.title }),
+            /* @__PURE__ */ jsxs("span", { className: "text-[10px] font-mono text-slate-400", children: [
+              "(",
+              job.id,
+              ")"
+            ] }),
+            /* @__PURE__ */ jsx("span", { className: "text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full font-bold", children: job.type })
           ] }),
-          /* @__PURE__ */ jsx("div", { className: `text-[13px] ${textMuted} font-normal mt-0.5`, children: inProg.interns })
+          /* @__PURE__ */ jsxs("div", { className: "text-blue-400 font-semibold text-[11px] mt-0.5", children: [
+            job.department,
+            " • ",
+            job.location
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `text-[10px] ${textMuted} mt-0.5`, children: [
+            "Posted: ",
+            job.postedDate,
+            " • ",
+            job.openings,
+            " Openings"
+          ] })
         ] }),
-        /* @__PURE__ */ jsx("span", { className: "text-[12px] bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/30 font-semibold", children: inProg.ppo })
-      ] }, i)) }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-4", children: [
+          /* @__PURE__ */ jsxs("div", { className: "text-right", children: [
+            /* @__PURE__ */ jsx("span", { className: "text-emerald-400 font-bold text-sm", children: job.applicants }),
+            /* @__PURE__ */ jsx("div", { className: `text-[10px] ${textMuted}`, children: "Applicants" })
+          ] }),
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => onShowToast(`Viewing applicants for ${job.title}`),
+              className: "bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3.5 py-1.5 rounded-xl text-xs transition cursor-pointer",
+              children: "View Pipeline"
+            }
+          )
+        ] })
+      ] }, job.id)) }),
       /* @__PURE__ */ jsx(
         ActionModal,
         {
-          isOpen: isModalOpen,
-          title: "Launch Corporate Internship Drive",
-          subtitle: "Publish a new university internship program cohort",
-          fields: [
-            { label: "Internship Program Name", name: "cohort", type: "text", placeholder: "e.g. Summer AI Innovation Cohort" },
-            { label: "Program Duration", name: "duration", type: "text", placeholder: "e.g. 6 Months" },
-            { label: "Monthly Stipend", name: "stipend", type: "text", placeholder: "e.g. ₹40,000 / mo" }
-          ],
-          onClose: () => setIsModalOpen(false),
-          onSubmit: handleLaunchInternship,
+          isOpen: isActionModalOpen,
+          title: actionModalConfig.title,
+          subtitle: actionModalConfig.subtitle,
+          fields: actionModalConfig.fields,
+          onClose: () => setIsActionModalOpen(false),
+          onSubmit: handleModalFormSubmit,
           isDarkMode
         }
       )
     ] });
   }
-  if (activeSubView === "partnerships") {
-    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-[14px] font-sans transition-colors duration-200 ${cardClass}`, children: [
-      /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
-        /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
-          /* @__PURE__ */ jsx(FiBookOpen, { className: "w-5 h-5 text-[#3665EE]" }),
-          " Campus University MoUs"
+  if (activeSubView === "candidates") {
+    const filteredCandidates = candidatesList.filter(
+      (c) => c.name.toLowerCase().includes(candidateSearchQuery.toLowerCase()) || c.college.toLowerCase().includes(candidateSearchQuery.toLowerCase()) || c.skills.some((s) => s.toLowerCase().includes(candidateSearchQuery.toLowerCase()))
+    );
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiSearch, { className: "w-5 h-5 text-blue-500" }),
+            " Talent Pool & Candidate Database"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Verified university engineering students and campus job seekers" })
         ] }),
-        /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Partner universities with signed corporate recruitment MoUs" })
-      ] }),
-      /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: ["IIT Bombay MoU", "IIT Delhi MoU", "BITS Pilani MoU", "NIT Trichy MoU", "DTU Delhi MoU"].map((mou, i) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border flex items-center justify-between cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-[#3665EE] ${subCardClass}`, onClick: () => onShowToast(`Opened MoU record for ${mou}`), children: [
-        /* @__PURE__ */ jsx("span", { className: `text-[15px] font-semibold ${textHeading}`, children: mou }),
-        /* @__PURE__ */ jsx("span", { className: "text-emerald-500 text-[12px] bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 font-medium", children: "Active MoU" })
-      ] }, i)) })
-    ] });
-  }
-  if (activeSubView === "pipeline") {
-    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-[14px] font-sans transition-colors duration-200 ${cardClass}`, children: [
-      /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
-        /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
-          /* @__PURE__ */ jsx(FiUsers, { className: "w-5 h-5 text-[#3665EE]" }),
-          " Talent Funnel Pipeline"
-        ] }),
-        /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Pipeline stage metrics from campus sourcing to PPO conversion" })
-      ] }),
-      /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
-        { stage: "Sourced Candidates", count: internshipsList.length > 0 ? "420" : "0", sub: "Partner Universities" },
-        { stage: "Shortlisted for Test", count: internshipsList.length > 0 ? "145" : "0", sub: "Coding & Aptitude Round" },
-        { stage: "Interview Cleared", count: internshipsList.length > 0 ? "62" : "0", sub: "Technical + HR Cleared" },
-        { stage: "PPO Offered", count: internshipsList.length > 0 ? "48" : "0", sub: "Full Time Pre-Placement" }
-      ].map((pip, i) => /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-xl border space-y-1 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-[#3665EE] ${subCardClass}`, onClick: () => onShowToast(`Viewing stage pipeline for ${pip.stage}`), children: [
-        /* @__PURE__ */ jsx("span", { className: `text-[13px] font-medium block ${textMuted}`, children: pip.stage }),
-        /* @__PURE__ */ jsx("div", { className: "text-[28px] md:text-[30px] font-bold text-[#3665EE] leading-none my-1", children: pip.count }),
-        /* @__PURE__ */ jsx("span", { className: `text-[12px] ${textMuted} block`, children: pip.sub })
-      ] }, i)) })
-    ] });
-  }
-  return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-[14px] font-sans transition-colors duration-200 ${cardClass}`, children: [
-    /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
-      /* @__PURE__ */ jsxs("h2", { className: `text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`, children: [
-        /* @__PURE__ */ jsx(FiGrid, { className: "w-5 h-5 text-[#3665EE]" }),
-        " Enterprise Company Portal Overview"
-      ] }),
-      /* @__PURE__ */ jsx("p", { className: `text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`, children: "Corporate internship drives, university MoUs, intern enrollment, and PPO conversions" })
-    ] }),
-    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
-      /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-[#3665EE] ${subCardClass}`, onClick: () => onShowToast("Viewing Internship Drives"), children: [
-        /* @__PURE__ */ jsx("span", { className: `text-[13px] font-medium block ${textMuted}`, children: "Active Drives" }),
-        /* @__PURE__ */ jsx("div", { className: "text-[28px] md:text-[30px] font-bold text-[#3665EE] leading-none my-1", children: internshipsList.length }),
-        /* @__PURE__ */ jsx("span", { className: `text-[12px] ${textMuted} block`, children: internshipsList.length > 0 ? "Live Cohorts" : "No active cohorts" })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-[#3665EE] ${subCardClass}`, onClick: () => onShowToast("Viewing Campus MoUs"), children: [
-        /* @__PURE__ */ jsx("span", { className: `text-[13px] font-medium block ${textMuted}`, children: "Partner Universities" }),
-        /* @__PURE__ */ jsx("div", { className: "text-[28px] md:text-[30px] font-bold text-[#3665EE] leading-none my-1", children: "5 Colleges" }),
-        /* @__PURE__ */ jsx("span", { className: `text-[12px] ${textMuted} block`, children: "Direct MoUs Signed" })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-[#3665EE] ${subCardClass}`, onClick: () => onShowToast("Viewing Enrolled Interns"), children: [
-        /* @__PURE__ */ jsx("span", { className: `text-[13px] font-medium block ${textMuted}`, children: "Enrolled Candidates" }),
-        /* @__PURE__ */ jsx("div", { className: "text-[28px] md:text-[30px] font-bold text-emerald-500 leading-none my-1", children: internshipsList.length > 0 ? "Active" : "0" }),
-        /* @__PURE__ */ jsxs("span", { className: "text-[12px] text-emerald-600 flex items-center gap-1 font-medium mt-1", children: [
-          /* @__PURE__ */ jsx(FiTrendingUp, { className: "w-3.5 h-3.5" }),
-          " PPO Track Active"
+        /* @__PURE__ */ jsxs("div", { className: "relative w-full md:w-72", children: [
+          /* @__PURE__ */ jsx(FiSearch, { className: "absolute left-3 top-2.5 w-4 h-4 text-slate-400" }),
+          /* @__PURE__ */ jsx(
+            "input",
+            {
+              type: "text",
+              placeholder: "Search by candidate, college or skill...",
+              value: candidateSearchQuery,
+              onChange: (e) => setCandidateSearchQuery(e.target.value),
+              className: `w-full pl-9 pr-4 py-2 rounded-xl text-xs border focus:outline-none focus:border-blue-500 ${isDarkMode ? "bg-slate-800 border-slate-700 text-white" : "bg-slate-50 border-slate-200 text-slate-900"}`
+            }
+          )
         ] })
       ] }),
-      /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-[#3665EE] ${subCardClass}`, onClick: () => onShowToast("Viewing Monthly Stipends"), children: [
-        /* @__PURE__ */ jsx("span", { className: `text-[13px] font-medium block ${textMuted}`, children: "System Status" }),
-        /* @__PURE__ */ jsx("div", { className: "text-[28px] md:text-[30px] font-bold text-emerald-500 leading-none my-1", children: "Connected" }),
-        /* @__PURE__ */ jsx("span", { className: `text-[12px] ${textMuted} block`, children: "Real-time Sync Active" })
+      /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: filteredCandidates.map((c) => /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-2xl border space-y-3 ${subCardClass} transition hover:shadow-md hover:border-blue-500`, children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between", children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("h4", { className: `font-bold text-sm ${textHeading}`, children: c.name }),
+            /* @__PURE__ */ jsxs("div", { className: "text-blue-400 font-semibold text-[11px]", children: [
+              c.college,
+              " • ",
+              c.degree
+            ] }),
+            /* @__PURE__ */ jsx("div", { className: `text-[10px] ${textMuted}`, children: c.experience })
+          ] }),
+          /* @__PURE__ */ jsxs("span", { className: "text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full font-bold border border-emerald-500/30", children: [
+            c.matchScore,
+            "% Match"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-1.5 pt-1", children: c.skills.map((sk, idx) => /* @__PURE__ */ jsx("span", { className: "text-[10px] bg-slate-700/30 px-2 py-0.5 rounded-md font-medium", children: sk }, idx)) }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-end gap-2 pt-2 border-t border-slate-700/20", children: [
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => setSelectedCandidateModal(c),
+              className: "px-3 py-1.5 rounded-lg border border-slate-600/40 hover:border-blue-500 text-xs font-semibold transition cursor-pointer",
+              children: "View Resume"
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => {
+                openTriggerModal("Schedule Interview", `Invite ${c.name} for technical interview`, [
+                  { label: "Candidate Name", name: "candidateName", type: "text", placeholder: c.name },
+                  { label: "Target Position", name: "role", type: "text", placeholder: "Graduate Software Engineer" },
+                  { label: "Interview Round", name: "round", type: "text", placeholder: "Technical Screening" },
+                  { label: "Interviewer", name: "interviewer", type: "text", placeholder: "Lead Architect" }
+                ]);
+              },
+              className: "px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition cursor-pointer",
+              children: "Schedule Interview"
+            }
+          )
+        ] })
+      ] }, c.id)) }),
+      selectedCandidateModal && /* @__PURE__ */ jsx("div", { className: "fixed inset-0 z-50 backdrop-blur-md bg-slate-950/70 flex items-center justify-center p-4", children: /* @__PURE__ */ jsxs("div", { className: `max-w-md w-full rounded-2xl border p-6 space-y-4 shadow-2xl ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between border-b pb-3 border-slate-700/40", children: [
+          /* @__PURE__ */ jsx("h3", { className: `text-base font-bold ${textHeading}`, children: "Candidate Resume & ATS Profile" }),
+          /* @__PURE__ */ jsx("button", { onClick: () => setSelectedCandidateModal(null), className: "text-slate-400 hover:text-white text-lg font-bold", children: "×" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "space-y-2 text-xs", children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Name:" }),
+            " ",
+            /* @__PURE__ */ jsx("span", { className: "font-bold", children: selectedCandidateModal.name })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Email:" }),
+            " ",
+            /* @__PURE__ */ jsx("span", { className: "font-mono text-blue-400", children: selectedCandidateModal.email })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "University:" }),
+            " ",
+            /* @__PURE__ */ jsx("span", { className: "font-bold", children: selectedCandidateModal.college })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Degree:" }),
+            " ",
+            /* @__PURE__ */ jsx("span", { children: selectedCandidateModal.degree })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "AI Match Fit:" }),
+            " ",
+            /* @__PURE__ */ jsxs("span", { className: "font-bold text-emerald-400", children: [
+              selectedCandidateModal.matchScore,
+              "%"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "pt-2", children: /* @__PURE__ */ jsx("span", { className: textMuted, children: "Verified Skills:" }) }),
+          /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-1.5", children: selectedCandidateModal.skills.map((s, idx) => /* @__PURE__ */ jsx("span", { className: "bg-blue-600/20 text-blue-400 px-2 py-0.5 rounded text-[10px] font-bold", children: s }, idx)) })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "pt-3 border-t border-slate-700/40 flex justify-between items-center", children: [
+          /* @__PURE__ */ jsxs(
+            "button",
+            {
+              onClick: () => {
+                onShowToast(`Downloading ATS resume for ${selectedCandidateModal.name}`);
+                setSelectedCandidateModal(null);
+              },
+              className: "px-3 py-1.5 rounded-xl border border-slate-600/40 text-xs font-semibold flex items-center gap-1.5",
+              children: [
+                /* @__PURE__ */ jsx(FiDownload, { className: "w-3.5 h-3.5" }),
+                " Download PDF"
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsx("button", { onClick: () => setSelectedCandidateModal(null), className: "px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold text-xs", children: "Close" })
+        ] })
+      ] }) }),
+      /* @__PURE__ */ jsx(
+        ActionModal,
+        {
+          isOpen: isActionModalOpen,
+          title: actionModalConfig.title,
+          subtitle: actionModalConfig.subtitle,
+          fields: actionModalConfig.fields,
+          onClose: () => setIsActionModalOpen(false),
+          onSubmit: handleModalFormSubmit,
+          isDarkMode
+        }
+      )
+    ] });
+  }
+  if (activeSubView === "applications") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiFileText, { className: "w-5 h-5 text-blue-500" }),
+            " Candidate Application Pipeline"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Track candidate lifecycle stages from screening to offer rollout" })
+        ] }),
+        /* @__PURE__ */ jsxs(
+          "button",
+          {
+            onClick: () => onShowToast("Exported application records to CSV"),
+            className: "px-3 py-2 rounded-xl border border-slate-600/40 hover:border-blue-500 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer",
+            children: [
+              /* @__PURE__ */ jsx(FiDownload, { className: "w-3.5 h-3.5" }),
+              " Export Funnel"
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "space-y-3", children: applicationsList.map((app) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-3 ${subCardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsx("h4", { className: `font-bold text-sm ${textHeading}`, children: app.applicantName }),
+            /* @__PURE__ */ jsxs("span", { className: "text-[10px] font-mono text-slate-400", children: [
+              "(",
+              app.id,
+              ")"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "text-blue-400 font-semibold text-[11px] mt-0.5", children: app.position }),
+          /* @__PURE__ */ jsxs("div", { className: `text-[10px] ${textMuted} mt-0.5`, children: [
+            "Applied on ",
+            app.appliedDate,
+            " • Evaluation: ",
+            app.score
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
+          /* @__PURE__ */ jsx("span", { className: `text-[10px] px-2.5 py-1 rounded-full font-bold border ${app.stage === "Offer Sent" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : app.stage === "Technical Round" || app.stage === "HR Round" ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : "bg-slate-500/20 text-slate-300 border-slate-500/30"}`, children: app.stage }),
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => {
+                const nextStage = app.stage === "Screening" ? "Technical Round" : app.stage === "Technical Round" ? "HR Round" : "Offer Sent";
+                const updated = applicationsList.map((a) => a.id === app.id ? { ...a, stage: nextStage } : a);
+                updateMutation.mutate({ applications: updated });
+                onShowToast(`Advanced ${app.applicantName} to ${nextStage}!`);
+              },
+              className: "bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition cursor-pointer",
+              children: "Advance Stage"
+            }
+          )
+        ] })
+      ] }, app.id)) })
+    ] });
+  }
+  if (activeSubView === "interviews") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiCalendar, { className: "w-5 h-5 text-blue-500" }),
+            " Scheduled Candidate Interviews & Panels"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Technical assessments, leadership rounds, and live interview rooms" })
+        ] }),
+        /* @__PURE__ */ jsxs(
+          "button",
+          {
+            onClick: () => openTriggerModal("Schedule Interview", "Book a virtual interview panel slot", [
+              { label: "Candidate Name", name: "candidateName", type: "text", placeholder: "e.g. Sneha Kulkarni" },
+              { label: "Role Position", name: "role", type: "text", placeholder: "e.g. AI Engineering Intern" },
+              { label: "Interview Round", name: "round", type: "text", placeholder: "e.g. Machine Learning Deep Dive" },
+              { label: "Interviewer Panel", name: "interviewer", type: "text", placeholder: "e.g. Dr. Ananya Roy" },
+              { label: "Interview Date", name: "date", type: "text", placeholder: "e.g. March 18, 2026" },
+              { label: "Time Slot", name: "time", type: "text", placeholder: "e.g. 11:00 AM" }
+            ]),
+            className: "bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-md shadow-blue-500/20",
+            children: [
+              /* @__PURE__ */ jsx(FiPlus, { className: "w-4 h-4" }),
+              " Schedule Interview"
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "space-y-3", children: interviewsList.map((int) => /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-2xl border flex flex-col md:flex-row md:items-center justify-between gap-4 ${subCardClass} transition hover:shadow-md`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsx("h4", { className: `font-bold text-sm ${textHeading}`, children: int.candidateName }),
+            /* @__PURE__ */ jsxs("span", { className: "text-blue-400 font-semibold text-xs", children: [
+              "• ",
+              int.role
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "text-blue-500 font-semibold text-[11px] mt-0.5", children: int.round }),
+          /* @__PURE__ */ jsxs("div", { className: `text-[10px] ${textMuted} mt-0.5`, children: [
+            "Interviewer: ",
+            int.interviewer,
+            " • Scheduled for ",
+            int.date,
+            " at ",
+            int.time
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
+          /* @__PURE__ */ jsx("span", { className: `text-[10px] px-2.5 py-1 rounded-full font-bold border ${int.status === "Completed" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : "bg-blue-500/20 text-blue-400 border-blue-500/30"}`, children: int.status }),
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => onShowToast(`Entering meeting room for ${int.candidateName}`),
+              className: "bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition cursor-pointer",
+              children: "Join Meeting Room"
+            }
+          )
+        ] })
+      ] }, int.id)) }),
+      /* @__PURE__ */ jsx(
+        ActionModal,
+        {
+          isOpen: isActionModalOpen,
+          title: actionModalConfig.title,
+          subtitle: actionModalConfig.subtitle,
+          fields: actionModalConfig.fields,
+          onClose: () => setIsActionModalOpen(false),
+          onSubmit: handleModalFormSubmit,
+          isDarkMode
+        }
+      )
+    ] });
+  }
+  if (activeSubView === "employees") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiUsers, { className: "w-5 h-5 text-blue-500" }),
+            " Internal Workforce & Team Directory"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Corporate team members, technical interviewers, and campus recruiting leads" })
+        ] }),
+        /* @__PURE__ */ jsxs(
+          "button",
+          {
+            onClick: () => openTriggerModal("Onboard Employee", "Add a new company hiring manager or engineer", [
+              { label: "Full Name", name: "name", type: "text", placeholder: "e.g. Vikram Mehta" },
+              { label: "Department", name: "department", type: "text", placeholder: "e.g. Core Engineering" },
+              { label: "Designation", name: "designation", type: "text", placeholder: "e.g. Staff Software Engineer" },
+              { label: "Corporate Email", name: "email", type: "email", placeholder: "e.g. v.mehta@enterprise.com" }
+            ]),
+            className: "bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-md shadow-blue-500/20",
+            children: [
+              /* @__PURE__ */ jsx(FiPlus, { className: "w-4 h-4" }),
+              " Onboard Employee"
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: employeesList.map((emp) => /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-2xl border space-y-2 ${subCardClass} transition hover:shadow-md`, children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between", children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("h4", { className: `font-bold text-sm ${textHeading}`, children: emp.name }),
+            /* @__PURE__ */ jsx("div", { className: "text-blue-400 font-semibold text-[11px]", children: emp.designation }),
+            /* @__PURE__ */ jsxs("div", { className: `text-[10px] ${textMuted}`, children: [
+              emp.department,
+              " • Joined ",
+              emp.joinedDate
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx("span", { className: "text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full font-bold border border-emerald-500/30", children: emp.status })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "text-[11px] pt-1", children: [
+          /* @__PURE__ */ jsx("span", { className: textMuted, children: "Work Email:" }),
+          " ",
+          /* @__PURE__ */ jsx("span", { className: "font-mono text-blue-500", children: emp.email })
+        ] })
+      ] }, emp.id)) }),
+      /* @__PURE__ */ jsx(
+        ActionModal,
+        {
+          isOpen: isActionModalOpen,
+          title: actionModalConfig.title,
+          subtitle: actionModalConfig.subtitle,
+          fields: actionModalConfig.fields,
+          onClose: () => setIsActionModalOpen(false),
+          onSubmit: handleModalFormSubmit,
+          isDarkMode
+        }
+      )
+    ] });
+  }
+  if (activeSubView === "recruitment") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiTrendingUp, { className: "w-5 h-5 text-blue-500" }),
+            " Campus Recruitment Drives & University MoUs"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "On-campus recruitment schedules, academic partnerships, and hiring funnel velocity" })
+        ] }),
+        /* @__PURE__ */ jsxs(
+          "button",
+          {
+            onClick: () => openTriggerModal("Register Campus Drive", "Schedule recruitment drive with an accredited institution", [
+              { label: "University / Institute", name: "college", type: "text", placeholder: "e.g. IIT Bombay" },
+              { label: "Drive Program Type", name: "type", type: "text", placeholder: "e.g. SDE-1 Graduate Drive 2026" }
+            ]),
+            className: "bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-md shadow-blue-500/20",
+            children: [
+              /* @__PURE__ */ jsx(FiPlus, { className: "w-4 h-4" }),
+              " Register Campus Drive"
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: partnershipsList.map((p, idx) => /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-2xl border space-y-2 ${subCardClass} transition hover:shadow-md hover:border-blue-500`, children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between", children: [
+          /* @__PURE__ */ jsx("h4", { className: `font-bold text-sm ${textHeading}`, children: p.college }),
+          /* @__PURE__ */ jsx("span", { className: "text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-bold border border-emerald-500/30", children: p.status })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "text-blue-400 font-semibold text-[11px]", children: p.type }),
+        /* @__PURE__ */ jsxs("div", { className: "text-[10px] text-slate-400", children: [
+          "MoU Period: ",
+          p.mouYear,
+          " • ",
+          p.studentsHired
+        ] })
+      ] }, idx)) }),
+      /* @__PURE__ */ jsxs("div", { className: "space-y-3 pt-2", children: [
+        /* @__PURE__ */ jsx("h3", { className: `font-bold text-sm ${textHeading}`, children: "Talent Funnel Velocity" }),
+        /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
+          { stage: "Sourced Candidates", count: "540", sub: "From 5 Universities" },
+          { stage: "Online Assessments Cleared", count: "182", sub: "Aptitude & Coding" },
+          { stage: "Technical Cleared", count: "64", sub: "System Design + DS" },
+          { stage: "Offers Accepted", count: "38", sub: "Batch 2026 Joined" }
+        ].map((st, i) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border space-y-1 ${subCardClass}`, children: [
+          /* @__PURE__ */ jsx("span", { className: `text-[11px] ${textMuted}`, children: st.stage }),
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-blue-400", children: st.count }),
+          /* @__PURE__ */ jsx("span", { className: "text-[10px] text-emerald-400 font-semibold", children: st.sub })
+        ] }, i)) })
+      ] }),
+      /* @__PURE__ */ jsx(
+        ActionModal,
+        {
+          isOpen: isActionModalOpen,
+          title: actionModalConfig.title,
+          subtitle: actionModalConfig.subtitle,
+          fields: actionModalConfig.fields,
+          onClose: () => setIsActionModalOpen(false),
+          onSubmit: handleModalFormSubmit,
+          isDarkMode
+        }
+      )
+    ] });
+  }
+  if (activeSubView === "reports") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiFileText, { className: "w-5 h-5 text-blue-500" }),
+            " Corporate Hiring & Recruitment Analytics"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Executive talent acquisition intelligence, cost per hire, and offer clearance ratios" })
+        ] }),
+        /* @__PURE__ */ jsxs(
+          "button",
+          {
+            onClick: () => onShowToast("Generated full Talent Acquisition PDF Report"),
+            className: "bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer flex items-center gap-1.5 shadow-md",
+            children: [
+              /* @__PURE__ */ jsx(FiDownload, { className: "w-4 h-4" }),
+              " Download Hiring Report"
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
+        { label: "Average Time-to-Hire", val: "18 Days", sub: "Industry standard: 35 days" },
+        { label: "Offer Acceptance Rate", val: "86.4%", sub: "High candidate sentiment" },
+        { label: "Sourcing Channel Quality", val: "94/100", sub: "Top tier campus talent" },
+        { label: "Cost-per-Hire Savings", val: "42%", sub: "Via Role Ready automated ATS" }
+      ].map((stat, i) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border space-y-1 ${subCardClass}`, children: [
+        /* @__PURE__ */ jsx("span", { className: `text-[11px] ${textMuted}`, children: stat.label }),
+        /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-blue-400", children: stat.val }),
+        /* @__PURE__ */ jsx("span", { className: "text-[10px] text-emerald-400 font-semibold", children: stat.sub })
+      ] }, i)) })
+    ] });
+  }
+  if (activeSubView === "messages") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+          /* @__PURE__ */ jsx(FiMessageSquare, { className: "w-5 h-5 text-blue-500" }),
+          " Candidate & University Placement Cell Desk"
+        ] }),
+        /* @__PURE__ */ jsx("p", { className: textMuted, children: "Direct communication channel for shortlists, interview arrangements, and offer queries" })
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: `p-4 rounded-xl border space-y-3 min-h-[220px] max-h-[300px] overflow-y-auto ${subCardClass}`, children: chatMessages.map((msg) => /* @__PURE__ */ jsxs("div", { className: `flex flex-col ${msg.isMe ? "items-end" : "items-start"}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-[10px] text-slate-400 mb-1", children: [
+          /* @__PURE__ */ jsx("span", { className: "font-semibold", children: msg.sender }),
+          /* @__PURE__ */ jsxs("span", { children: [
+            "• ",
+            msg.time
+          ] })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: `p-3 rounded-2xl max-w-sm text-xs ${msg.isMe ? "bg-blue-600 text-white rounded-tr-none" : isDarkMode ? "bg-slate-700 text-white rounded-tl-none" : "bg-white border text-slate-900 rounded-tl-none"}`, children: msg.text })
+      ] }, msg.id)) }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 pt-2", children: [
+        /* @__PURE__ */ jsx(
+          "input",
+          {
+            type: "text",
+            placeholder: "Type your message to candidate or placement cell...",
+            value: messageInput,
+            onChange: (e) => setMessageInput(e.target.value),
+            onKeyDown: (e) => e.key === "Enter" && handleSendMessage(),
+            className: `flex-1 px-4 py-2.5 rounded-xl border text-xs focus:outline-none focus:border-blue-500 ${isDarkMode ? "bg-slate-800 border-slate-700 text-white" : "bg-slate-50 border-slate-200 text-slate-900"}`
+          }
+        ),
+        /* @__PURE__ */ jsxs(
+          "button",
+          {
+            onClick: handleSendMessage,
+            className: "bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition cursor-pointer",
+            children: [
+              /* @__PURE__ */ jsx(FiSend, { className: "w-3.5 h-3.5" }),
+              " Send"
+            ]
+          }
+        )
       ] })
+    ] });
+  }
+  if (activeSubView === "notifications") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiBell, { className: "w-5 h-5 text-blue-500" }),
+            " Notifications & Recruitment Alerts"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "New applications, interview confirmations, and offer status updates" })
+        ] }),
+        /* @__PURE__ */ jsx("button", { onClick: () => onShowToast("Marked all notifications as read"), className: "text-blue-400 font-bold hover:underline cursor-pointer", children: "Mark All as Read" })
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "space-y-3", children: [
+        { title: "Arjun Das accepted technical interview slot for Tomorrow at 14:30 PM", time: "15 mins ago", tag: "Interview" },
+        { title: "12 New Applications submitted for Graduate SDE-1 Position", time: "1 hour ago", tag: "Job Portal" },
+        { title: "IIT Bombay placement office confirmed Campus Drive MoU", time: "4 hours ago", tag: "Campus MoU" }
+      ].map((nt, i) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border flex items-center justify-between ${subCardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx("h4", { className: `font-bold ${textHeading}`, children: nt.title }),
+          /* @__PURE__ */ jsxs("span", { className: "text-blue-400 font-semibold", children: [
+            nt.tag,
+            " • ",
+            nt.time
+          ] })
+        ] }),
+        /* @__PURE__ */ jsx("span", { className: "text-[10px] bg-blue-600/20 text-blue-400 px-2.5 py-0.5 rounded-full font-bold border border-blue-500/30", children: "New" })
+      ] }, i)) })
+    ] });
+  }
+  if (activeSubView === "settings") {
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `flex items-center justify-between pb-4 border-b ${borderDivider}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiSliders, { className: "w-5 h-5 text-blue-500" }),
+            " Company Settings & Employer Governance"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Configure enterprise corporate profile, employer branding, and ATS integration settings" })
+        ] }),
+        /* @__PURE__ */ jsx(
+          "button",
+          {
+            onClick: () => onShowToast("Enterprise settings saved successfully!"),
+            className: "bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer",
+            children: "Save Settings"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
+        /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-xl border space-y-2 ${subCardClass}`, children: [
+          /* @__PURE__ */ jsx("h4", { className: `font-bold text-sm ${textHeading}`, children: "Enterprise Employer Verification" }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "Corporate Registration: CIN-U72200KA2021PTC • GSTIN Verified" }),
+          /* @__PURE__ */ jsx("div", { className: "text-[11px] font-bold text-emerald-400", children: "Employer Badge: Tier-1 Verified Partner" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: `p-5 rounded-xl border space-y-2 ${subCardClass}`, children: [
+          /* @__PURE__ */ jsx("h4", { className: `font-bold text-sm ${textHeading}`, children: "Campus Recruitment Automation" }),
+          /* @__PURE__ */ jsx("p", { className: textMuted, children: "AI Matching Threshold: 85% • Automated Screening Tests Enabled" }),
+          /* @__PURE__ */ jsx("div", { className: "text-[11px] font-bold text-blue-400", children: "ATS Synchronization Active" })
+        ] })
+      ] })
+    ] });
+  }
+  return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 text-xs font-sans transition-colors duration-200 ${cardClass}`, children: [
+    /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
+      /* @__PURE__ */ jsxs("h2", { className: `text-lg font-bold flex items-center gap-2 ${textHeading}`, children: [
+        /* @__PURE__ */ jsx(FiGrid, { className: "w-5 h-5 text-blue-500" }),
+        " Enterprise Company Portal Overview"
+      ] }),
+      /* @__PURE__ */ jsx("p", { className: textMuted, children: "Corporate recruitment drives, campus talent sourcing, candidate pipeline, and hiring conversion tracks" })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
+      /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast("Viewing Job Requisitions"), children: [
+        /* @__PURE__ */ jsx("span", { className: `font-semibold block ${textMuted}`, children: "Active Job Requisitions" }),
+        /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-blue-400 mt-1", children: jobsList.length }),
+        /* @__PURE__ */ jsxs("span", { className: `text-[10px] ${textMuted}`, children: [
+          jobsList.reduce((acc, j) => acc + j.openings, 0),
+          " Total Openings"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast("Viewing Applications"), children: [
+        /* @__PURE__ */ jsx("span", { className: `font-semibold block ${textMuted}`, children: "Candidate Applications" }),
+        /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-emerald-400 mt-1", children: applicationsList.length }),
+        /* @__PURE__ */ jsx("span", { className: `text-[10px] ${textMuted}`, children: "In Active Funnel" })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast("Viewing Scheduled Interviews"), children: [
+        /* @__PURE__ */ jsx("span", { className: `font-semibold block ${textMuted}`, children: "Scheduled Interviews" }),
+        /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-blue-400 mt-1", children: interviewsList.length }),
+        /* @__PURE__ */ jsx("span", { className: `text-[10px] ${textMuted}`, children: "Active Panels" })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 ${subCardClass}`, onClick: () => onShowToast("Viewing Partner Universities"), children: [
+        /* @__PURE__ */ jsx("span", { className: `font-semibold block ${textMuted}`, children: "Campus MoUs" }),
+        /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-emerald-400 mt-1", children: partnershipsList.length }),
+        /* @__PURE__ */ jsxs("span", { className: "text-[10px] text-emerald-400 flex items-center gap-1 mt-1 font-bold", children: [
+          /* @__PURE__ */ jsx(FiTrendingUp, { className: "w-3 h-3" }),
+          " Tier-1 University MoUs"
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "space-y-3 pt-2", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ jsx("h3", { className: `font-bold text-sm ${textHeading}`, children: "Recent Requisitions & Campus Openings" }),
+        /* @__PURE__ */ jsxs("span", { className: `text-[11px] ${textMuted}`, children: [
+          jobsList.length,
+          " Open Positions"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: jobsList.slice(0, 4).map((job) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border space-y-2 ${subCardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-start", children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("h4", { className: `font-bold ${textHeading}`, children: job.title }),
+            /* @__PURE__ */ jsxs("div", { className: "text-blue-400 text-[11px] font-semibold", children: [
+              job.department,
+              " • ",
+              job.location
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx("span", { className: "text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30 font-bold", children: job.status })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-[11px] pt-1", children: [
+          /* @__PURE__ */ jsxs("span", { className: textMuted, children: [
+            "Type: ",
+            job.type
+          ] }),
+          /* @__PURE__ */ jsxs("span", { className: "font-semibold text-blue-500", children: [
+            job.applicants,
+            " Applicants"
+          ] })
+        ] })
+      ] }, job.id)) })
     ] })
   ] });
 };
@@ -11667,7 +14365,7 @@ const ParentDashboard = ({
         }) })
       ] })
     ] }),
-    !selectedChild && ["attendance", "academic", "learning", "career", "career-reports", "fees"].includes(activeSubView) && /* @__PURE__ */ jsxs("div", { className: `p-10 rounded-3xl border text-center ${isDarkMode ? "bg-slate-900 border-slate-800 text-white" : "bg-white border-blue-100 text-slate-900"}`, children: [
+    !selectedChild && ["attendance", "academic", "learning", "career", "career-reports", "fees", "career-discovery", "career-roadmap", "assessments"].includes(activeSubView) && /* @__PURE__ */ jsxs("div", { className: `p-10 rounded-3xl border text-center ${isDarkMode ? "bg-slate-900 border-slate-800 text-white" : "bg-white border-blue-100 text-slate-900"}`, children: [
       /* @__PURE__ */ jsx(FiInfo, { className: "w-10 h-10 text-blue-400 mx-auto mb-3" }),
       /* @__PURE__ */ jsx("h3", { className: "text-[17px] md:text-[18px] font-semibold leading-[1.35]", children: "No Child Account Selected" }),
       /* @__PURE__ */ jsx("p", { className: "text-[13px] md:text-[14px] text-slate-400 mt-1 max-w-sm mx-auto leading-normal", children: "Please register or select a child account to inspect their progress, attendance, and evaluation records." }),
@@ -11753,7 +14451,7 @@ const ParentDashboard = ({
         ] }, s.id)) })
       ] })
     ] }) : null }),
-    activeSubView === "children" && /* @__PURE__ */ jsxs("div", { className: `p-6 rounded-3xl border ${isDarkMode ? "bg-slate-900 border-slate-800" : "bg-white border-blue-100 shadow-sm"} space-y-6`, children: [
+    (activeSubView === "children" || activeSubView === "child") && /* @__PURE__ */ jsxs("div", { className: `p-6 rounded-3xl border ${isDarkMode ? "bg-slate-900 border-slate-800" : "bg-white border-blue-100 shadow-sm"} space-y-6`, children: [
       /* @__PURE__ */ jsxs("div", { className: "flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-700/40", children: [
         /* @__PURE__ */ jsxs("div", { children: [
           /* @__PURE__ */ jsxs("h3", { className: "text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2", children: [
@@ -12081,15 +14779,15 @@ Portal: https://roleready.ai/login`, c.id),
         /* @__PURE__ */ jsx("p", { className: "text-slate-300 leading-relaxed text-[14px]", children: academicProgress.teacherFeedback })
       ] })
     ] }),
-    activeSubView === "career" && selectedChild && /* @__PURE__ */ jsxs("div", { className: `p-6 rounded-3xl border ${isDarkMode ? "bg-slate-900 border-slate-800" : "bg-white border-blue-100 shadow-sm"} space-y-6`, children: [
+    (activeSubView === "career" || activeSubView === "career-discovery") && selectedChild && /* @__PURE__ */ jsxs("div", { className: `p-6 rounded-3xl border ${isDarkMode ? "bg-slate-900 border-slate-800" : "bg-white border-blue-100 shadow-sm"} space-y-6`, children: [
       /* @__PURE__ */ jsxs("div", { className: "flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-700/40", children: [
         /* @__PURE__ */ jsxs("div", { children: [
           /* @__PURE__ */ jsxs("h3", { className: "text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2", children: [
             /* @__PURE__ */ jsx(FiCompass, { className: "w-5 h-5 text-indigo-400" }),
-            "Career DNA & Psychometric Trajectory — ",
+            "AI Career Discovery & Psychometric Profile — ",
             selectedChild.name
           ] }),
-          /* @__PURE__ */ jsx("p", { className: "text-[13px] md:text-[14px] text-slate-400 mt-1 leading-normal", children: "Calculated via Holland RIASEC Hexagonal Cognitive Aptitude Assessment." })
+          /* @__PURE__ */ jsx("p", { className: "text-[13px] md:text-[14px] text-slate-400 mt-1 leading-normal", children: "Evaluated via Holland RIASEC Hexagonal Cognitive Aptitude Diagnostic & Skills Matrix." })
         ] }),
         /* @__PURE__ */ jsxs("span", { className: "px-3 py-1 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[13px] font-semibold", children: [
           "Holland Code: ",
@@ -12098,7 +14796,7 @@ Portal: https://roleready.ai/login`, c.id),
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-12 gap-6", children: [
         /* @__PURE__ */ jsxs("div", { className: "lg:col-span-6 space-y-3", children: [
-          /* @__PURE__ */ jsx("h4", { className: "text-[12px] font-semibold uppercase text-slate-400 tracking-wider", children: "RIASEC Psychological Profile" }),
+          /* @__PURE__ */ jsx("h4", { className: "text-[12px] font-semibold uppercase text-slate-400 tracking-wider", children: "RIASEC Psychological Profile & Strengths" }),
           (((_k = careerProgress == null ? void 0 : careerProgress.hollandScores) == null ? void 0 : _k.length) || 0) === 0 ? /* @__PURE__ */ jsx("div", { className: "p-6 text-center border border-dashed border-slate-700 rounded-2xl text-[13px] text-slate-400", children: "RIASEC Holland Code assessment pending. When your student completes the diagnostic in their portal, live psychometric data will appear here." }) : careerProgress == null ? void 0 : careerProgress.hollandScores.map((t, idx) => /* @__PURE__ */ jsxs("div", { className: "space-y-1", children: [
             /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-[14px]", children: [
               /* @__PURE__ */ jsx("span", { className: "text-slate-300 font-medium", children: t.trait }),
@@ -12111,7 +14809,7 @@ Portal: https://roleready.ai/login`, c.id),
           ] }, idx))
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "lg:col-span-6 space-y-3", children: [
-          /* @__PURE__ */ jsx("h4", { className: "text-[12px] font-semibold uppercase text-slate-400 tracking-wider", children: "AI Neural Career Pathways" }),
+          /* @__PURE__ */ jsx("h4", { className: "text-[12px] font-semibold uppercase text-slate-400 tracking-wider", children: "Suggested Career Paths & Alignment" }),
           (((_l = careerProgress == null ? void 0 : careerProgress.pathways) == null ? void 0 : _l.length) || 0) === 0 ? /* @__PURE__ */ jsx("div", { className: "p-6 text-center border border-dashed border-slate-700 rounded-2xl text-[13px] text-slate-400", children: "Career pathways will generate once the student completes their career diagnostic." }) : careerProgress == null ? void 0 : careerProgress.pathways.map((p) => /* @__PURE__ */ jsxs("div", { className: "p-4 rounded-2xl border border-slate-700 bg-slate-800/50 space-y-1.5", children: [
             /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-center", children: [
               /* @__PURE__ */ jsx("h5", { className: "font-semibold text-[16px] leading-[1.35]", children: p.title }),
@@ -12122,7 +14820,7 @@ Portal: https://roleready.ai/login`, c.id),
             ] }),
             /* @__PURE__ */ jsx("p", { className: "text-slate-400 text-[13px] leading-normal", children: p.matchRationale }),
             /* @__PURE__ */ jsxs("p", { className: "text-blue-300 text-[13px] font-medium", children: [
-              "Est. Salary: ",
+              "Est. Compensation: ",
               p.salaryRange,
               " • ",
               p.growthOutlook
@@ -12131,7 +14829,40 @@ Portal: https://roleready.ai/login`, c.id),
         ] })
       ] })
     ] }),
-    activeSubView === "career-reports" && selectedChild && /* @__PURE__ */ jsxs("div", { className: `p-6 rounded-3xl border ${isDarkMode ? "bg-slate-900 border-slate-800" : "bg-white border-blue-100 shadow-sm"} space-y-6`, children: [
+    (activeSubView === "career-roadmap" || activeSubView === "roadmap") && selectedChild && /* @__PURE__ */ jsxs("div", { className: `p-6 rounded-3xl border ${isDarkMode ? "bg-slate-900 border-slate-800" : "bg-white border-blue-100 shadow-sm"} space-y-6`, children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-700/40", children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h3", { className: "text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2", children: [
+            /* @__PURE__ */ jsx(FiTrendingUp, { className: "w-5 h-5 text-emerald-400" }),
+            "Personalized Career Roadmap — ",
+            selectedChild.name
+          ] }),
+          /* @__PURE__ */ jsxs("p", { className: "text-[13px] md:text-[14px] text-slate-400 mt-1 leading-normal", children: [
+            "Step-by-step milestone progression toward target career: ",
+            /* @__PURE__ */ jsx("strong", { className: "text-blue-400 font-semibold", children: selectedChild.targetCareer || "Software & Technology" })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsx("span", { className: "px-3.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[13px] font-semibold", children: "On Track • Milestone 2 of 5" })
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "space-y-4", children: [
+        { step: "Phase 1", title: "Secondary School Foundation (Grades 8 - 10)", status: "Completed", desc: "Solidify core mathematics, sciences, and introductory computing literacy. Maintain >85% GPA.", badge: "Completed" },
+        { step: "Phase 2", title: "Senior Secondary Stream & Electives (Grades 11 - 12)", status: "In Progress", desc: "Select STEM PCM stream. Build portfolio projects, prepare for competitive entrance examinations.", badge: "In Progress" },
+        { step: "Phase 3", title: "Undergraduate Degree & Specialized Track", status: "Upcoming", desc: "B.Tech Computer Science / AI / Data Systems from an accredited partner university.", badge: "Upcoming" },
+        { step: "Phase 4", title: "Industry Internships & Technical Certifications", status: "Upcoming", desc: "Cloud certifications (AWS/Azure), open-source contributions, and corporate summer internships.", badge: "Upcoming" },
+        { step: "Phase 5", title: "Career Placement & Professional Launch", status: "Upcoming", desc: "Full-time campus placement or lateral role placement with corporate recruiting partners.", badge: "Upcoming" }
+      ].map((milestone, idx) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-2xl border flex items-start justify-between gap-4 ${milestone.status === "Completed" ? isDarkMode ? "bg-emerald-950/20 border-emerald-500/30" : "bg-emerald-50/60 border-emerald-200" : milestone.status === "In Progress" ? isDarkMode ? "bg-blue-950/20 border-blue-500/30 ring-1 ring-blue-500/30" : "bg-blue-50/60 border-blue-200" : isDarkMode ? "bg-slate-800/40 border-slate-700/60" : "bg-slate-50 border-slate-200"}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-start gap-3", children: [
+          /* @__PURE__ */ jsx("div", { className: `w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold shrink-0 mt-0.5 ${milestone.status === "Completed" ? "bg-emerald-500 text-white" : milestone.status === "In Progress" ? "bg-blue-600 text-white animate-pulse" : "bg-slate-700 text-slate-300"}`, children: idx + 1 }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("span", { className: "text-[11px] font-semibold uppercase tracking-wider text-slate-400", children: milestone.step }),
+            /* @__PURE__ */ jsx("h4", { className: "text-[16px] font-semibold text-slate-100", children: milestone.title }),
+            /* @__PURE__ */ jsx("p", { className: "text-[13px] text-slate-400 mt-1 leading-normal", children: milestone.desc })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsx("span", { className: `px-2.5 py-1 rounded-full text-[11px] font-semibold shrink-0 ${milestone.status === "Completed" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : milestone.status === "In Progress" ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" : "bg-slate-700/40 text-slate-400 border border-slate-600/30"}`, children: milestone.badge })
+      ] }, idx)) })
+    ] }),
+    (activeSubView === "career-reports" || activeSubView === "assessments") && selectedChild && /* @__PURE__ */ jsxs("div", { className: `p-6 rounded-3xl border ${isDarkMode ? "bg-slate-900 border-slate-800" : "bg-white border-blue-100 shadow-sm"} space-y-6`, children: [
       /* @__PURE__ */ jsx("div", { className: "flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-700/40", children: /* @__PURE__ */ jsxs("div", { children: [
         /* @__PURE__ */ jsxs("h3", { className: "text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2", children: [
           /* @__PURE__ */ jsx(FiFileText, { className: "w-5 h-5 text-blue-400" }),
@@ -13174,12 +15905,14 @@ Portal: https://roleready.ai/login`, c.id),
 };
 const ProfileImageUpload = ({
   avatarUrl,
+  name,
   isEditing,
   onPhotoChange,
   isDarkMode = false
 }) => {
   const fileInputRef = useRef(null);
   const [isUploading, setIsUploading] = React.useState(false);
+  const initials = (name || "RR").split(" ").filter(Boolean).map((w) => w[0]).slice(0, 2).join("").toUpperCase() || "RR";
   const handleFileChange = async (e) => {
     var _a2;
     const file = (_a2 = e.target.files) == null ? void 0 : _a2[0];
@@ -13208,15 +15941,18 @@ const ProfileImageUpload = ({
       }
     }
   };
-  return /* @__PURE__ */ jsxs("div", { className: "relative group inline-block", children: [
-    /* @__PURE__ */ jsx("div", { className: "w-28 h-28 sm:w-32 sm:h-32 rounded-3xl overflow-hidden border-4 border-white dark:border-slate-800 shadow-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center relative", children: avatarUrl ? /* @__PURE__ */ jsx(
-      "img",
-      {
-        src: avatarUrl,
-        alt: "User Profile",
-        className: "w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-      }
-    ) : /* @__PURE__ */ jsx(FiUser, { className: "w-12 h-12 text-slate-400" }) }),
+  return /* @__PURE__ */ jsxs("div", { className: "relative group inline-block shrink-0", children: [
+    /* @__PURE__ */ jsxs("div", { className: `w-24 h-24 sm:w-28 sm:h-28 rounded-2xl sm:rounded-3xl overflow-hidden ring-4 shadow-xl flex items-center justify-center relative transition-all duration-300 ${isDarkMode ? "ring-slate-900 bg-slate-800" : "ring-white bg-slate-100"}`, children: [
+      avatarUrl ? /* @__PURE__ */ jsx(
+        "img",
+        {
+          src: avatarUrl,
+          alt: name || "User Profile",
+          className: "w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        }
+      ) : /* @__PURE__ */ jsx("div", { className: "w-full h-full bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-800 text-white font-bold text-2xl sm:text-3xl flex items-center justify-center tracking-wider shadow-inner", children: initials }),
+      isUploading && /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-7 h-7 border-3 border-white border-t-transparent rounded-full animate-spin" }) })
+    ] }),
     isEditing && /* @__PURE__ */ jsxs(Fragment, { children: [
       /* @__PURE__ */ jsx(
         "input",
@@ -13236,9 +15972,10 @@ const ProfileImageUpload = ({
             var _a2;
             return (_a2 = fileInputRef.current) == null ? void 0 : _a2.click();
           },
-          className: "absolute bottom-1 right-1 bg-blue-600 hover:bg-blue-500 text-white p-2.5 rounded-2xl shadow-lg transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer border-2 border-white dark:border-slate-800",
-          title: "Change / Upload Photo",
-          children: /* @__PURE__ */ jsx(FiCamera, { className: "w-4 h-4" })
+          className: "absolute -bottom-1.5 -right-1.5 bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-xl shadow-lg transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer border-2 border-white dark:border-slate-900",
+          title: "Upload or Change Photo",
+          "aria-label": "Upload or Change Photo",
+          children: /* @__PURE__ */ jsx(FiCamera, { className: "w-3.5 h-3.5" })
         }
       )
     ] })
@@ -13254,88 +15991,100 @@ const ProfileHeader = ({
   onPhotoChange,
   isDarkMode = false
 }) => {
+  var _a2;
   const roleDisplayNames = {
-    "super-admin": "Super Admin Governance Root",
-    "school": "School Institutional Administrator",
-    "college": "College Admissions & Dean",
+    "super-admin": "Super Administrator",
+    "school": "School Administrator",
+    "college": "College Dean / Admin",
     "mentor": "Certified Executive Career Mentor",
-    "training": "Skill Academy Director",
+    "training": "Training Institute Director",
     "recruiter": "Corporate Talent Lead",
-    "company": "Enterprise Program Lead"
+    "company": "Enterprise Company Lead",
+    "parent": "Parent & Family Guardian"
   };
-  return /* @__PURE__ */ jsxs("div", { className: `rounded-3xl border p-6 sm:p-8 relative overflow-hidden transition-all duration-200 ${isDarkMode ? "bg-slate-900 border-slate-800 text-white shadow-xl" : "bg-white border-blue-100 text-slate-900 shadow-sm"}`, children: [
-    /* @__PURE__ */ jsx("div", { className: "h-28 -mx-6 -mt-6 sm:-mx-8 sm:-mt-8 mb-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-800 relative opacity-90", children: /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-white/5 backdrop-blur-[1px]" }) }),
-    /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 relative z-10 -mt-16 sm:-mt-20", children: [
-      /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row items-start sm:items-end gap-5", children: [
+  const displayName = profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : profile.fullName || "User Profile";
+  const headline = profile.qualification || (((_a2 = profile.roleData) == null ? void 0 : _a2.experience) ? `${profile.roleData.experience}+ Years Experience • Career Advisor` : null) || "Certified Career Guidance Specialist";
+  return /* @__PURE__ */ jsxs("div", { className: `rounded-3xl border overflow-hidden transition-all duration-200 ${isDarkMode ? "bg-slate-900 border-slate-800 text-white shadow-xl" : "bg-white border-blue-100 text-slate-900 shadow-sm"}`, children: [
+    /* @__PURE__ */ jsxs("div", { className: "h-36 sm:h-44 bg-gradient-to-r from-[#12163A] via-blue-700 to-indigo-800 relative", children: [
+      /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-400/25 via-transparent to-transparent" }),
+      /* @__PURE__ */ jsx("div", { className: "absolute top-4 right-5 sm:top-5 sm:right-6", children: /* @__PURE__ */ jsxs("span", { className: "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white border border-white/20 shadow-xs", children: [
+        /* @__PURE__ */ jsx(FiShield, { className: "w-3.5 h-3.5 text-blue-300" }),
+        /* @__PURE__ */ jsx("span", { children: roleDisplayNames[profile.role] || profile.role })
+      ] }) })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "px-6 sm:px-8 pb-6 sm:pb-8 pt-0", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row sm:items-end justify-between gap-4 -mt-14 sm:-mt-16 mb-4", children: [
         /* @__PURE__ */ jsx(
           ProfileImageUpload,
           {
             avatarUrl: profile.avatarUrl,
+            name: displayName,
             isEditing,
             onPhotoChange,
             isDarkMode
           }
         ),
-        /* @__PURE__ */ jsxs("div", { className: "space-y-1 pb-1", children: [
-          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 flex-wrap", children: [
-            /* @__PURE__ */ jsx("h2", { className: "text-xl sm:text-2xl font-extrabold tracking-tight", children: profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : profile.fullName || "User Profile" }),
-            /* @__PURE__ */ jsxs("span", { className: "bg-blue-500/15 border border-blue-500/30 text-blue-500 text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5", children: [
-              /* @__PURE__ */ jsx(FiShield, { className: "w-3.5 h-3.5" }),
-              /* @__PURE__ */ jsx("span", { children: roleDisplayNames[profile.role] || profile.role })
-            ] })
+        /* @__PURE__ */ jsx("div", { className: "flex items-center gap-3 shrink-0 pt-2 sm:pt-0", children: !isEditing ? /* @__PURE__ */ jsxs(
+          "button",
+          {
+            type: "button",
+            onClick: onEditClick,
+            className: "bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-2",
+            children: [
+              /* @__PURE__ */ jsx(FiEdit2, { className: "w-4 h-4" }),
+              /* @__PURE__ */ jsx("span", { children: "Edit Profile" })
+            ]
+          }
+        ) : /* @__PURE__ */ jsxs(Fragment, { children: [
+          /* @__PURE__ */ jsxs(
+            "button",
+            {
+              type: "button",
+              onClick: onCancelClick,
+              disabled: isSaving,
+              className: `font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 ${isDarkMode ? "border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700" : "border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200"}`,
+              children: [
+                /* @__PURE__ */ jsx(FiX, { className: "w-4 h-4" }),
+                /* @__PURE__ */ jsx("span", { children: "Cancel" })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxs(
+            "button",
+            {
+              type: "button",
+              onClick: onSaveClick,
+              disabled: isSaving,
+              className: "bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-2 disabled:opacity-50",
+              children: [
+                /* @__PURE__ */ jsx(FiCheck, { className: "w-4 h-4" }),
+                /* @__PURE__ */ jsx("span", { children: isSaving ? "Saving..." : "Save Changes" })
+              ]
+            }
+          )
+        ] }) })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "space-y-1.5", children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 flex-wrap", children: [
+          /* @__PURE__ */ jsx("h2", { className: `text-2xl sm:text-3xl font-bold tracking-tight ${isDarkMode ? "text-white" : "text-slate-900"}`, children: displayName }),
+          /* @__PURE__ */ jsx("span", { className: `inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold border ${isDarkMode ? "bg-blue-500/15 border-blue-500/30 text-blue-400" : "bg-blue-50 border-blue-200 text-blue-700"}`, children: roleDisplayNames[profile.role] || profile.role })
+        ] }),
+        /* @__PURE__ */ jsx("p", { className: `text-sm font-medium ${isDarkMode ? "text-slate-400" : "text-slate-600"}`, children: headline }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-5 sm:gap-7 text-xs text-slate-500 dark:text-slate-400 flex-wrap pt-3 mt-3 border-t border-slate-100 dark:border-slate-800", children: [
+          profile.email && /* @__PURE__ */ jsxs("span", { className: "flex items-center gap-1.5", children: [
+            /* @__PURE__ */ jsx(FiMail, { className: "w-3.5 h-3.5 text-blue-500 shrink-0" }),
+            /* @__PURE__ */ jsx("span", { className: "font-medium text-slate-700 dark:text-slate-300", children: profile.email })
           ] }),
-          /* @__PURE__ */ jsx("p", { className: "text-xs text-slate-500 dark:text-slate-400 font-medium", children: profile.qualification || "Career Professional" }),
-          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400 flex-wrap pt-1", children: [
-            profile.email && /* @__PURE__ */ jsxs("span", { className: "flex items-center gap-1.5", children: [
-              /* @__PURE__ */ jsx(FiMail, { className: "w-3.5 h-3.5 text-blue-500" }),
-              /* @__PURE__ */ jsx("span", { children: profile.email })
-            ] }),
-            profile.location && /* @__PURE__ */ jsxs("span", { className: "flex items-center gap-1.5", children: [
-              /* @__PURE__ */ jsx(FiMapPin, { className: "w-3.5 h-3.5 text-blue-500" }),
-              /* @__PURE__ */ jsx("span", { children: profile.location })
-            ] })
+          (profile.phoneNumber || profile.mobile) && /* @__PURE__ */ jsxs("span", { className: "flex items-center gap-1.5", children: [
+            /* @__PURE__ */ jsx(FiPhone, { className: "w-3.5 h-3.5 text-emerald-500 shrink-0" }),
+            /* @__PURE__ */ jsx("span", { className: "font-medium text-slate-700 dark:text-slate-300", children: profile.phoneNumber || profile.mobile })
+          ] }),
+          /* @__PURE__ */ jsxs("span", { className: "flex items-center gap-1.5", children: [
+            /* @__PURE__ */ jsx(FiMapPin, { className: "w-3.5 h-3.5 text-rose-500 shrink-0" }),
+            /* @__PURE__ */ jsx("span", { className: "font-medium text-slate-700 dark:text-slate-300", children: profile.location || "Remote / Global" })
           ] })
         ] })
-      ] }),
-      /* @__PURE__ */ jsx("div", { className: "flex items-center gap-3 w-full sm:w-auto shrink-0 pt-2 sm:pt-0", children: !isEditing ? /* @__PURE__ */ jsxs(
-        "button",
-        {
-          type: "button",
-          onClick: onEditClick,
-          className: "w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center gap-2",
-          children: [
-            /* @__PURE__ */ jsx(FiEdit2, { className: "w-4 h-4" }),
-            /* @__PURE__ */ jsx("span", { children: "Edit Profile" })
-          ]
-        }
-      ) : /* @__PURE__ */ jsxs(Fragment, { children: [
-        /* @__PURE__ */ jsxs(
-          "button",
-          {
-            type: "button",
-            onClick: onCancelClick,
-            disabled: isSaving,
-            className: "flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50",
-            children: [
-              /* @__PURE__ */ jsx(FiX, { className: "w-4 h-4" }),
-              /* @__PURE__ */ jsx("span", { children: "Cancel" })
-            ]
-          }
-        ),
-        /* @__PURE__ */ jsxs(
-          "button",
-          {
-            type: "button",
-            onClick: onSaveClick,
-            disabled: isSaving,
-            className: "flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed",
-            children: [
-              /* @__PURE__ */ jsx(FiCheck, { className: "w-4 h-4" }),
-              /* @__PURE__ */ jsx("span", { children: isSaving ? "Saving..." : "Save Changes" })
-            ]
-          }
-        )
-      ] }) })
+      ] })
     ] })
   ] });
 };
@@ -13344,73 +16093,88 @@ const ProfileDetails = ({
   isDarkMode = false
 }) => {
   const cardClass = isDarkMode ? "bg-slate-900 border-slate-800 text-white shadow-xl" : "bg-white border-blue-100 text-slate-900 shadow-sm";
-  const subCardClass = isDarkMode ? "bg-slate-800/60 border-slate-700/60" : "bg-slate-50/60 border-slate-100";
+  const subCardClass = isDarkMode ? "bg-slate-800/60 border-slate-700/60" : "bg-slate-50/70 border-slate-200/70";
   const textMuted = isDarkMode ? "text-slate-400" : "text-slate-500";
+  const fullName = profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : profile.fullName || "User Profile";
+  const defaultSkills = [
+    "Career Advisory",
+    "Interview Preparation",
+    "Technical Roadmaps",
+    "Resume Guidance"
+  ];
+  const displaySkills = profile.skills && profile.skills.length > 0 ? profile.skills : defaultSkills;
+  const defaultBio = profile.role === "mentor" ? "Dedicated career mentor and domain specialist empowering students and professionals to achieve their career aspirations." : "Authenticated Role Ready ecosystem member actively managing educational and career milestones.";
   return /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-6 font-sans", children: [
     /* @__PURE__ */ jsxs("div", { className: "lg:col-span-2 space-y-6", children: [
       /* @__PURE__ */ jsxs("div", { className: `rounded-3xl border p-6 sm:p-7 space-y-5 ${cardClass}`, children: [
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2.5 pb-4 border-b border-slate-100 dark:border-slate-800", children: [
           /* @__PURE__ */ jsx("div", { className: "w-8 h-8 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold", children: /* @__PURE__ */ jsx(FiUser, { className: "w-4 h-4" }) }),
-          /* @__PURE__ */ jsx("h3", { className: "font-extrabold text-base", children: "Personal Information" })
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("h3", { className: "font-bold text-base", children: "Personal Information" }),
+            /* @__PURE__ */ jsx("p", { className: `text-xs ${textMuted} mt-0.5`, children: "Your verified personal identity and contact details" })
+          ] })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs", children: [
           /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-2xl border space-y-1 ${subCardClass}`, children: [
             /* @__PURE__ */ jsx("span", { className: `text-[11px] font-medium block ${textMuted}`, children: "Full Name" }),
-            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white", children: profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : profile.fullName || "N/A" })
+            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white", children: fullName })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-2xl border space-y-1 ${subCardClass}`, children: [
             /* @__PURE__ */ jsxs("span", { className: `text-[11px] font-medium flex items-center gap-1 ${textMuted}`, children: [
-              /* @__PURE__ */ jsx(FiMail, { className: "w-3 h-3 text-blue-500" }),
+              /* @__PURE__ */ jsx(FiMail, { className: "w-3.5 h-3.5 text-blue-500" }),
               " Email Address"
             ] }),
-            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white truncate", children: profile.email || "N/A" })
+            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white truncate", title: profile.email, children: profile.email || "Not Provided" })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-2xl border space-y-1 ${subCardClass}`, children: [
             /* @__PURE__ */ jsxs("span", { className: `text-[11px] font-medium flex items-center gap-1 ${textMuted}`, children: [
-              /* @__PURE__ */ jsx(FiPhone, { className: "w-3 h-3 text-blue-500" }),
+              /* @__PURE__ */ jsx(FiPhone, { className: "w-3.5 h-3.5 text-emerald-500" }),
               " Phone Number"
             ] }),
-            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white", children: profile.phoneNumber || profile.mobile || "N/A" })
+            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white", children: profile.phoneNumber || profile.mobile || "Not Provided" })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-2xl border space-y-1 ${subCardClass}`, children: [
             /* @__PURE__ */ jsxs("span", { className: `text-[11px] font-medium flex items-center gap-1 ${textMuted}`, children: [
-              /* @__PURE__ */ jsx(FiCalendar, { className: "w-3 h-3 text-blue-500" }),
+              /* @__PURE__ */ jsx(FiCalendar, { className: "w-3.5 h-3.5 text-purple-500" }),
               " Date of Birth"
             ] }),
-            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white", children: profile.dob || "N/A" })
+            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white", children: profile.dob || "Not Provided" })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-2xl border space-y-1 ${subCardClass}`, children: [
             /* @__PURE__ */ jsx("span", { className: `text-[11px] font-medium block ${textMuted}`, children: "Gender" }),
-            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white", children: profile.gender || "N/A" })
+            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white capitalize", children: profile.gender || "Not Specified" })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-2xl border space-y-1 ${subCardClass}`, children: [
             /* @__PURE__ */ jsxs("span", { className: `text-[11px] font-medium flex items-center gap-1 ${textMuted}`, children: [
-              /* @__PURE__ */ jsx(FiMapPin, { className: "w-3 h-3 text-blue-500" }),
+              /* @__PURE__ */ jsx(FiMapPin, { className: "w-3.5 h-3.5 text-rose-500" }),
               " Location / Address"
             ] }),
-            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white", children: profile.location || "N/A" })
+            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white", children: profile.location || "Remote / Global" })
           ] })
         ] })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: `rounded-3xl border p-6 sm:p-7 space-y-5 ${cardClass}`, children: [
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2.5 pb-4 border-b border-slate-100 dark:border-slate-800", children: [
           /* @__PURE__ */ jsx("div", { className: "w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center font-bold", children: /* @__PURE__ */ jsx(FiBookOpen, { className: "w-4 h-4" }) }),
-          /* @__PURE__ */ jsx("h3", { className: "font-extrabold text-base", children: "Education & Qualification" })
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx("h3", { className: "font-bold text-base", children: "Education & Credentials" }),
+            /* @__PURE__ */ jsx("p", { className: `text-xs ${textMuted} mt-0.5`, children: "Academic degrees, certifications, and industry recognition" })
+          ] })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs", children: [
           /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-2xl border space-y-1.5 ${subCardClass}`, children: [
             /* @__PURE__ */ jsxs("span", { className: `text-[11px] font-medium flex items-center gap-1 ${textMuted}`, children: [
-              /* @__PURE__ */ jsx(FiBookOpen, { className: "w-3 h-3 text-indigo-500" }),
+              /* @__PURE__ */ jsx(FiBookOpen, { className: "w-3.5 h-3.5 text-indigo-500" }),
               " Highest Education"
             ] }),
-            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white leading-snug", children: profile.education || "N/A" })
+            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white leading-snug", children: profile.education || "Master of Technology / Post Graduate" })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-2xl border space-y-1.5 ${subCardClass}`, children: [
             /* @__PURE__ */ jsxs("span", { className: `text-[11px] font-medium flex items-center gap-1 ${textMuted}`, children: [
-              /* @__PURE__ */ jsx(FiAward, { className: "w-3 h-3 text-indigo-500" }),
+              /* @__PURE__ */ jsx(FiAward, { className: "w-3.5 h-3.5 text-amber-500" }),
               " Professional Qualification"
             ] }),
-            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white leading-snug", children: profile.qualification || "N/A" })
+            /* @__PURE__ */ jsx("p", { className: "font-bold text-sm text-slate-900 dark:text-white leading-snug", children: profile.qualification || "Certified Career Mentor & Advisor" })
           ] })
         ] })
       ] })
@@ -13419,30 +16183,53 @@ const ProfileDetails = ({
       /* @__PURE__ */ jsxs("div", { className: `rounded-3xl border p-6 sm:p-7 space-y-4 ${cardClass}`, children: [
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800", children: [
           /* @__PURE__ */ jsx("div", { className: "w-8 h-8 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold", children: /* @__PURE__ */ jsx(FiFileText, { className: "w-4 h-4" }) }),
-          /* @__PURE__ */ jsx("h3", { className: "font-extrabold text-base", children: "Bio / About Me" })
+          /* @__PURE__ */ jsx("h3", { className: "font-bold text-base", children: "Bio / About Me" })
         ] }),
-        /* @__PURE__ */ jsxs("p", { className: "text-xs text-slate-600 dark:text-slate-300 leading-relaxed italic", children: [
+        /* @__PURE__ */ jsxs("p", { className: "text-xs text-slate-600 dark:text-slate-300 leading-relaxed italic bg-slate-50/50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-100 dark:border-slate-800", children: [
           '"',
-          profile.bio || "No bio specified yet.",
+          profile.bio || defaultBio,
           '"'
         ] })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: `rounded-3xl border p-6 sm:p-7 space-y-4 ${cardClass}`, children: [
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800", children: [
           /* @__PURE__ */ jsx("div", { className: "w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold", children: /* @__PURE__ */ jsx(FiCpu, { className: "w-4 h-4" }) }),
-          /* @__PURE__ */ jsx("h3", { className: "font-extrabold text-base", children: "Skills & Expertise" })
+          /* @__PURE__ */ jsx("h3", { className: "font-bold text-base", children: "Skills & Specializations" })
         ] }),
-        /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2", children: profile.skills && profile.skills.length > 0 ? profile.skills.map((skill, index) => /* @__PURE__ */ jsxs(
+        /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2 pt-1", children: displaySkills.map((skill, index) => /* @__PURE__ */ jsxs(
           "span",
           {
-            className: "bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5",
+            className: "bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-semibold px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-2xs",
             children: [
               /* @__PURE__ */ jsx(FiCheckCircle, { className: "w-3.5 h-3.5 text-blue-500" }),
               /* @__PURE__ */ jsx("span", { children: skill })
             ]
           },
           index
-        )) : /* @__PURE__ */ jsx("span", { className: "text-xs text-slate-400", children: "No skills added yet." }) })
+        )) })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: `rounded-3xl border p-6 sm:p-7 space-y-4 ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2.5 pb-3 border-b border-slate-100 dark:border-slate-800", children: [
+          /* @__PURE__ */ jsx("div", { className: "w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold", children: /* @__PURE__ */ jsx(FiShield, { className: "w-4 h-4" }) }),
+          /* @__PURE__ */ jsx("h3", { className: "font-bold text-base", children: "Account Security" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "space-y-3 text-xs", children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800", children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Identity Status" }),
+            /* @__PURE__ */ jsxs("span", { className: "font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1", children: [
+              /* @__PURE__ */ jsx(FiCheckCircle, { className: "w-3.5 h-3.5" }),
+              " Verified Account"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800", children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Access Level" }),
+            /* @__PURE__ */ jsx("span", { className: "font-semibold text-blue-600 dark:text-blue-400", children: "Authenticated Role" })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between py-1.5", children: [
+            /* @__PURE__ */ jsx("span", { className: textMuted, children: "Session State" }),
+            /* @__PURE__ */ jsx("span", { className: "font-semibold text-slate-700 dark:text-slate-300", children: "Active" })
+          ] })
+        ] })
       ] })
     ] })
   ] });
@@ -13709,11 +16496,17 @@ const UserProfileView = ({
 }) => {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState(null);
+  const cached = typeof window !== "undefined" ? getCachedUser() : null;
+  const initialProfile = cached ? normalizeUserProfile(cached) : null;
+  const [formData, setFormData] = useState(initialProfile);
   const [errors, setErrors] = useState({});
   const { data: profile, isLoading, isError, error } = useQuery({
     queryKey: ["userProfile"],
-    queryFn: fetchUserProfile
+    queryFn: fetchUserProfile,
+    initialData: initialProfile || void 0,
+    staleTime: 1e3 * 60 * 2,
+    // 2 minutes
+    retry: 1
   });
   useEffect(() => {
     if (profile) {
@@ -13728,7 +16521,7 @@ const UserProfileView = ({
       setIsEditing(false);
       onShowToast("Profile information updated successfully!");
     },
-    onError: (err) => {
+    onError: () => {
       onShowToast("Unable to update profile. Please try again.");
     }
   });
@@ -13834,11 +16627,29 @@ const UserProfileView = ({
   const handleCancel = () => {
     if (profile) {
       setFormData(profile);
+    } else if (initialProfile) {
+      setFormData(initialProfile);
     }
     setErrors({});
     setIsEditing(false);
   };
-  if (isLoading || !formData) {
+  if (isError && !formData && !initialProfile) {
+    return /* @__PURE__ */ jsxs("div", { className: "p-8 text-center space-y-4 max-w-md mx-auto bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-3xl font-sans", children: [
+      /* @__PURE__ */ jsx(FiAlertCircle, { className: "w-10 h-10 text-rose-500 mx-auto" }),
+      /* @__PURE__ */ jsx("h3", { className: "font-extrabold text-base text-rose-600 dark:text-rose-400", children: "Failed to Load Profile" }),
+      /* @__PURE__ */ jsx("p", { className: "text-xs text-rose-500", children: (error == null ? void 0 : error.message) || "Server connection error" }),
+      /* @__PURE__ */ jsx(
+        "button",
+        {
+          type: "button",
+          onClick: () => queryClient.invalidateQueries({ queryKey: ["userProfile"] }),
+          className: "bg-rose-600 text-white font-bold text-xs px-4 py-2 rounded-xl hover:bg-rose-500 transition cursor-pointer",
+          children: "Retry"
+        }
+      )
+    ] });
+  }
+  if (isLoading && !formData && !initialProfile) {
     return /* @__PURE__ */ jsxs("div", { className: "space-y-6 font-sans animate-pulse max-w-5xl mx-auto", children: [
       /* @__PURE__ */ jsx("div", { className: "h-48 rounded-3xl bg-slate-200 dark:bg-slate-800" }),
       /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-6", children: [
@@ -13847,26 +16658,12 @@ const UserProfileView = ({
       ] })
     ] });
   }
-  if (isError) {
-    return /* @__PURE__ */ jsxs("div", { className: "p-8 text-center space-y-4 max-w-md mx-auto bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-3xl font-sans", children: [
-      /* @__PURE__ */ jsx(FiAlertCircle, { className: "w-10 h-10 text-rose-500 mx-auto" }),
-      /* @__PURE__ */ jsx("h3", { className: "font-extrabold text-base text-rose-600 dark:text-rose-400", children: "Failed to Load Profile" }),
-      /* @__PURE__ */ jsx("p", { className: "text-xs text-rose-500", children: (error == null ? void 0 : error.message) || "Server connection error" }),
-      /* @__PURE__ */ jsx(
-        "button",
-        {
-          onClick: () => queryClient.invalidateQueries({ queryKey: ["userProfile"] }),
-          className: "bg-rose-600 text-white font-bold text-xs px-4 py-2 rounded-xl hover:bg-rose-500 transition cursor-pointer",
-          children: "Retry"
-        }
-      )
-    ] });
-  }
+  const activeProfile = formData || profile || initialProfile || normalizeUserProfile(null);
   return /* @__PURE__ */ jsxs("div", { className: "space-y-6 max-w-5xl mx-auto font-sans", children: [
     /* @__PURE__ */ jsx(
       ProfileHeader,
       {
-        profile: formData,
+        profile: activeProfile,
         isEditing,
         isSaving: updateMutation.isPending,
         onEditClick: () => setIsEditing(true),
@@ -13876,10 +16673,10 @@ const UserProfileView = ({
         isDarkMode
       }
     ),
-    !isEditing ? /* @__PURE__ */ jsx(ProfileDetails, { profile: formData, isDarkMode }) : /* @__PURE__ */ jsx(
+    !isEditing ? /* @__PURE__ */ jsx(ProfileDetails, { profile: activeProfile, isDarkMode }) : /* @__PURE__ */ jsx(
       ProfileForm,
       {
-        formData,
+        formData: activeProfile,
         errors,
         onChange: handleFieldChange,
         onAddSkill: handleAddSkill,
@@ -14679,6 +17476,10 @@ const SuperAdminDashboard = ({
   const subCardClass = isDarkMode ? "bg-slate-800/80 border-slate-700/80 text-white" : "bg-blue-50/40 border-blue-100 text-slate-900";
   const textMuted = isDarkMode ? "text-slate-400" : "text-slate-500";
   const textHeading = isDarkMode ? "text-white" : "text-slate-900";
+  const borderDivider = isDarkMode ? "border-slate-800" : "border-slate-100";
+  if (activeSubView === "profile") {
+    return /* @__PURE__ */ jsx(UserProfileView, { onShowToast, isDarkMode });
+  }
   if (activeSubView === "access") {
     return /* @__PURE__ */ jsx(
       EntitiesTable,
@@ -14694,6 +17495,130 @@ const SuperAdminDashboard = ({
         isDarkMode
       }
     );
+  }
+  const roleSubviews = {
+    "users": "all",
+    "parents": "parent",
+    "mentors": "mentor",
+    "recruiters": "recruiter",
+    "schools": "school",
+    "colleges": "college",
+    "training-institutes": "training",
+    "companies": "company"
+  };
+  if (roleSubviews[activeSubView] !== void 0) {
+    return /* @__PURE__ */ jsx(
+      EntitiesTable,
+      {
+        entities,
+        activeFilter: roleSubviews[activeSubView],
+        onFilterChange,
+        searchQuery,
+        onSimulateWorkspace,
+        onEditEntity,
+        onToggleStatus,
+        onDeleteEntity,
+        isDarkMode
+      }
+    );
+  }
+  if (activeSubView === "approvals") {
+    const pendingEntities = entities.filter((e) => e.status === "pending");
+    return /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 space-y-6 ${cardClass}`, children: [
+      /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider} flex items-center justify-between`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("h2", { className: `text-xl font-bold flex items-center gap-2 ${textHeading}`, children: [
+            /* @__PURE__ */ jsx(FiShield, { className: "w-5 h-5 text-amber-400" }),
+            "Pending Institutional & Partner Approvals"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: `text-xs mt-1 ${textMuted}`, children: "Review and approve pending school, college, corporate, and mentor verification requests." })
+        ] }),
+        /* @__PURE__ */ jsxs("span", { className: "px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full text-xs font-semibold", children: [
+          pendingEntities.length,
+          " Pending Approvals"
+        ] })
+      ] }),
+      pendingEntities.length === 0 ? /* @__PURE__ */ jsxs("div", { className: "py-12 text-center text-xs text-slate-400 border border-dashed border-slate-700/60 rounded-2xl", children: [
+        /* @__PURE__ */ jsx(FiCheckCircle, { className: "w-10 h-10 text-emerald-400 mx-auto mb-2 opacity-80" }),
+        /* @__PURE__ */ jsx("h4", { className: "text-sm font-semibold text-slate-200", children: "All Registrations Approved" }),
+        /* @__PURE__ */ jsx("p", { className: "mt-1", children: "No institutional partners are currently awaiting manual verification." })
+      ] }) : /* @__PURE__ */ jsx("div", { className: "space-y-3", children: pendingEntities.map((ent) => /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border flex items-center justify-between ${subCardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsx("span", { className: `font-bold text-sm ${textHeading}`, children: ent.name }),
+            /* @__PURE__ */ jsx("span", { className: "text-[11px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full font-semibold uppercase", children: ent.role })
+          ] }),
+          /* @__PURE__ */ jsxs("p", { className: `text-xs mt-0.5 ${textMuted}`, children: [
+            ent.contactEmail || "Verified Entity",
+            " • ",
+            ent.seats,
+            " Allocated Seats"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => {
+                onToggleStatus(ent.id);
+                onShowToast(`Approved and activated access for ${ent.name}!`);
+              },
+              className: "bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-xl transition cursor-pointer",
+              children: "Approve"
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              onClick: () => {
+                if (confirm(`Reject registration for ${ent.name}?`)) {
+                  onDeleteEntity(ent.id);
+                }
+              },
+              className: "bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 text-xs font-semibold px-3 py-2 rounded-xl transition cursor-pointer",
+              children: "Reject"
+            }
+          )
+        ] })
+      ] }, ent.id)) })
+    ] });
+  }
+  if (activeSubView === "reports" || activeSubView === "analytics") {
+    return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
+      /* @__PURE__ */ jsx(
+        MetricsGrid,
+        {
+          currentWorkspace: "super-admin",
+          totalEntities: entities.length,
+          totalSeats,
+          pendingCount,
+          isDarkMode
+        }
+      ),
+      /* @__PURE__ */ jsxs("div", { className: `rounded-2xl border p-6 ${cardClass}`, children: [
+        /* @__PURE__ */ jsxs("div", { className: `pb-4 border-b ${borderDivider}`, children: [
+          /* @__PURE__ */ jsx("h3", { className: `font-bold text-sm ${textHeading}`, children: "Ecosystem Growth & Platform Telemetry" }),
+          /* @__PURE__ */ jsx("p", { className: `text-xs mt-1 ${textMuted}`, children: "Cross-vertical performance and engagement statistics" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4 mt-4", children: [
+          /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border ${subCardClass} text-center`, children: [
+            /* @__PURE__ */ jsx("span", { className: "text-2xl font-bold text-blue-400 block", children: totalSeats }),
+            /* @__PURE__ */ jsx("span", { className: "text-xs font-semibold text-slate-300 mt-1 block", children: "Total Student Licenses" }),
+            /* @__PURE__ */ jsx("span", { className: `text-[11px] ${textMuted}`, children: "Across schools & academies" })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border ${subCardClass} text-center`, children: [
+            /* @__PURE__ */ jsx("span", { className: "text-2xl font-bold text-emerald-400 block", children: entities.filter((e) => e.status === "active").length }),
+            /* @__PURE__ */ jsx("span", { className: "text-xs font-semibold text-slate-300 mt-1 block", children: "Active Verified Partners" }),
+            /* @__PURE__ */ jsx("span", { className: `text-[11px] ${textMuted}`, children: "Full platform compliance" })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `p-4 rounded-xl border ${subCardClass} text-center`, children: [
+            /* @__PURE__ */ jsx("span", { className: "text-2xl font-bold text-purple-400 block", children: auditLogs.length }),
+            /* @__PURE__ */ jsx("span", { className: "text-xs font-semibold text-slate-300 mt-1 block", children: "Logged System Audits" }),
+            /* @__PURE__ */ jsx("span", { className: `text-[11px] ${textMuted}`, children: "Security telemetry trail" })
+          ] })
+        ] })
+      ] })
+    ] });
   }
   if (activeSubView === "rbac") {
     return /* @__PURE__ */ jsx(RBACMatrix, { onSave: () => onShowToast("Saved global RBAC Matrix policies!"), isDarkMode });
@@ -14779,6 +17704,49 @@ const SuperAdminDashboard = ({
     ] })
   ] });
 };
+const getRoleUrlSlug = (role) => {
+  if (role === "training") return "training-institute";
+  return role;
+};
+const roleAliasMap = {
+  "super-admin": "super-admin",
+  "superadmin": "super-admin",
+  "admin": "super-admin",
+  "school": "school",
+  "schools": "school",
+  "schooladmin": "school",
+  "college": "college",
+  "colleges": "college",
+  "collegeadmin": "college",
+  "mentor": "mentor",
+  "mentors": "mentor",
+  "counselor": "mentor",
+  "counselors": "mentor",
+  "training": "training",
+  "trainings": "training",
+  "training-institute": "training",
+  "training-institutes": "training",
+  "traininginstitute": "training",
+  "traininginstitutes": "training",
+  "institute": "training",
+  "institutes": "training",
+  "academy": "training",
+  "academies": "training",
+  "recruiter": "recruiter",
+  "recruiters": "recruiter",
+  "talent": "recruiter",
+  "hr": "recruiter",
+  "company": "company",
+  "companies": "company",
+  "companyadmin": "company",
+  "enterprise": "company",
+  "parent": "parent",
+  "parents": "parent",
+  "family": "parent",
+  "student": "parent",
+  "students": "parent",
+  "learner": "parent"
+};
 const $role = UNSAFE_withComponentProps(function RoleDashboardRoute() {
   var _a2, _b2, _c;
   const params = useParams();
@@ -14786,65 +17754,6 @@ const $role = UNSAFE_withComponentProps(function RoleDashboardRoute() {
   const location = useLocation();
   const queryClient = useQueryClient();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  useEffect(() => {
-    let isMounted = true;
-    const verifySession = async () => {
-      const token = getAccessToken();
-      if (token) {
-        if (isMounted) setIsCheckingAuth(false);
-        return;
-      }
-      const refreshToken = getRefreshToken();
-      if (refreshToken) {
-        try {
-          const newToken = await tryRefreshToken();
-          if (newToken && isMounted) {
-            setIsCheckingAuth(false);
-            return;
-          }
-        } catch {
-        }
-      }
-      if (isMounted) {
-        navigate("/login", {
-          replace: true
-        });
-      }
-    };
-    verifySession();
-    return () => {
-      isMounted = false;
-    };
-  }, [navigate]);
-  const roleAliasMap = {
-    "super-admin": "super-admin",
-    "superadmin": "super-admin",
-    "admin": "super-admin",
-    "school": "school",
-    "schools": "school",
-    "college": "college",
-    "colleges": "college",
-    "mentor": "mentor",
-    "mentors": "mentor",
-    "counselor": "mentor",
-    "counselors": "mentor",
-    "training": "training",
-    "trainings": "training",
-    "academy": "training",
-    "academies": "training",
-    "recruiter": "recruiter",
-    "recruiters": "recruiter",
-    "hr": "recruiter",
-    "company": "company",
-    "companies": "company",
-    "enterprise": "company",
-    "parent": "parent",
-    "parents": "parent",
-    "family": "parent",
-    "student": "parent",
-    "students": "parent",
-    "learner": "parent"
-  };
   const pathSegments = location.pathname.split("/").filter(Boolean);
   const isPortalPrefix = ((_a2 = pathSegments[0]) == null ? void 0 : _a2.toLowerCase()) === "portal";
   const rawPathRole = isPortalPrefix ? ((_b2 = pathSegments[1]) == null ? void 0 : _b2.toLowerCase()) || "" : ((_c = pathSegments[0]) == null ? void 0 : _c.toLowerCase()) || "";
@@ -14852,12 +17761,67 @@ const $role = UNSAFE_withComponentProps(function RoleDashboardRoute() {
   const resolvedRole = roleAliasMap[rawParamRole] || roleAliasMap[rawPathRole] || "super-admin";
   const currentWorkspace = resolvedRole;
   const rawSubView = isPortalPrefix ? pathSegments[2] || "overview" : params["*"] || pathSegments[1] || "overview";
-  const activeSubView = rawSubView.toLowerCase().replace(/^\//, "") || "overview";
+  const normalizedSubView = rawSubView.toLowerCase().replace(/^\//, "") || "overview";
+  const activeSubView = normalizedSubView === "dashboard" ? "overview" : normalizedSubView;
+  useEffect(() => {
+    let isMounted = true;
+    const verifySession = async () => {
+      let token = getAccessToken();
+      if (!token) {
+        const refreshToken = getRefreshToken();
+        if (refreshToken) {
+          try {
+            token = await tryRefreshToken();
+          } catch {
+          }
+        }
+      }
+      if (!token) {
+        if (isMounted) {
+          navigate("/login", {
+            replace: true
+          });
+        }
+        return;
+      }
+      const cached = getCachedUser();
+      const activeRole = localStorage.getItem("rr_active_role") || sessionStorage.getItem("rr_active_role");
+      let userRoleStr = (cached == null ? void 0 : cached.role) || activeRole;
+      if (!userRoleStr && token) {
+        try {
+          const parts = token.split(".");
+          if (parts.length === 3) {
+            const payload = JSON.parse(atob(parts[1]));
+            userRoleStr = payload.role;
+          }
+        } catch {
+        }
+      }
+      if (userRoleStr) {
+        const normalizedAuth = roleAliasMap[userRoleStr.toLowerCase().replace(/[-_ ]/g, "")] || roleAliasMap[userRoleStr.toLowerCase()];
+        if (normalizedAuth && normalizedAuth !== "super-admin" && currentWorkspace !== normalizedAuth) {
+          const authorizedRoute = resolveDashboardRoute(void 0, userRoleStr);
+          if (isMounted) {
+            navigate(authorizedRoute, {
+              replace: true
+            });
+          }
+          return;
+        }
+      }
+      if (isMounted) setIsCheckingAuth(false);
+    };
+    verifySession();
+    return () => {
+      isMounted = false;
+    };
+  }, [navigate, currentWorkspace]);
   const [activeRoleFilter, setActiveRoleFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isGrantModalOpen, setIsGrantModalOpen] = useState(false);
   const [editingEntity, setEditingEntity] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
       const savedTheme = localStorage.getItem("role_ready_theme");
@@ -14937,45 +17901,49 @@ const $role = UNSAFE_withComponentProps(function RoleDashboardRoute() {
     setTimeout(() => setToastMessage(null), 4e3);
   };
   const handleWorkspaceChange = (role) => {
+    setIsMobileMenuOpen(false);
     const prefix = isPortalPrefix ? "/portal" : "";
-    navigate(`${prefix}/${role}`);
-    showToast(`Switched to ${role.toUpperCase()} Workspace Portal!`);
+    const slug = getRoleUrlSlug(role);
+    navigate(`${prefix}/${slug}/dashboard`);
+    showToast(`Switched to ${role.toUpperCase()} Workspace!`);
   };
   const handleViewChange = (view) => {
+    setIsMobileMenuOpen(false);
     const prefix = isPortalPrefix ? "/portal" : "";
-    if (view === "overview") {
-      navigate(`${prefix}/${currentWorkspace}`);
+    const slug = getRoleUrlSlug(currentWorkspace);
+    if (view === "overview" || view === "dashboard") {
+      navigate(`${prefix}/${slug}/dashboard`);
     } else {
-      navigate(`${prefix}/${currentWorkspace}/${view}`);
+      navigate(`${prefix}/${slug}/${view}`);
     }
   };
   const handleSimulateWorkspace = (role) => {
     handleWorkspaceChange(role);
   };
   const getSubViewTitle = () => {
-    if (activeSubView === "overview") {
+    if (activeSubView === "overview" || activeSubView === "dashboard") {
       const portalNames = {
-        "super-admin": "Super Admin Governance Hub",
-        "school": "School Admin Portal Overview",
-        "college": "College Admin Portal Overview",
-        "mentor": "Mentor & Counselor Desk Overview",
-        "training": "Training Institute Portal Overview",
-        "recruiter": "Recruiter Talent Desk Overview",
-        "company": "Enterprise Company Portal Overview",
-        "parent": "Parent & Family Intelligence Portal Overview"
+        "super-admin": "Super Admin Dashboard",
+        "school": "School Dashboard",
+        "college": "College Dashboard",
+        "mentor": "Mentor Dashboard",
+        "training": "Training Institute Dashboard",
+        "recruiter": "Recruiter Dashboard",
+        "company": "Company Dashboard",
+        "parent": "Parent Dashboard"
       };
       return portalNames[currentWorkspace] || "Workspace Overview";
     }
     if (activeSubView === "profile") {
       const profileTitles = {
-        "super-admin": "Super Admin Governance Profile & Security",
-        "school": "School Admin Profile & Account Settings",
-        "college": "College Admin Profile & Account Settings",
-        "mentor": "Mentor Profile & Credentials Verification",
-        "training": "Training Academy Profile & Credentials",
-        "recruiter": "Recruiter Profile & Corporate Settings",
-        "company": "Enterprise Company Profile & Verification",
-        "parent": "Parent Profile & Family Governance Settings"
+        "super-admin": "Super Admin Profile & Account",
+        "school": "School Admin Profile & Account",
+        "college": "College Admin Profile & Account",
+        "mentor": "Mentor Profile & Account",
+        "training": "Training Institute Profile & Account",
+        "recruiter": "Recruiter Profile & Account",
+        "company": "Company Profile & Account",
+        "parent": "Parent Profile & Account"
       };
       return profileTitles[currentWorkspace] || "User Profile & Settings";
     }
@@ -15001,6 +17969,27 @@ const $role = UNSAFE_withComponentProps(function RoleDashboardRoute() {
       }
     }
     const titles = {
+      "child": "Child Overview & Academic Profile",
+      "career-discovery": "AI Career Discovery Engine",
+      "career-roadmap": "Personalized Career Milestones Roadmap",
+      "progress": "Student Learning & Performance Progress",
+      "sessions": "Mentorship Sessions & Video Counseling",
+      "create-job": "Create & Post Job Opportunity",
+      "shortlisted": "Shortlisted Candidates",
+      "selected": "Selected Candidates & Hires",
+      "parents": "Parent Accounts Directory",
+      "training-institutes": "Training Institutes Management",
+      "approvals": "Partner & Institution Approvals",
+      "departments": "Academic Departments & Faculties",
+      "batches": "Training Batches & Cohorts",
+      "learners": "Enrolled Learners & Trainees",
+      "trainers": "Certified Trainers & Faculty",
+      "enrollments": "Course Enrollments & Subscriptions",
+      "attendance": "Batch Attendance & Class Presence",
+      "certificates": "Issued Certificates Registry",
+      "classes": "Academic Classes & Grade Roster",
+      "employees": "Employees & Team Directory",
+      "recruitment": "Recruitment Pipeline & Hiring Tracker",
       "access": "Access Provisioning & Quota Management Hub",
       "rbac": "Role-Based Access Control (RBAC) Matrix",
       "ai": "AI Recommendation Engine Control",
@@ -15014,7 +18003,7 @@ const $role = UNSAFE_withComponentProps(function RoleDashboardRoute() {
       "performance": "Performance Monitoring Dashboard",
       "placement": "Placement & Internship Readiness Reports",
       "notifications": "Portal Notifications Desk",
-      "settings": "School Governance & Settings",
+      "settings": "Workspace Governance & Settings",
       "programs": "Academic Programs & Degree Tracks",
       "admissions": "College Admissions & Cutoff Management",
       "applications": "Student Applications & Enrollment Pipeline",
@@ -15055,7 +18044,7 @@ const $role = UNSAFE_withComponentProps(function RoleDashboardRoute() {
       "mentors": "1-on-1 Mentor & Counselor Booking Desk",
       "fees": "Fee Management & Subscription Invoicing"
     };
-    return titles[activeSubView] || `${activeSubView.toUpperCase()} View`;
+    return titles[activeSubView] || `${activeSubView.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}`;
   };
   if (isCheckingAuth) {
     return /* @__PURE__ */ jsxs("div", {
@@ -15077,16 +18066,19 @@ const $role = UNSAFE_withComponentProps(function RoleDashboardRoute() {
       onViewChange: handleViewChange,
       onRoleFilter: setActiveRoleFilter,
       totalEntities: entities.length,
-      isDarkMode
+      isDarkMode,
+      isMobileOpen: isMobileMenuOpen,
+      onCloseMobile: () => setIsMobileMenuOpen(false)
     }), /* @__PURE__ */ jsxs("div", {
-      className: "pl-72 flex-1 flex flex-col min-w-0",
+      className: "md:pl-72 pl-0 flex-1 flex flex-col min-w-0 transition-all duration-300",
       children: [/* @__PURE__ */ jsx(Topbar, {
         currentWorkspace,
         searchQuery,
         onSearchChange: setSearchQuery,
         onShowToast: showToast,
         isDarkMode,
-        onToggleTheme: handleToggleTheme
+        onToggleTheme: handleToggleTheme,
+        onToggleMobileMenu: () => setIsMobileMenuOpen((prev) => !prev)
       }), /* @__PURE__ */ jsxs("main", {
         className: "p-8 flex-1 animate-fade-in",
         children: [toastMessage && /* @__PURE__ */ jsxs("div", {
@@ -15168,9 +18160,11 @@ const $role = UNSAFE_withComponentProps(function RoleDashboardRoute() {
 });
 const route9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  default: $role
+  default: $role,
+  getRoleUrlSlug,
+  roleAliasMap
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-Duqma3Cv.js", "imports": ["/assets/jsx-runtime-D_zvdyIk.js", "/assets/chunk-62JRHF6Z-W8r8RY01.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/root-C4Q--5xy.js", "imports": ["/assets/jsx-runtime-D_zvdyIk.js", "/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_index-Bn0BTm_z.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/login": { "id": "routes/login", "parentId": "root", "path": "login", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/login-DBBrtOOq.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/api-U8oLodN_.js", "/assets/authService-MxT1qWSX.js", "/assets/index-DUkYxB1-.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "signup-route": { "id": "signup-route", "parentId": "root", "path": "signup", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/signup-n5n8eQXM.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/index-DUkYxB1-.js", "/assets/authService-MxT1qWSX.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "register-route": { "id": "register-route", "parentId": "root", "path": "register", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/signup-n5n8eQXM.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/index-DUkYxB1-.js", "/assets/authService-MxT1qWSX.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "forgot-password-route": { "id": "forgot-password-route", "parentId": "root", "path": "forgot-password", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/forgot-password-Ci-IYG0i.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/authService-MxT1qWSX.js", "/assets/index-DUkYxB1-.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "portal-role-root": { "id": "portal-role-root", "parentId": "root", "path": "portal/:role", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-DOn86LSC.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-U8oLodN_.js", "/assets/index-DUkYxB1-.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "portal-role-splat": { "id": "portal-role-splat", "parentId": "root", "path": "portal/:role/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-DOn86LSC.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-U8oLodN_.js", "/assets/index-DUkYxB1-.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "role-root": { "id": "role-root", "parentId": "root", "path": ":role", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-DOn86LSC.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-U8oLodN_.js", "/assets/index-DUkYxB1-.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "role-splat": { "id": "role-splat", "parentId": "root", "path": ":role/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-DOn86LSC.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-U8oLodN_.js", "/assets/index-DUkYxB1-.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-e96e87ff.js", "version": "e96e87ff", "sri": void 0 };
+const serverManifest = { "entry": { "module": "/assets/entry.client-Duqma3Cv.js", "imports": ["/assets/jsx-runtime-D_zvdyIk.js", "/assets/chunk-62JRHF6Z-W8r8RY01.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/root-DUnXIOfd.js", "imports": ["/assets/jsx-runtime-D_zvdyIk.js", "/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_index-Bn0BTm_z.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/login": { "id": "routes/login", "parentId": "root", "path": "login", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/login-D1WjVEPQ.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/api-Cv69fpNu.js", "/assets/authService-ag6zjYB4.js", "/assets/index-BWMxe9sO.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "signup-route": { "id": "signup-route", "parentId": "root", "path": "signup", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/signup-DMnN0nuc.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/index-BWMxe9sO.js", "/assets/authService-ag6zjYB4.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "register-route": { "id": "register-route", "parentId": "root", "path": "register", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/signup-DMnN0nuc.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/index-BWMxe9sO.js", "/assets/authService-ag6zjYB4.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "forgot-password-route": { "id": "forgot-password-route", "parentId": "root", "path": "forgot-password", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/forgot-password-CPTk55NW.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/authService-ag6zjYB4.js", "/assets/index-BWMxe9sO.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "portal-role-root": { "id": "portal-role-root", "parentId": "root", "path": "portal/:role", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-BPr3C2NI.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-Cv69fpNu.js", "/assets/index-BWMxe9sO.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "portal-role-splat": { "id": "portal-role-splat", "parentId": "root", "path": "portal/:role/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-BPr3C2NI.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-Cv69fpNu.js", "/assets/index-BWMxe9sO.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "role-root": { "id": "role-root", "parentId": "root", "path": ":role", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-BPr3C2NI.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-Cv69fpNu.js", "/assets/index-BWMxe9sO.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "role-splat": { "id": "role-splat", "parentId": "root", "path": ":role/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-BPr3C2NI.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-Cv69fpNu.js", "/assets/index-BWMxe9sO.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-a5a93199.js", "version": "a5a93199", "sri": void 0 };
 const assetsBuildDirectory = "build\\client";
 const basename = "/";
 const future = { "unstable_optimizeDeps": false, "v8_passThroughRequests": false, "v8_trailingSlashAwareDataRequests": false, "unstable_previewServerPrerendering": false, "v8_middleware": false, "v8_splitRouteModules": false, "v8_viteEnvironmentApi": false };

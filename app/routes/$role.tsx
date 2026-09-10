@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchEntities, fetchAuditLogs, addEntity, updateEntity, deleteEntity } from '../lib/api';
+import { fetchEntities, fetchAuditLogs, addEntity, updateEntity, deleteEntity, resolveDashboardRoute, getCachedUser } from '../lib/api';
 import { getAccessToken, getRefreshToken, tryRefreshToken } from '../services/apiClient';
 import { RoleType, EcosystemEntity, StatusType } from '../lib/types';
 import { Sidebar } from '../components/Sidebar';
@@ -12,6 +12,60 @@ import { RoleWorkspaceViews } from '../components/RoleWorkspaceViews';
 import { SuperAdminDashboard } from '../components/Pages/SuperAdminDashboard';
 import { FiCheckCircle, FiPlus } from 'react-icons/fi';
 
+export const getRoleUrlSlug = (role: RoleType): string => {
+  if (role === 'training') return 'training-institute';
+  return role;
+};
+
+// Singular and Plural Alias Mapping so URLs like /mentors, /schools, /colleges, /training-institute work 100%
+export const roleAliasMap: Record<string, RoleType> = {
+  'super-admin': 'super-admin',
+  'superadmin': 'super-admin',
+  'admin': 'super-admin',
+  
+  'school': 'school',
+  'schools': 'school',
+  'schooladmin': 'school',
+  
+  'college': 'college',
+  'colleges': 'college',
+  'collegeadmin': 'college',
+  
+  'mentor': 'mentor',
+  'mentors': 'mentor',
+  'counselor': 'mentor',
+  'counselors': 'mentor',
+  
+  'training': 'training',
+  'trainings': 'training',
+  'training-institute': 'training',
+  'training-institutes': 'training',
+  'traininginstitute': 'training',
+  'traininginstitutes': 'training',
+  'institute': 'training',
+  'institutes': 'training',
+  'academy': 'training',
+  'academies': 'training',
+  
+  'recruiter': 'recruiter',
+  'recruiters': 'recruiter',
+  'talent': 'recruiter',
+  'hr': 'recruiter',
+  
+  'company': 'company',
+  'companies': 'company',
+  'companyadmin': 'company',
+  'enterprise': 'company',
+
+  'parent': 'parent',
+  'parents': 'parent',
+  'family': 'parent',
+
+  'student': 'parent',
+  'students': 'parent',
+  'learner': 'parent'
+};
+
 export default function RoleDashboardRoute() {
   const params = useParams();
   const navigate = useNavigate();
@@ -19,79 +73,6 @@ export default function RoleDashboardRoute() {
   const queryClient = useQueryClient();
 
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-
-  // Authentication Guard: Check access token or try transparent refresh before rendering
-  useEffect(() => {
-    let isMounted = true;
-    const verifySession = async () => {
-      const token = getAccessToken();
-      if (token) {
-        if (isMounted) setIsCheckingAuth(false);
-        return;
-      }
-
-      // If no access token in memory/storage, attempt refresh token rotation
-      const refreshToken = getRefreshToken();
-      if (refreshToken) {
-        try {
-          const newToken = await tryRefreshToken();
-          if (newToken && isMounted) {
-            setIsCheckingAuth(false);
-            return;
-          }
-        } catch {
-          // Token refresh failed
-        }
-      }
-
-      // If neither access token nor valid refresh token exists, redirect to /login
-      if (isMounted) {
-        navigate('/login', { replace: true });
-      }
-    };
-
-    verifySession();
-    return () => { isMounted = false; };
-  }, [navigate]);
-
-  // Singular and Plural Alias Mapping so URLs like /mentors, /schools, /colleges work 100%
-  const roleAliasMap: Record<string, RoleType> = {
-    'super-admin': 'super-admin',
-    'superadmin': 'super-admin',
-    'admin': 'super-admin',
-    
-    'school': 'school',
-    'schools': 'school',
-    
-    'college': 'college',
-    'colleges': 'college',
-    
-    'mentor': 'mentor',
-    'mentors': 'mentor',
-    'counselor': 'mentor',
-    'counselors': 'mentor',
-    
-    'training': 'training',
-    'trainings': 'training',
-    'academy': 'training',
-    'academies': 'training',
-    
-    'recruiter': 'recruiter',
-    'recruiters': 'recruiter',
-    'hr': 'recruiter',
-    
-    'company': 'company',
-    'companies': 'company',
-    'enterprise': 'company',
-
-    'parent': 'parent',
-    'parents': 'parent',
-    'family': 'parent',
-
-    'student': 'parent',
-    'students': 'parent',
-    'learner': 'parent'
-  };
 
   // Parse path segments reactively using useLocation()
   const pathSegments = location.pathname.split('/').filter(Boolean);
@@ -103,8 +84,69 @@ export default function RoleDashboardRoute() {
   const currentWorkspace: RoleType = resolvedRole;
 
   // Synchronous, flicker-free activeSubView derived directly from URL location
+  // Maps '/dashboard' or empty splat directly to 'overview'
   const rawSubView = isPortalPrefix ? (pathSegments[2] || 'overview') : (params["*"] || pathSegments[1] || 'overview');
-  const activeSubView = rawSubView.toLowerCase().replace(/^\//, '') || 'overview';
+  const normalizedSubView = rawSubView.toLowerCase().replace(/^\//, '') || 'overview';
+  const activeSubView = normalizedSubView === 'dashboard' ? 'overview' : normalizedSubView;
+
+  // Authentication & RBAC Route Protection Guard:
+  // Verifies user session and ensures users cannot access unauthorized role dashboards.
+  useEffect(() => {
+    let isMounted = true;
+    const verifySession = async () => {
+      let token = getAccessToken();
+      if (!token) {
+        // If no access token in memory/storage, attempt refresh token rotation
+        const refreshToken = getRefreshToken();
+        if (refreshToken) {
+          try {
+            token = await tryRefreshToken();
+          } catch {
+            // Token refresh failed
+          }
+        }
+      }
+
+      // If neither access token nor valid refresh token exists, redirect to /login
+      if (!token) {
+        if (isMounted) {
+          navigate('/login', { replace: true });
+        }
+        return;
+      }
+
+      // RBAC Check: Ensure the authenticated user has permission to access currentWorkspace
+      const cached = getCachedUser();
+      const activeRole = localStorage.getItem('rr_active_role') || sessionStorage.getItem('rr_active_role');
+      let userRoleStr: string | undefined = cached?.role || activeRole;
+      if (!userRoleStr && token) {
+        try {
+          const parts = token.split('.');
+          if (parts.length === 3) {
+            const payload = JSON.parse(atob(parts[1]));
+            userRoleStr = payload.role;
+          }
+        } catch {}
+      }
+
+      if (userRoleStr) {
+        const normalizedAuth = roleAliasMap[userRoleStr.toLowerCase().replace(/[-_ ]/g, '')] || roleAliasMap[userRoleStr.toLowerCase()];
+        // If the user's role is known and not super-admin, redirect if attempting unauthorized workspace
+        if (normalizedAuth && normalizedAuth !== 'super-admin' && currentWorkspace !== normalizedAuth) {
+          const authorizedRoute = resolveDashboardRoute(undefined, userRoleStr);
+          if (isMounted) {
+            navigate(authorizedRoute, { replace: true });
+          }
+          return;
+        }
+      }
+
+      if (isMounted) setIsCheckingAuth(false);
+    };
+
+    verifySession();
+    return () => { isMounted = false; };
+  }, [navigate, currentWorkspace]);
 
   const [activeRoleFilter, setActiveRoleFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -112,6 +154,7 @@ export default function RoleDashboardRoute() {
   const [isGrantModalOpen, setIsGrantModalOpen] = useState(false);
   const [editingEntity, setEditingEntity] = useState<EcosystemEntity | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
@@ -185,17 +228,21 @@ export default function RoleDashboardRoute() {
   };
 
   const handleWorkspaceChange = (role: RoleType) => {
+    setIsMobileMenuOpen(false);
     const prefix = isPortalPrefix ? '/portal' : '';
-    navigate(`${prefix}/${role}`);
-    showToast(`Switched to ${role.toUpperCase()} Workspace Portal!`);
+    const slug = getRoleUrlSlug(role);
+    navigate(`${prefix}/${slug}/dashboard`);
+    showToast(`Switched to ${role.toUpperCase()} Workspace!`);
   };
 
   const handleViewChange = (view: string) => {
+    setIsMobileMenuOpen(false);
     const prefix = isPortalPrefix ? '/portal' : '';
-    if (view === 'overview') {
-      navigate(`${prefix}/${currentWorkspace}`);
+    const slug = getRoleUrlSlug(currentWorkspace);
+    if (view === 'overview' || view === 'dashboard') {
+      navigate(`${prefix}/${slug}/dashboard`);
     } else {
-      navigate(`${prefix}/${currentWorkspace}/${view}`);
+      navigate(`${prefix}/${slug}/${view}`);
     }
   };
 
@@ -205,30 +252,30 @@ export default function RoleDashboardRoute() {
 
   // Clean Header Title Mapping
   const getSubViewTitle = (): string => {
-    if (activeSubView === 'overview') {
+    if (activeSubView === 'overview' || activeSubView === 'dashboard') {
       const portalNames: Record<RoleType, string> = {
-        'super-admin': 'Super Admin Governance Hub',
-        'school': 'School Admin Portal Overview',
-        'college': 'College Admin Portal Overview',
-        'mentor': 'Mentor & Counselor Desk Overview',
-        'training': 'Training Institute Portal Overview',
-        'recruiter': 'Recruiter Talent Desk Overview',
-        'company': 'Enterprise Company Portal Overview',
-        'parent': 'Parent & Family Intelligence Portal Overview'
+        'super-admin': 'Super Admin Dashboard',
+        'school': 'School Dashboard',
+        'college': 'College Dashboard',
+        'mentor': 'Mentor Dashboard',
+        'training': 'Training Institute Dashboard',
+        'recruiter': 'Recruiter Dashboard',
+        'company': 'Company Dashboard',
+        'parent': 'Parent Dashboard'
       };
       return portalNames[currentWorkspace] || 'Workspace Overview';
     }
 
     if (activeSubView === 'profile') {
       const profileTitles: Record<RoleType, string> = {
-        'super-admin': 'Super Admin Governance Profile & Security',
-        'school': 'School Admin Profile & Account Settings',
-        'college': 'College Admin Profile & Account Settings',
-        'mentor': 'Mentor Profile & Credentials Verification',
-        'training': 'Training Academy Profile & Credentials',
-        'recruiter': 'Recruiter Profile & Corporate Settings',
-        'company': 'Enterprise Company Profile & Verification',
-        'parent': 'Parent Profile & Family Governance Settings'
+        'super-admin': 'Super Admin Profile & Account',
+        'school': 'School Admin Profile & Account',
+        'college': 'College Admin Profile & Account',
+        'mentor': 'Mentor Profile & Account',
+        'training': 'Training Institute Profile & Account',
+        'recruiter': 'Recruiter Profile & Account',
+        'company': 'Company Profile & Account',
+        'parent': 'Parent Profile & Account'
       };
       return profileTitles[currentWorkspace] || 'User Profile & Settings';
     }
@@ -256,6 +303,27 @@ export default function RoleDashboardRoute() {
     }
 
     const titles: Record<string, string> = {
+      'child': 'Child Overview & Academic Profile',
+      'career-discovery': 'AI Career Discovery Engine',
+      'career-roadmap': 'Personalized Career Milestones Roadmap',
+      'progress': 'Student Learning & Performance Progress',
+      'sessions': 'Mentorship Sessions & Video Counseling',
+      'create-job': 'Create & Post Job Opportunity',
+      'shortlisted': 'Shortlisted Candidates',
+      'selected': 'Selected Candidates & Hires',
+      'parents': 'Parent Accounts Directory',
+      'training-institutes': 'Training Institutes Management',
+      'approvals': 'Partner & Institution Approvals',
+      'departments': 'Academic Departments & Faculties',
+      'batches': 'Training Batches & Cohorts',
+      'learners': 'Enrolled Learners & Trainees',
+      'trainers': 'Certified Trainers & Faculty',
+      'enrollments': 'Course Enrollments & Subscriptions',
+      'attendance': 'Batch Attendance & Class Presence',
+      'certificates': 'Issued Certificates Registry',
+      'classes': 'Academic Classes & Grade Roster',
+      'employees': 'Employees & Team Directory',
+      'recruitment': 'Recruitment Pipeline & Hiring Tracker',
       'access': 'Access Provisioning & Quota Management Hub',
       'rbac': 'Role-Based Access Control (RBAC) Matrix',
       'ai': 'AI Recommendation Engine Control',
@@ -269,7 +337,7 @@ export default function RoleDashboardRoute() {
       'performance': 'Performance Monitoring Dashboard',
       'placement': 'Placement & Internship Readiness Reports',
       'notifications': 'Portal Notifications Desk',
-      'settings': 'School Governance & Settings',
+      'settings': 'Workspace Governance & Settings',
       'programs': 'Academic Programs & Degree Tracks',
       'admissions': 'College Admissions & Cutoff Management',
       'applications': 'Student Applications & Enrollment Pipeline',
@@ -311,7 +379,7 @@ export default function RoleDashboardRoute() {
       'fees': 'Fee Management & Subscription Invoicing'
     };
 
-    return titles[activeSubView] || `${activeSubView.toUpperCase()} View`;
+    return titles[activeSubView] || `${activeSubView.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}`;
   };
 
   if (isCheckingAuth) {
@@ -338,10 +406,12 @@ export default function RoleDashboardRoute() {
         onRoleFilter={setActiveRoleFilter}
         totalEntities={entities.length}
         isDarkMode={isDarkMode}
+        isMobileOpen={isMobileMenuOpen}
+        onCloseMobile={() => setIsMobileMenuOpen(false)}
       />
 
       {/* Main Content Body */}
-      <div className="pl-72 flex-1 flex flex-col min-w-0">
+      <div className="md:pl-72 pl-0 flex-1 flex flex-col min-w-0 transition-all duration-300">
         {/* Top Header */}
         <Topbar
           currentWorkspace={currentWorkspace}
@@ -350,6 +420,7 @@ export default function RoleDashboardRoute() {
           onShowToast={showToast}
           isDarkMode={isDarkMode}
           onToggleTheme={handleToggleTheme}
+          onToggleMobileMenu={() => setIsMobileMenuOpen(prev => !prev)}
         />
 
         {/* Page Content View Area with Flicker-Free Keyed Smooth Transition */}

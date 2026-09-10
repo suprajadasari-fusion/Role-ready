@@ -17,7 +17,8 @@ import {
   FiGrid, 
   FiDollarSign,
   FiSliders,
-  FiBell
+  FiBell,
+  FiCalendar
 } from 'react-icons/fi';
 import { ActionModal } from '../ActionModal';
 import { StudentToolsViews } from '../StudentToolsViews';
@@ -124,6 +125,10 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
     ? 'bg-slate-900 border-slate-800 text-white shadow-xl'
     : 'bg-white border-slate-200 text-slate-900 shadow-xs';
 
+  const subCardClass = isDarkMode
+    ? 'bg-slate-800/80 border-slate-700/80 text-white'
+    : 'bg-blue-50/40 border-blue-100 text-slate-900';
+
   const textMuted = isDarkMode ? 'text-slate-400' : 'text-[#6B7280]';
   const textHeading = isDarkMode ? 'text-white' : 'text-[#12163A]';
   const borderDivider = isDarkMode ? 'border-slate-800' : 'border-slate-100';
@@ -196,8 +201,110 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
       );
     }
 
-    // 2. PROGRAMS
-    if (activeSubView === 'programs') {
+    // 2. STUDENTS MANAGEMENT
+    if (activeSubView === 'students') {
+      const enrolledStudents = [
+        { id: "COL-STU-01", name: "Aarav Sharma", dept: "Computer Science & Engineering", year: "Final Year (Sem 7)", gpa: "9.2 CGPA", placementStatus: "Placed (Microsoft)", ctc: "₹24.0 LPA" },
+        { id: "COL-STU-02", name: "Priya Nair", dept: "Electronics & Communication", year: "Final Year (Sem 7)", gpa: "8.9 CGPA", placementStatus: "Placed (Qualcomm)", ctc: "₹18.5 LPA" },
+        { id: "COL-STU-03", name: "Rohan Patel", dept: "Mechanical Engineering", year: "Third Year (Sem 5)", gpa: "8.4 CGPA", placementStatus: "Internship Active", ctc: "₹45,000 / mo" },
+        { id: "COL-STU-04", name: "Kavya Menon", dept: "Information Technology", year: "Final Year (Sem 7)", gpa: "9.1 CGPA", placementStatus: "Shortlisted (Google)", ctc: "Under Review" }
+      ];
+
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
+          <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b ${borderDivider}`}>
+            <div>
+              <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
+                <FiBookOpen className="w-5 h-5 text-[#3665EE]" /> Enrolled Student Management & Academic Records
+              </h2>
+              <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>
+                Filter by academic department, semester, and placement readiness status
+              </p>
+            </div>
+            <button
+              onClick={() => onShowToast("Exported enrolled student registry to CSV")}
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#3665EE] text-white hover:bg-[#2A54D5] cursor-pointer"
+            >
+              Export Registry
+            </button>
+          </div>
+
+          <div className="rounded-2xl border border-slate-700/60 overflow-hidden">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-[#DEE9FF]/40 text-[#12163A] uppercase text-[11px] font-bold border-b border-[#C6D9FF]">
+                <tr>
+                  <th className="p-3.5">Roll / ID</th>
+                  <th className="p-3.5">Student Name</th>
+                  <th className="p-3.5">Department</th>
+                  <th className="p-3.5">Year / Sem</th>
+                  <th className="p-3.5">CGPA</th>
+                  <th className="p-3.5">Placement Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-700/40 text-[13px]">
+                {enrolledStudents.map((s) => (
+                  <tr key={s.id} className="hover:bg-slate-800/20">
+                    <td className="p-3.5 font-mono text-blue-400 font-semibold">{s.id}</td>
+                    <td className={`p-3.5 font-semibold ${textHeading}`}>{s.name}</td>
+                    <td className={`p-3.5 ${textMuted}`}>{s.dept}</td>
+                    <td className={`p-3.5 ${textMuted}`}>{s.year}</td>
+                    <td className="p-3.5 font-bold text-emerald-400">{s.gpa}</td>
+                    <td className="p-3.5">
+                      <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full text-xs font-semibold">
+                        {s.placementStatus}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    // 2B. DEPARTMENTS MANAGEMENT
+    if (activeSubView === 'departments') {
+      const departments = [
+        { name: "Computer Science & Engineering", code: "CSE", head: "Dr. K. R. Raman", facultyCount: 42, studentsCount: 480, labs: 8 },
+        { name: "Electronics & Communication", code: "ECE", head: "Dr. S. Mukherjee", facultyCount: 34, studentsCount: 360, labs: 6 },
+        { name: "Information Technology", code: "IT", head: "Dr. V. Sundaram", facultyCount: 28, studentsCount: 240, labs: 5 },
+        { name: "Mechanical Engineering", code: "ME", head: "Dr. R. K. Nair", facultyCount: 30, studentsCount: 280, labs: 7 }
+      ];
+
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
+          <div className={`pb-4 border-b ${borderDivider}`}>
+            <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
+              <FiGrid className="w-5 h-5 text-[#3665EE]" /> Academic Department & Faculty Management
+            </h2>
+            <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>
+              Academic divisions, faculty heads, student strength, and research laboratories
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {departments.map((d, idx) => (
+              <div key={idx} className={`p-5 rounded-2xl border ${subCardClass} space-y-3`}>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold bg-[#3665EE] text-white px-2.5 py-0.5 rounded-md">{d.code}</span>
+                  <span className={`text-xs ${textMuted}`}>{d.facultyCount} Faculty Members</span>
+                </div>
+                <h4 className={`text-base font-semibold ${textHeading}`}>{d.name}</h4>
+                <p className={`text-xs ${textMuted}`}>Department Head: <strong className="text-slate-200">{d.head}</strong></p>
+                <div className="pt-2 border-t border-slate-700/40 flex justify-between text-xs">
+                  <span>Enrolled: <strong>{d.studentsCount} Students</strong></span>
+                  <span>Research Labs: <strong>{d.labs} Labs</strong></span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // 2C. PROGRAMS & COURSES
+    if (activeSubView === 'programs' || activeSubView === 'courses') {
       return (
         <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
           <div className={`flex items-center justify-between pb-4 border-b ${borderDivider}`}>
@@ -372,14 +479,14 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
       );
     }
 
-    // 6. PLACEMENT CELL
-    if (activeSubView === 'placement-cell' || activeSubView === 'drives') {
+    // 6. PLACEMENT CELL & CAMPUS DRIVES
+    if (activeSubView === 'placement-cell' || activeSubView === 'placements' || activeSubView === 'jobs' || activeSubView === 'drives') {
       return (
         <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
           <div className={`flex items-center justify-between pb-4 border-b ${borderDivider}`}>
             <div>
               <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
-                <FiBriefcase className="w-5 h-5 text-[#3665EE]" /> Campus Placement Cell & Recruitment Hub
+                <FiBriefcase className="w-5 h-5 text-[#3665EE]" /> Campus Placement Cell & Corporate Recruitment Hub
               </h2>
               <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>Manage corporate placement drives, CTC packages, & applicant rosters</p>
             </div>
@@ -464,13 +571,54 @@ export const CollegeDashboard: React.FC<CollegeDashboardProps> = ({
       );
     }
 
-    // 8. ANALYTICS
-    if (activeSubView === 'analytics') {
+    // 7B. EVENTS & WORKSHOPS
+    if (activeSubView === 'events') {
+      const events = [
+        { title: "Annual Tech Innovation Hackathon 2026", date: "September 24-25, 2026", type: "Hackathon", venue: "Auditorium & Innovation Hub", registered: "128 Teams" },
+        { title: "Industry AI Keynote: LLMs in Production", date: "October 02, 2026", type: "Guest Lecture", venue: "Virtual Webinar Room", registered: "450 Students" },
+        { title: "Autumn Career & Internship Fair", date: "October 15, 2026", type: "Career Fair", venue: "Campus Convention Center", registered: "45 Corporate Partners" }
+      ];
+
       return (
         <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
           <div className={`pb-4 border-b ${borderDivider}`}>
             <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
-              <FiTrendingUp className="w-5 h-5 text-[#3665EE]" /> Institutional Performance & Placement Analytics
+              <FiCalendar className="w-5 h-5 text-[#3665EE]" /> Campus Events, Hackathons & Guidance Workshops
+            </h2>
+            <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>
+              Technical hackathons, guest lectures, industry symposiums, and career fairs
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {events.map((ev, idx) => (
+              <div key={idx} className={`p-5 rounded-2xl border ${subCardClass} space-y-3 flex flex-col justify-between`}>
+                <div className="space-y-2">
+                  <span className="text-[11px] font-semibold uppercase text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full">{ev.type}</span>
+                  <h4 className={`text-base font-semibold ${textHeading}`}>{ev.title}</h4>
+                  <p className={`text-xs ${textMuted}`}>Date: {ev.date}</p>
+                  <p className={`text-xs ${textMuted}`}>Venue: {ev.venue}</p>
+                </div>
+                <div className="pt-2 border-t border-slate-700/40 flex items-center justify-between">
+                  <span className="text-xs font-semibold text-emerald-400">{ev.registered}</span>
+                  <button onClick={() => onShowToast(`Registered for ${ev.title}`)} className="text-xs text-blue-400 font-semibold hover:underline cursor-pointer">
+                    Manage Event
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // 8. ANALYTICS & REPORTS
+    if (activeSubView === 'analytics' || activeSubView === 'reports') {
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
+          <div className={`pb-4 border-b ${borderDivider}`}>
+            <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
+              <FiTrendingUp className="w-5 h-5 text-[#3665EE]" /> Institutional Performance & Placement Reports
             </h2>
             <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>Placement trends and corporate recruitment distributions</p>
           </div>

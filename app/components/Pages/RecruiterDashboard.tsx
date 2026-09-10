@@ -325,6 +325,71 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
       );
     }
 
+    // 3B. CREATE JOB POSTING
+    if (activeSubView === 'create-job') {
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
+          <div className={`pb-4 border-b ${borderDivider}`}>
+            <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
+              <FiPlus className="w-5 h-5 text-[#3665EE]" /> Create & Publish Job Requisition
+            </h2>
+            <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>
+              Broadcast new job opening to student talent pools across partner universities
+            </p>
+          </div>
+
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const form = e.currentTarget;
+            const title = (form.elements.namedItem('title') as HTMLInputElement)?.value || "Software Engineer";
+            const ctc = (form.elements.namedItem('ctc') as HTMLInputElement)?.value || "₹18.0 LPA";
+            const location = (form.elements.namedItem('location') as HTMLInputElement)?.value || "Bengaluru / Remote";
+            const newJob: RecruiterJob = {
+              id: `JOB-${Math.floor(100 + Math.random() * 900)}`,
+              title,
+              ctc,
+              location,
+              applicants: 0,
+              status: "Active Requisition"
+            };
+            const updated = [newJob, ...jobsList];
+            updateMutation.mutate({ jobs: updated });
+            onShowToast(`Published new job requisition: ${title} (${ctc})!`);
+          }} className="space-y-4 max-w-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Job Title</label>
+                <input name="title" required placeholder="e.g. Cloud Infrastructure Engineer" className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/60 text-white text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Annual CTC Range</label>
+                <input name="ctc" required placeholder="e.g. ₹18.0 - 24.0 LPA" className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/60 text-white text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Job Location</label>
+                <input name="location" required placeholder="e.g. Bengaluru / Pune / Remote" className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/60 text-white text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Experience Level</label>
+                <input name="experience" placeholder="e.g. Entry Level (0-2 Years)" className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/60 text-white text-sm" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">Skills Required (Comma-separated)</label>
+              <input name="skills" placeholder="e.g. Python, Docker, Kubernetes, AWS, PostgreSQL" className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/60 text-white text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">Job Description & Responsibilities</label>
+              <textarea name="description" rows={4} placeholder="Describe core responsibilities, key qualifications, and compensation perks..." className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/60 text-white text-sm" />
+            </div>
+            <button type="submit" className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-semibold text-sm px-6 py-2.5 rounded-xl transition cursor-pointer shadow-md">
+              Publish Job Requisition
+            </button>
+          </form>
+        </div>
+      );
+    }
+
     // 4. CAMPUS HIRING
     if (activeSubView === 'campus-hiring') {
       return (
@@ -371,33 +436,150 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
       );
     }
 
-    // 5. STUDENT SEARCH
-    if (activeSubView === 'student-search') {
+    // 5. STUDENT TALENT POOL & CANDIDATES
+    if (activeSubView === 'student-search' || activeSubView === 'candidates') {
+      const candidates = [
+        { name: "Aarav Sharma", college: "IIT Delhi", branch: "Computer Science", gpa: "9.2 CGPA", skills: ["Python", "PyTorch", "System Design"], atsMatch: 95 },
+        { name: "Priya Nair", college: "BITS Pilani", branch: "Electronics & Communication", gpa: "8.9 CGPA", skills: ["C++", "Embedded Linux", "Verilog"], atsMatch: 91 },
+        { name: "Kavya Menon", college: "NIT Surathkal", branch: "Information Technology", gpa: "9.0 CGPA", skills: ["React", "TypeScript", "Node.js", "Docker"], atsMatch: 88 }
+      ];
+
       return (
         <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
-          <div className={`flex items-center justify-between pb-4 border-b ${borderDivider}`}>
-            <div>
-              <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
-                <FiSearch className="w-5 h-5 text-[#3665EE]" /> Global Student Talent Search Engine
-              </h2>
-              <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>Search verified student talent by skills, ATS fit, and qualifications</p>
-            </div>
+          <div className={`pb-4 border-b ${borderDivider}`}>
+            <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
+              <FiSearch className="w-5 h-5 text-[#3665EE]" /> Candidate Talent Pool & Resume Search
+            </h2>
+            <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>Search verified university candidates by skills, GPA, & ATS score</p>
           </div>
 
-          <div className="p-6 rounded-[24px] bg-[#DEE9FF] border border-[#C6D9FF] space-y-4">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input 
-                type="text" 
-                placeholder="Search candidates by skill e.g. Python, Cloud, Full-Stack..." 
-                className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-[#12163A] text-[14px] focus:outline-none focus:ring-2 focus:ring-[#3665EE]"
-              />
-              <button 
-                onClick={() => onShowToast("Executed search query across live candidate database!")}
-                className="bg-[#3665EE] hover:bg-[#2A54D5] text-white text-[14px] font-semibold px-6 py-2.5 rounded-xl transition cursor-pointer shadow-md"
-              >
-                Search Talent Database
-              </button>
-            </div>
+          <div className="p-4 rounded-xl bg-[#DEE9FF]/40 border border-[#C6D9FF] flex flex-col sm:flex-row gap-3">
+            <input 
+              type="text" 
+              placeholder="Search by skill e.g. Python, Docker, React, AWS..." 
+              className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-[#12163A] text-sm focus:outline-none"
+            />
+            <button 
+              onClick={() => onShowToast("Executed search across verified student candidate pool!")}
+              className="bg-[#3665EE] hover:bg-[#2A54D5] text-white text-sm font-semibold px-6 py-2.5 rounded-xl cursor-pointer"
+            >
+              Search Candidates
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {candidates.map((c, idx) => (
+              <div key={idx} className={`p-4 rounded-xl border ${subCardClass} space-y-3 flex flex-col justify-between`}>
+                <div>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h4 className={`font-semibold text-[15px] ${textHeading}`}>{c.name}</h4>
+                      <p className={`text-xs ${textMuted}`}>{c.college} • {c.branch}</p>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400">
+                      {c.atsMatch}% Fit
+                    </span>
+                  </div>
+                  <p className="text-xs font-semibold text-blue-400 mt-2">{c.gpa}</p>
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {c.skills.map((s, si) => (
+                      <span key={si} className="text-[10px] bg-slate-700/40 text-slate-300 px-2 py-0.5 rounded-md">{s}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-slate-700/40 flex items-center justify-between">
+                  <button onClick={() => onShowToast(`Downloaded resume for ${c.name}`)} className="text-xs text-blue-400 font-semibold hover:underline">
+                    Download Resume
+                  </button>
+                  <button onClick={() => onShowToast(`Shortlisted ${c.name}!`)} className="bg-[#3665EE] hover:bg-[#2A54D5] text-white text-xs font-semibold px-3 py-1.5 rounded-lg cursor-pointer">
+                    Shortlist
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // 5B. APPLICATIONS PIPELINE
+    if (activeSubView === 'applications') {
+      const apps = [
+        { id: 'APP-101', candidate: "Aarav Sharma", role: "AI & MLOps Scientist", college: "IIT Delhi", appliedDate: "2 days ago", matchScore: 95, status: "Under Review" },
+        { id: 'APP-102', candidate: "Priya Nair", role: "Software Engineer", college: "BITS Pilani", appliedDate: "3 days ago", matchScore: 91, status: "Shortlisted" },
+        { id: 'APP-103', candidate: "Rohan Patel", role: "Cloud Solutions Architect", college: "NIT Trichy", appliedDate: "4 days ago", matchScore: 84, status: "Applied" }
+      ];
+
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
+          <div className={`pb-4 border-b ${borderDivider}`}>
+            <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
+              <FiFileText className="w-5 h-5 text-[#3665EE]" /> Candidate Applications Pipeline
+            </h2>
+            <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>
+              Review incoming applications, evaluate ATS match scores, and progress candidate stages
+            </p>
+          </div>
+
+          <div className="divide-y divide-slate-800 border border-slate-700 rounded-2xl overflow-hidden text-sm">
+            {apps.map((a) => (
+              <div key={a.id} className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-white">{a.candidate}</span>
+                    <span className="text-xs text-slate-400">({a.college})</span>
+                    <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400">{a.role}</span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1">Applied: {a.appliedDate} • ATS Alignment: <strong className="text-emerald-400">{a.matchScore}%</strong></p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300">{a.status}</span>
+                  <button onClick={() => onShowToast(`Moved ${a.candidate} to Shortlist!`)} className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 rounded-xl cursor-pointer">
+                    Shortlist
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // 5C. SHORTLISTED CANDIDATES
+    if (activeSubView === 'shortlisted') {
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
+          <div className={`pb-4 border-b ${borderDivider}`}>
+            <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
+              <FiUserCheck className="w-5 h-5 text-emerald-400" /> Shortlisted Candidates Pool
+            </h2>
+            <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>
+              Candidates approved for technical evaluation and interviews
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {[
+              { name: "Priya Nair", role: "Software Engineer", college: "BITS Pilani", ctc: "₹20.0 LPA", match: 91 },
+              { name: "Aarav Sharma", role: "AI & MLOps Scientist", college: "IIT Delhi", ctc: "₹28.0 LPA", match: 95 }
+            ].map((sc, idx) => (
+              <div key={idx} className={`p-4 rounded-xl border ${subCardClass} flex items-center justify-between`}>
+                <div>
+                  <h4 className={`font-semibold text-sm ${textHeading}`}>{sc.name}</h4>
+                  <p className={`text-xs ${textMuted}`}>{sc.role} • {sc.college} • Target CTC: {sc.ctc}</p>
+                </div>
+                <button 
+                  onClick={() => openTriggerModal("Schedule Candidate Interview", "Set up interview round", [
+                    { label: "Candidate Name", name: "candidate", type: "text", placeholder: sc.name },
+                    { label: "Job Role", name: "role", type: "text", placeholder: sc.role },
+                    { label: "Date & Time", name: "time", type: "text", placeholder: "Tomorrow, 2:00 PM" }
+                  ])}
+                  className="bg-[#3665EE] hover:bg-[#2A54D5] text-white text-xs font-semibold px-3 py-1.5 rounded-lg cursor-pointer"
+                >
+                  Schedule Interview
+                </button>
+              </div>
+            ))}
           </div>
         </div>
       );
@@ -476,8 +658,8 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
       );
     }
 
-    // 8. OFFER LETTERS
-    if (activeSubView === 'offers') {
+    // 8. OFFER LETTERS & SELECTED CANDIDATES
+    if (activeSubView === 'offers' || activeSubView === 'selected') {
       return (
         <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
           <div className={`flex items-center justify-between pb-4 border-b ${borderDivider}`}>
@@ -548,6 +730,41 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({
               <p className="text-[14px] font-semibold text-[#12163A] mt-2">Campus Placement Drives</p>
               <span className="text-[12px] text-[#3665EE] font-medium block mt-0.5">Partner Institutions</span>
             </div>
+          </div>
+        </div>
+      );
+    }
+
+    // 9B. MESSAGES & COMMUNICATIONS
+    if (activeSubView === 'messages') {
+      return (
+        <div className={`rounded-[24px] border p-6 space-y-6 text-[14px] font-sans ${cardClass}`}>
+          <div className={`pb-4 border-b ${borderDivider}`}>
+            <h2 className={`text-[20px] md:text-[22px] font-semibold leading-[1.3] flex items-center gap-2 ${textHeading}`}>
+              <FiFileText className="w-5 h-5 text-[#3665EE]" /> Candidate & University Placement Cell Messages
+            </h2>
+            <p className={`text-[13px] md:text-[14px] ${textMuted} font-normal leading-normal mt-1`}>
+              Direct communication with job applicants and college placement officers
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {[
+              { sender: "Aarav Sharma (Candidate - AI Engineer)", time: "10:15 AM", message: "Thank you for the interview confirmation! I have accepted the calendar invite.", unread: true },
+              { sender: "Placement Cell (IIT Delhi)", time: "Yesterday", message: "The registered student list for your upcoming campus drive has been finalized.", unread: false }
+            ].map((m, idx) => (
+              <div key={idx} className={`p-4 rounded-xl border flex items-center justify-between cursor-pointer transition ${subCardClass}`} onClick={() => onShowToast(`Opened message with ${m.sender}`)}>
+                <div>
+                  <div className="flex items-center gap-2">
+                    {m.unread && <span className="w-2 h-2 rounded-full bg-blue-500" />}
+                    <span className={`font-semibold text-sm ${textHeading}`}>{m.sender}</span>
+                    <span className={`text-[11px] ${textMuted}`}>{m.time}</span>
+                  </div>
+                  <p className={`text-xs mt-1 ${textMuted}`}>{m.message}</p>
+                </div>
+                <button className="text-xs text-blue-400 font-semibold hover:underline">Reply</button>
+              </div>
+            ))}
           </div>
         </div>
       );

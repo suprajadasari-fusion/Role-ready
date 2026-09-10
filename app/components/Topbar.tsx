@@ -3,12 +3,10 @@ import { RoleType } from '~/lib/types';
 import { 
   FiSearch, 
   FiBell, 
-  FiUserCheck, 
   FiSun, 
   FiMoon,
-  FiUser
+  FiMenu
 } from 'react-icons/fi';
-import { useCurrentUser } from '~/hooks/useUser';
 
 interface TopbarProps {
   currentWorkspace: RoleType;
@@ -17,6 +15,7 @@ interface TopbarProps {
   onShowToast: (msg: string) => void;
   isDarkMode: boolean;
   onToggleTheme: () => void;
+  onToggleMobileMenu?: () => void;
 }
 
 export const Topbar: React.FC<TopbarProps> = ({
@@ -25,20 +24,9 @@ export const Topbar: React.FC<TopbarProps> = ({
   onSearchChange,
   onShowToast,
   isDarkMode,
-  onToggleTheme
+  onToggleTheme,
+  onToggleMobileMenu
 }) => {
-  const { data: currentUser } = useCurrentUser();
-
-  const userDisplayName = currentUser?.profile?.firstName && currentUser?.profile?.lastName
-    ? `${currentUser.profile.firstName} ${currentUser.profile.lastName}`
-    : (currentUser?.profile?.firstName || currentUser?.email || 'System User');
-
-  const userRoleDisplay = currentUser?.role
-    ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1).toLowerCase()
-    : (currentWorkspace === 'super-admin' ? 'Super Admin' : currentWorkspace.charAt(0).toUpperCase() + currentWorkspace.slice(1));
-
-  const userAvatar = currentUser?.avatarUrl || currentUser?.profile?.avatarUrl;
-
   const roleNameMap: Record<RoleType, string> = {
     'super-admin': 'Super Admin (Governance)',
     'school': 'School Admin Portal',
@@ -51,14 +39,28 @@ export const Topbar: React.FC<TopbarProps> = ({
   };
 
   return (
-    <header className={`h-16 border-b px-6 flex items-center justify-between sticky top-0 z-30 font-sans transition-colors duration-200 ${
+    <header className={`h-16 border-b px-4 md:px-6 flex items-center justify-between sticky top-0 z-30 font-sans transition-colors duration-200 ${
       isDarkMode 
         ? 'bg-[#12163A] border-slate-800 text-white backdrop-blur-md' 
         : 'bg-white/90 border-slate-200 text-[#12163A] backdrop-blur-md shadow-2xs'
     }`}>
-      {/* Search Input */}
-      <div className="flex items-center gap-3 w-96">
-        <div className="relative w-full">
+      {/* Left: Mobile Toggle & Search Input */}
+      <div className="flex items-center gap-3 min-w-0">
+        {onToggleMobileMenu && (
+          <button
+            onClick={onToggleMobileMenu}
+            className={`md:hidden p-2 rounded-xl border transition-colors cursor-pointer shrink-0 ${
+              isDarkMode
+                ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white'
+                : 'bg-[#DEE9FF] border-[#C6D9FF] text-[#12163A] hover:bg-[#CBDDFF]'
+            }`}
+            aria-label="Toggle navigation drawer"
+          >
+            <FiMenu className="w-5 h-5 text-[#3665EE]" />
+          </button>
+        )}
+
+        <div className="relative w-52 sm:w-72 md:w-96">
           <FiSearch className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${
             isDarkMode ? 'text-slate-400' : 'text-[#3665EE]'
           }`} />
@@ -76,14 +78,14 @@ export const Topbar: React.FC<TopbarProps> = ({
         </div>
       </div>
 
-      {/* Right Controls: Theme Switcher, Notifications, User Profile */}
-      <div className="flex items-center gap-3">
+      {/* Right Controls: Theme Switcher & Notifications */}
+      <div className="flex items-center gap-2 md:gap-3 shrink-0">
         {/* Dark / Light Theme Toggle Button */}
         <button
           onClick={onToggleTheme}
           aria-label={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-[13px] font-semibold transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-[13px] font-semibold transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${
             isDarkMode 
               ? 'bg-slate-800 border-amber-500/40 text-amber-400 hover:bg-slate-700' 
               : 'bg-[#DEE9FF] border-[#C6D9FF] text-[#12163A] hover:bg-[#CBDDFF]'
@@ -92,19 +94,19 @@ export const Topbar: React.FC<TopbarProps> = ({
           {isDarkMode ? (
             <>
               <FiSun className="w-4 h-4 text-amber-400" />
-              <span>Light Mode</span>
+              <span className="hidden sm:inline">Light Mode</span>
             </>
           ) : (
             <>
               <FiMoon className="w-4 h-4 text-[#3665EE]" />
-              <span>Dark Mode</span>
+              <span className="hidden sm:inline">Dark Mode</span>
             </>
           )}
         </button>
 
         {/* Notifications Icon */}
         <button 
-          onClick={() => onShowToast("Notifications: 2 pending seat approval requests.")}
+          onClick={() => onShowToast("Notifications: 2 pending activity updates.")}
           aria-label="View notifications"
           className={`relative p-2 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${
             isDarkMode 
@@ -116,28 +118,6 @@ export const Topbar: React.FC<TopbarProps> = ({
           <span className="absolute top-1 right-1 w-2 h-2 bg-[#3665EE] rounded-full animate-ping" />
           <span className="absolute top-1 right-1 w-2 h-2 bg-[#3665EE] rounded-full" />
         </button>
-
-        <div className={`h-6 w-px ${isDarkMode ? 'bg-slate-800' : 'bg-slate-200'}`} />
-
-        {/* Live Authenticated User Profile Badge */}
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-[#12163A] text-white font-bold flex items-center justify-center text-xs shadow-md border border-[#3665EE]/40 overflow-hidden">
-            {userAvatar ? (
-              <img src={userAvatar} alt={userDisplayName} className="w-full h-full object-cover" />
-            ) : (
-              <FiUser className="w-4 h-4 text-[#3665EE]" />
-            )}
-          </div>
-          <div className="hidden sm:block text-left">
-            <div className={`text-[13px] md:text-[14px] font-semibold leading-tight truncate max-w-[150px] ${isDarkMode ? 'text-white' : 'text-[#12163A]'}`} title={userDisplayName}>
-              {userDisplayName}
-            </div>
-            <div className="text-[12px] font-medium text-[#3665EE]">
-              {userRoleDisplay}
-            </div>
-          </div>
-        </div>
-
       </div>
     </header>
   );

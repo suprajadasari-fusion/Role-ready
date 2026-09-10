@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchUserProfile, updateUserProfile, uploadProfilePhoto } from '../../lib/api';
+import { fetchUserProfile, updateUserProfile, uploadProfilePhoto, normalizeUserProfile, getCachedUser } from '../../lib/api';
 import { UserProfile } from '../../lib/types';
 import { ProfileHeader } from './ProfileHeader';
 import { ProfileDetails } from './ProfileDetails';
 import { ProfileForm } from './ProfileForm';
-import { FiRefreshCw, FiAlertCircle } from 'react-icons/fi';
+import { FiAlertCircle } from 'react-icons/fi';
 
 interface UserProfileViewProps {
   onShowToast: (msg: string) => void;
@@ -18,13 +18,21 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
 }) => {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState<UserProfile | null>(null);
+
+  // Synchronous initial fallback from cached user session so UI is never stuck on empty skeletons
+  const cached = typeof window !== 'undefined' ? getCachedUser() : null;
+  const initialProfile: UserProfile | null = cached ? normalizeUserProfile(cached) : null;
+
+  const [formData, setFormData] = useState<UserProfile | null>(initialProfile);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // 1. Fetch Logged-in User Profile via TanStack Query
   const { data: profile, isLoading, isError, error } = useQuery({
     queryKey: ['userProfile'],
-    queryFn: fetchUserProfile
+    queryFn: fetchUserProfile,
+    initialData: initialProfile || undefined,
+    staleTime: 1000 * 60 * 2, // 2 minutes
+    retry: 1
   });
 
   // Sync state when profile is fetched or updated
@@ -43,7 +51,7 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
       setIsEditing(false);
       onShowToast("Profile information updated successfully!");
     },
-    onError: (err: any) => {
+    onError: () => {
       onShowToast("Unable to update profile. Please try again.");
     }
   });
@@ -171,13 +179,33 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
   const handleCancel = () => {
     if (profile) {
       setFormData(profile);
+    } else if (initialProfile) {
+      setFormData(initialProfile);
     }
     setErrors({});
     setIsEditing(false);
   };
 
-  // LOADING STATE SKELETON
-  if (isLoading || !formData) {
+  // ERROR STATE: Only if we truly have no profile data to display
+  if (isError && !formData && !initialProfile) {
+    return (
+      <div className="p-8 text-center space-y-4 max-w-md mx-auto bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-3xl font-sans">
+        <FiAlertCircle className="w-10 h-10 text-rose-500 mx-auto" />
+        <h3 className="font-extrabold text-base text-rose-600 dark:text-rose-400">Failed to Load Profile</h3>
+        <p className="text-xs text-rose-500">{(error as any)?.message || "Server connection error"}</p>
+        <button 
+          type="button"
+          onClick={() => queryClient.invalidateQueries({ queryKey: ['userProfile'] })}
+          className="bg-rose-600 text-white font-bold text-xs px-4 py-2 rounded-xl hover:bg-rose-500 transition cursor-pointer"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  // LOADING SKELETON: Only when actively loading and we don't even have cached profile data
+  if (isLoading && !formData && !initialProfile) {
     return (
       <div className="space-y-6 font-sans animate-pulse max-w-5xl mx-auto">
         <div className="h-48 rounded-3xl bg-slate-200 dark:bg-slate-800" />
@@ -189,28 +217,14 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
     );
   }
 
-  // ERROR STATE
-  if (isError) {
-    return (
-      <div className="p-8 text-center space-y-4 max-w-md mx-auto bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-3xl font-sans">
-        <FiAlertCircle className="w-10 h-10 text-rose-500 mx-auto" />
-        <h3 className="font-extrabold text-base text-rose-600 dark:text-rose-400">Failed to Load Profile</h3>
-        <p className="text-xs text-rose-500">{(error as any)?.message || "Server connection error"}</p>
-        <button 
-          onClick={() => queryClient.invalidateQueries({ queryKey: ['userProfile'] })}
-          className="bg-rose-600 text-white font-bold text-xs px-4 py-2 rounded-xl hover:bg-rose-500 transition cursor-pointer"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
+  // Active profile model guaranteed non-null
+  const activeProfile: UserProfile = formData || profile || initialProfile || normalizeUserProfile(null);
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto font-sans">
       {/* 1. Profile Header with Avatar & Actions */}
       <ProfileHeader
-        profile={formData}
+        profile={activeProfile}
         isEditing={isEditing}
         isSaving={updateMutation.isPending}
         onEditClick={() => setIsEditing(true)}
@@ -222,10 +236,10 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
 
       {/* 2. Main Content Body: Read-only Mode OR Editable Form Mode */}
       {!isEditing ? (
-        <ProfileDetails profile={formData} isDarkMode={isDarkMode} />
+        <ProfileDetails profile={activeProfile} isDarkMode={isDarkMode} />
       ) : (
         <ProfileForm 
-          formData={formData}
+          formData={activeProfile}
           errors={errors}
           onChange={handleFieldChange}
           onAddSkill={handleAddSkill}
