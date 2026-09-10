@@ -601,14 +601,6 @@ export async function saveCounselingNote(studentId: string, notes: string): Prom
 export * from '../services/parent';
 
 /**
- * Resolves the destination route following backend-provided route or user role:
- * - Prefers backend route if it's a valid dashboard route (e.g. /portal/student, /portal/parent, /portal/mentor, etc.)
- * - Maps role according to requirements:
- *   STUDENT -> /portal/student
- *   PARENT -> /portal/parent
- *   MENTOR -> /portal/mentor
- *   RECRUITER -> /portal/recruiter
-/**
  * Resolves the authorized role dashboard path based on authenticated user role:
  *   Parent             -> /parent/dashboard
  *   Mentor             -> /mentor/dashboard
@@ -619,48 +611,84 @@ export * from '../services/parent';
  *   School             -> /school/dashboard
  *   Company            -> /company/dashboard
  */
-export function resolveDashboardRoute(
-  backendRoute: any, 
-  userRole?: string
-): string {
-  let roleCandidate = userRole;
-  if (!roleCandidate && backendRoute && typeof backendRoute === 'object') {
-    roleCandidate = backendRoute.role;
-  }
+export function getDashboardRouteForRole(rawRole: string | undefined | null): string {
+  if (!rawRole) return '/parent/dashboard';
+  const normalized = rawRole.toLowerCase().trim().replace(/[-_ ]/g, '');
 
-  const normalized = (roleCandidate || '').toLowerCase().trim().replace(/[-_ ]/g, '');
   switch (normalized) {
     case 'parent':
     case 'student':
+    case 'learner':
+    case 'family':
       return '/parent/dashboard';
+
     case 'mentor':
     case 'counselor':
       return '/mentor/dashboard';
+
     case 'recruiter':
     case 'talent':
     case 'hr':
       return '/recruiter/dashboard';
-    case 'companyadmin':
-    case 'company':
-    case 'enterprise':
-      return '/company/dashboard';
+
+    case 'superadmin':
+    case 'super_admin':
+    case 'admin':
+    case 'governance':
+      return '/super-admin/dashboard';
+
+    case 'college':
+    case 'collegeadmin':
+    case 'university':
+      return '/college/dashboard';
+
+    case 'training':
+    case 'traininginstitute':
+    case 'training_institute':
+    case 'institute':
+    case 'academy':
+      return '/training-institute/dashboard';
+
     case 'school':
     case 'schooladmin':
       return '/school/dashboard';
-    case 'college':
-    case 'collegeadmin':
-      return '/college/dashboard';
-    case 'training':
-    case 'traininginstitute':
-      return '/training-institute/dashboard';
-    case 'superadmin':
-    case 'admin':
-      return '/super-admin/dashboard';
+
+    case 'company':
+    case 'companyadmin':
+    case 'company_admin':
+    case 'enterprise':
+    case 'employer':
+      return '/company/dashboard';
+
     default:
-      if (typeof backendRoute === 'string' && backendRoute.startsWith('/') && !backendRoute.startsWith('/auth/')) {
-        return backendRoute;
-      }
       return '/parent/dashboard';
   }
+}
+
+export function resolveDashboardRoute(
+  backendRoute: any, 
+  userRole?: string
+): string {
+  if (userRole) {
+    return getDashboardRouteForRole(userRole);
+  }
+
+  if (backendRoute && typeof backendRoute === 'object' && backendRoute.role) {
+    return getDashboardRouteForRole(backendRoute.role);
+  }
+
+  if (typeof backendRoute === 'string') {
+    const lower = backendRoute.toLowerCase();
+    if (lower.includes('parent')) return '/parent/dashboard';
+    if (lower.includes('mentor')) return '/mentor/dashboard';
+    if (lower.includes('recruiter')) return '/recruiter/dashboard';
+    if (lower.includes('super-admin') || lower.includes('superadmin') || lower.includes('admin')) return '/super-admin/dashboard';
+    if (lower.includes('college')) return '/college/dashboard';
+    if (lower.includes('training')) return '/training-institute/dashboard';
+    if (lower.includes('school')) return '/school/dashboard';
+    if (lower.includes('company')) return '/company/dashboard';
+  }
+
+  return '/parent/dashboard';
 }
 

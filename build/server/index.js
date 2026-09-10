@@ -64,7 +64,7 @@ const entryServer = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineP
   default: handleRequest,
   streamTimeout
 }, Symbol.toStringTag, { value: "Module" }));
-const stylesheet = "/assets/app-CIYb8nqa.css";
+const stylesheet = "/assets/app-CSgsIrap.css";
 function links() {
   return [{
     rel: "stylesheet",
@@ -214,10 +214,12 @@ function clearTokens() {
   if (typeof window !== "undefined") {
     localStorage.removeItem("rr_access_token");
     localStorage.removeItem("rr_refresh_token");
+    localStorage.removeItem("rr_user");
+    localStorage.removeItem("rr_active_role");
     sessionStorage.removeItem("rr_access_token");
     sessionStorage.removeItem("rr_refresh_token");
-    localStorage.removeItem("rr_user");
     sessionStorage.removeItem("rr_user");
+    sessionStorage.removeItem("rr_active_role");
   }
 }
 async function refreshAccessToken() {
@@ -1158,6 +1160,12 @@ async function fetchChildFees(studentId) {
   };
 }
 const API_BASE_URL = typeof window !== "undefined" ? ((_b = window.__ENV__) == null ? void 0 : _b.VITE_API_BASE_URL) || "https://role-ready-backendcode.onrender.com" : "https://role-ready-backendcode.onrender.com";
+function setCachedUser(user) {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("rr_user", JSON.stringify(user));
+    sessionStorage.setItem("rr_user", JSON.stringify(user));
+  }
+}
 function getCachedUser() {
   if (typeof window !== "undefined") {
     const raw = localStorage.getItem("rr_user") || sessionStorage.getItem("rr_user");
@@ -1426,15 +1434,14 @@ async function saveAIWeights(weights) {
     body: JSON.stringify(weights)
   });
 }
-function resolveDashboardRoute(backendRoute, userRole) {
-  let roleCandidate = userRole;
-  if (!roleCandidate && backendRoute && typeof backendRoute === "object") {
-    roleCandidate = backendRoute.role;
-  }
-  const normalized = (roleCandidate || "").toLowerCase().trim().replace(/[-_ ]/g, "");
+function getDashboardRouteForRole(rawRole) {
+  if (!rawRole) return "/parent/dashboard";
+  const normalized = rawRole.toLowerCase().trim().replace(/[-_ ]/g, "");
   switch (normalized) {
     case "parent":
     case "student":
+    case "learner":
+    case "family":
       return "/parent/dashboard";
     case "mentor":
     case "counselor":
@@ -1443,31 +1450,48 @@ function resolveDashboardRoute(backendRoute, userRole) {
     case "talent":
     case "hr":
       return "/recruiter/dashboard";
-    case "companyadmin":
-    case "company":
-    case "enterprise":
-      return "/company/dashboard";
-    case "school":
-    case "schooladmin":
-      return "/school/dashboard";
+    case "superadmin":
+    case "super_admin":
+    case "admin":
+    case "governance":
+      return "/super-admin/dashboard";
     case "college":
     case "collegeadmin":
+    case "university":
       return "/college/dashboard";
     case "training":
     case "traininginstitute":
+    case "training_institute":
+    case "institute":
+    case "academy":
       return "/training-institute/dashboard";
-    case "superadmin":
-    case "admin":
-      return "/super-admin/dashboard";
+    case "school":
+    case "schooladmin":
+      return "/school/dashboard";
+    case "company":
+    case "companyadmin":
+    case "company_admin":
+    case "enterprise":
+    case "employer":
+      return "/company/dashboard";
     default:
-      if (typeof backendRoute === "string" && backendRoute.startsWith("/") && !backendRoute.startsWith("/auth/")) {
-        return backendRoute;
-      }
       return "/parent/dashboard";
   }
 }
+function resolveDashboardRoute(backendRoute, userRole) {
+  if (userRole) {
+    return getDashboardRouteForRole(userRole);
+  }
+  return "/parent/dashboard";
+}
 function formatApiError$2(err) {
   var _a2, _b2, _c, _d, _e;
+  const rawMsg = ((_a2 = err == null ? void 0 : err.data) == null ? void 0 : _a2.message) || (err == null ? void 0 : err.message);
+  if (typeof rawMsg === "string") {
+    if (/invalid email|password|credential|not found/i.test(rawMsg)) {
+      return "Invalid email address or password. Please check your credentials.";
+    }
+  }
   if ((err == null ? void 0 : err.status) === 401) {
     return "Invalid email or password. Please check your credentials.";
   }
@@ -1478,7 +1502,7 @@ function formatApiError$2(err) {
     return "Access denied. Your account is not authorized.";
   }
   if ((err == null ? void 0 : err.status) === 400) {
-    const raw = (_a2 = err == null ? void 0 : err.data) == null ? void 0 : _a2.message;
+    const raw = (_b2 = err == null ? void 0 : err.data) == null ? void 0 : _b2.message;
     if (raw && typeof raw === "string" && !raw.includes("/api/") && !raw.includes("http") && !raw.includes("endpoint")) {
       return raw;
     }
@@ -1487,10 +1511,9 @@ function formatApiError$2(err) {
   if ((err == null ? void 0 : err.status) >= 500) {
     return "The server is temporarily unavailable. Please try again shortly.";
   }
-  if (((_b2 = err == null ? void 0 : err.message) == null ? void 0 : _b2.includes("Failed to fetch")) || ((_c = err == null ? void 0 : err.message) == null ? void 0 : _c.includes("NetworkError")) || ((_d = err == null ? void 0 : err.message) == null ? void 0 : _d.includes("network"))) {
+  if (((_c = err == null ? void 0 : err.message) == null ? void 0 : _c.includes("Failed to fetch")) || ((_d = err == null ? void 0 : err.message) == null ? void 0 : _d.includes("NetworkError")) || ((_e = err == null ? void 0 : err.message) == null ? void 0 : _e.includes("network"))) {
     return "Network error: Unable to reach authentication server. Please check your connection.";
   }
-  const rawMsg = ((_e = err == null ? void 0 : err.data) == null ? void 0 : _e.message) || (err == null ? void 0 : err.message);
   if (rawMsg && typeof rawMsg === "string" && !rawMsg.includes("/api/") && !rawMsg.includes("http") && !rawMsg.includes("POST") && !rawMsg.includes("GET")) {
     return rawMsg;
   }
@@ -1597,30 +1620,55 @@ const login = UNSAFE_withComponentProps(function LoginRoute() {
       return await authService.login(credentials);
     },
     onSuccess: async (res) => {
-      var _a2, _b2, _c, _d, _e, _f, _g, _h, _i;
+      var _a2, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
       if (!res.success) {
-        const isPreset = presetAccounts.some((p) => p.email.toLowerCase() === email.trim().toLowerCase());
-        if (isPreset) {
+        const preset = presetAccounts.find((p) => p.email.toLowerCase() === email.trim().toLowerCase());
+        if (preset) {
+          const demoRole = preset.role;
+          const demoToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." + btoa(JSON.stringify({
+            userId: "demo-" + demoRole,
+            email: preset.email,
+            role: demoRole
+          })) + ".demo";
+          setTokens(demoToken, "demo-refresh-token");
+          setCachedUser({
+            id: "demo-" + demoRole,
+            email: preset.email,
+            role: demoRole,
+            firstName: preset.label
+          });
           if (typeof window !== "undefined") {
-            localStorage.setItem("rr_active_role", selectedRole);
+            localStorage.setItem("rr_active_role", demoRole);
+            sessionStorage.setItem("rr_active_role", demoRole);
           }
-          const targetUrl2 = resolveDashboardRoute(void 0, selectedRole);
-          setToastMessage(`Signed in to ${selectedRole.toUpperCase()} workspace.`);
-          navigate(targetUrl2);
+          const targetUrl2 = getDashboardRouteForRole(demoRole);
+          setToastMessage(`Signed in to ${preset.label} workspace.`);
+          navigate(targetUrl2, {
+            replace: true
+          });
           return;
         }
         setApiError(res.message || "Authentication unsuccessful.");
         return;
       }
       if ((_a2 = res.data) == null ? void 0 : _a2.requires2Fa) {
-        const dest = resolveDashboardRoute((_b2 = res.data) == null ? void 0 : _b2.route, ((_d = (_c = res.data) == null ? void 0 : _c.user) == null ? void 0 : _d.role) || selectedRole);
+        const authRole = ((_c = (_b2 = res.data) == null ? void 0 : _b2.user) == null ? void 0 : _c.role) || (typeof ((_d = res.data) == null ? void 0 : _d.route) === "object" ? (_f = (_e = res.data) == null ? void 0 : _e.route) == null ? void 0 : _f.role : void 0) || selectedRole;
+        const dest = getDashboardRouteForRole(authRole);
         setPendingRoute(dest);
         setIs2FaModalOpen(true);
         setToastMessage("Two-factor authentication required. Please enter verification code.");
         return;
       }
+      const authenticatedRole = ((_h = (_g = res.data) == null ? void 0 : _g.user) == null ? void 0 : _h.role) || (typeof ((_i = res.data) == null ? void 0 : _i.route) === "object" ? (_k = (_j = res.data) == null ? void 0 : _j.route) == null ? void 0 : _k.role : void 0) || selectedRole;
+      if ((_l = res.data) == null ? void 0 : _l.accessToken) {
+        setTokens(res.data.accessToken, res.data.refreshToken);
+      }
+      if ((_m = res.data) == null ? void 0 : _m.user) {
+        setCachedUser(res.data.user);
+      }
       if (typeof window !== "undefined") {
-        localStorage.setItem("rr_active_role", ((_f = (_e = res.data) == null ? void 0 : _e.user) == null ? void 0 : _f.role) || selectedRole);
+        localStorage.setItem("rr_active_role", authenticatedRole);
+        sessionStorage.setItem("rr_active_role", authenticatedRole);
       }
       await queryClient.invalidateQueries({
         queryKey: ["currentUser"]
@@ -1628,22 +1676,37 @@ const login = UNSAFE_withComponentProps(function LoginRoute() {
       await queryClient.invalidateQueries({
         queryKey: ["profile"]
       });
-      queryClient.refetchQueries({
-        queryKey: ["currentUser"]
-      });
-      const targetUrl = resolveDashboardRoute((_g = res.data) == null ? void 0 : _g.route, ((_i = (_h = res.data) == null ? void 0 : _h.user) == null ? void 0 : _i.role) || selectedRole);
+      const targetUrl = getDashboardRouteForRole(authenticatedRole);
       setToastMessage(res.message || "Authentication successful!");
-      navigate(targetUrl);
+      navigate(targetUrl, {
+        replace: true
+      });
     },
     onError: (err) => {
-      const isPreset = presetAccounts.some((p) => p.email.toLowerCase() === email.trim().toLowerCase());
-      if (isPreset) {
+      const preset = presetAccounts.find((p) => p.email.toLowerCase() === email.trim().toLowerCase());
+      if (preset) {
+        const demoRole = preset.role;
+        const demoToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." + btoa(JSON.stringify({
+          userId: "demo-" + demoRole,
+          email: preset.email,
+          role: demoRole
+        })) + ".demo";
+        setTokens(demoToken, "demo-refresh-token");
+        setCachedUser({
+          id: "demo-" + demoRole,
+          email: preset.email,
+          role: demoRole,
+          firstName: preset.label
+        });
         if (typeof window !== "undefined") {
-          localStorage.setItem("rr_active_role", selectedRole);
+          localStorage.setItem("rr_active_role", demoRole);
+          sessionStorage.setItem("rr_active_role", demoRole);
         }
-        const targetUrl = resolveDashboardRoute(void 0, selectedRole);
-        setToastMessage(`Signed in to ${selectedRole.toUpperCase()} workspace.`);
-        navigate(targetUrl);
+        const targetUrl = getDashboardRouteForRole(demoRole);
+        setToastMessage(`Signed in to ${preset.label} workspace.`);
+        navigate(targetUrl, {
+          replace: true
+        });
         return;
       }
       setApiError(formatApiError$2(err));
@@ -1896,6 +1959,39 @@ const login = UNSAFE_withComponentProps(function LoginRoute() {
               className: "text-xs sm:text-sm text-slate-500 mt-1",
               children: "Enter your credentials to access your organization portal"
             })]
+          }), /* @__PURE__ */ jsxs("div", {
+            className: "mb-4",
+            children: [/* @__PURE__ */ jsx("div", {
+              className: "text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2",
+              children: "Quick Preset Accounts"
+            }), /* @__PURE__ */ jsx("div", {
+              className: "grid grid-cols-2 sm:grid-cols-4 gap-2",
+              children: presetAccounts.map((acc) => {
+                const Icon = acc.icon;
+                const isSelected = selectedRole === acc.role && email.toLowerCase() === acc.email.toLowerCase();
+                return /* @__PURE__ */ jsxs("button", {
+                  type: "button",
+                  onClick: () => {
+                    setSelectedRole(acc.role);
+                    setEmail(acc.email);
+                    setPassword(acc.password);
+                    setApiError(null);
+                  },
+                  className: `flex items-center justify-between p-2 rounded-xl border text-left transition cursor-pointer text-xs ${isSelected ? "border-blue-500 bg-blue-50/70 text-blue-700 font-semibold shadow-xs" : "border-slate-200 hover:border-blue-300 hover:bg-slate-50 text-slate-700"}`,
+                  children: [/* @__PURE__ */ jsxs("div", {
+                    className: "flex items-center gap-1.5 min-w-0",
+                    children: [/* @__PURE__ */ jsx(Icon, {
+                      className: `w-3.5 h-3.5 shrink-0 ${isSelected ? "text-blue-600" : "text-slate-400"}`
+                    }), /* @__PURE__ */ jsx("span", {
+                      className: "truncate text-[11.5px]",
+                      children: acc.label
+                    })]
+                  }), isSelected && /* @__PURE__ */ jsx(FiCheckCircle, {
+                    className: "w-3.5 h-3.5 text-blue-600 shrink-0 ml-1"
+                  })]
+                }, acc.role);
+              })
+            })]
           }), apiError && /* @__PURE__ */ jsxs("div", {
             className: "mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2",
             children: [/* @__PURE__ */ jsx(FiAlertTriangle, {
@@ -1982,7 +2078,7 @@ const login = UNSAFE_withComponentProps(function LoginRoute() {
                 })]
               }) : /* @__PURE__ */ jsxs(Fragment, {
                 children: [/* @__PURE__ */ jsx("span", {
-                  children: "Sign In to Workspace"
+                  children: selectedRole && email && presetAccounts.some((p) => p.email.toLowerCase() === email.toLowerCase()) ? `Sign In to ${selectedRole.toUpperCase().replace("-", " ")} Workspace` : "Sign In to Workspace"
                 }), /* @__PURE__ */ jsx(FiArrowRight, {
                   className: "w-4 h-4"
                 })]
@@ -5965,12 +6061,27 @@ const Sidebar = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isProfileMenuOpen]);
-  const handleLogout = async () => {
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const handleLogoutClick = () => {
+    setIsProfileMenuOpen(false);
+    setShowLogoutConfirm(true);
+  };
+  const confirmLogout = async () => {
+    setIsLoggingOut(true);
     try {
       await logoutUser();
     } catch {
     } finally {
       if (typeof window !== "undefined") {
+        localStorage.removeItem("rr_access_token");
+        localStorage.removeItem("rr_refresh_token");
+        localStorage.removeItem("rr_user");
+        localStorage.removeItem("rr_active_role");
+        sessionStorage.removeItem("rr_access_token");
+        sessionStorage.removeItem("rr_refresh_token");
+        sessionStorage.removeItem("rr_user");
+        sessionStorage.removeItem("rr_active_role");
         window.location.href = "/login";
       }
     }
@@ -6094,7 +6205,7 @@ const Sidebar = ({
                     "button",
                     {
                       type: "button",
-                      onClick: handleLogout,
+                      onClick: handleLogoutClick,
                       className: `w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${isDarkMode ? "hover:bg-rose-500/20 text-rose-400" : "hover:bg-rose-50 text-rose-600"}`,
                       children: [
                         /* @__PURE__ */ jsx(FiLogOut, { className: "w-4 h-4 shrink-0" }),
@@ -6141,7 +6252,7 @@ const Sidebar = ({
               "button",
               {
                 type: "button",
-                onClick: handleLogout,
+                onClick: handleLogoutClick,
                 className: `w-full mt-2 flex items-center justify-center min-h-[38px] gap-2 py-2 px-3.5 rounded-xl text-[13.5px] font-semibold transition-colors duration-150 cursor-pointer border ${isDarkMode ? "bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 shadow-xs" : "bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100 hover:border-rose-300 shadow-xs"}`,
                 children: [
                   /* @__PURE__ */ jsx(FiLogOut, { className: "w-4 h-4" }),
@@ -6152,7 +6263,43 @@ const Sidebar = ({
           ]
         }
       )
-    ] })
+    ] }),
+    showLogoutConfirm && /* @__PURE__ */ jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-fade-in", children: /* @__PURE__ */ jsxs(
+      "div",
+      {
+        className: `w-full max-w-sm rounded-2xl p-6 border shadow-2xl transition-all text-center ${isDarkMode ? "bg-slate-900 border-slate-700 text-white" : "bg-white border-slate-200 text-slate-800"}`,
+        children: [
+          /* @__PURE__ */ jsx("div", { className: "w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto mb-4 border border-rose-500/20", children: /* @__PURE__ */ jsx(FiLogOut, { className: "w-6 h-6" }) }),
+          /* @__PURE__ */ jsx("h3", { className: `text-lg font-bold ${isDarkMode ? "text-white" : "text-slate-900"}`, children: "Confirm Log Out" }),
+          /* @__PURE__ */ jsx("p", { className: "text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed", children: "Are you sure you want to end your active session? You will be redirected to the sign in page." }),
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 mt-6", children: [
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                type: "button",
+                onClick: () => setShowLogoutConfirm(false),
+                disabled: isLoggingOut,
+                className: `flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${isDarkMode ? "border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200" : "border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-700"}`,
+                children: "Cancel"
+              }
+            ),
+            /* @__PURE__ */ jsx(
+              "button",
+              {
+                type: "button",
+                onClick: confirmLogout,
+                disabled: isLoggingOut,
+                className: "flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition-colors cursor-pointer shadow-md shadow-rose-600/20 flex items-center justify-center gap-1.5 disabled:opacity-50",
+                children: isLoggingOut ? /* @__PURE__ */ jsxs("span", { className: "flex items-center gap-1.5", children: [
+                  /* @__PURE__ */ jsx("span", { className: "w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" }),
+                  /* @__PURE__ */ jsx("span", { children: "Logging out..." })
+                ] }) : /* @__PURE__ */ jsx("span", { children: "Yes, Log Out" })
+              }
+            )
+          ] })
+        ]
+      }
+    ) })
   ] });
 };
 const Topbar = ({
@@ -17711,13 +17858,16 @@ const getRoleUrlSlug = (role) => {
 const roleAliasMap = {
   "super-admin": "super-admin",
   "superadmin": "super-admin",
+  "super_admin": "super-admin",
   "admin": "super-admin",
   "school": "school",
   "schools": "school",
   "schooladmin": "school",
+  "school_admin": "school",
   "college": "college",
   "colleges": "college",
   "collegeadmin": "college",
+  "college_admin": "college",
   "mentor": "mentor",
   "mentors": "mentor",
   "counselor": "mentor",
@@ -17725,6 +17875,7 @@ const roleAliasMap = {
   "training": "training",
   "trainings": "training",
   "training-institute": "training",
+  "training_institute": "training",
   "training-institutes": "training",
   "traininginstitute": "training",
   "traininginstitutes": "training",
@@ -17739,6 +17890,7 @@ const roleAliasMap = {
   "company": "company",
   "companies": "company",
   "companyadmin": "company",
+  "company_admin": "company",
   "enterprise": "company",
   "parent": "parent",
   "parents": "parent",
@@ -18164,7 +18316,7 @@ const route9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   getRoleUrlSlug,
   roleAliasMap
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-Duqma3Cv.js", "imports": ["/assets/jsx-runtime-D_zvdyIk.js", "/assets/chunk-62JRHF6Z-W8r8RY01.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/root-DUnXIOfd.js", "imports": ["/assets/jsx-runtime-D_zvdyIk.js", "/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_index-Bn0BTm_z.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/login": { "id": "routes/login", "parentId": "root", "path": "login", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/login-D1WjVEPQ.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/api-Cv69fpNu.js", "/assets/authService-ag6zjYB4.js", "/assets/index-BWMxe9sO.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "signup-route": { "id": "signup-route", "parentId": "root", "path": "signup", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/signup-DMnN0nuc.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/index-BWMxe9sO.js", "/assets/authService-ag6zjYB4.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "register-route": { "id": "register-route", "parentId": "root", "path": "register", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/signup-DMnN0nuc.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/index-BWMxe9sO.js", "/assets/authService-ag6zjYB4.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "forgot-password-route": { "id": "forgot-password-route", "parentId": "root", "path": "forgot-password", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/forgot-password-CPTk55NW.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/authService-ag6zjYB4.js", "/assets/index-BWMxe9sO.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "portal-role-root": { "id": "portal-role-root", "parentId": "root", "path": "portal/:role", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-BPr3C2NI.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-Cv69fpNu.js", "/assets/index-BWMxe9sO.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "portal-role-splat": { "id": "portal-role-splat", "parentId": "root", "path": "portal/:role/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-BPr3C2NI.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-Cv69fpNu.js", "/assets/index-BWMxe9sO.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "role-root": { "id": "role-root", "parentId": "root", "path": ":role", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-BPr3C2NI.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-Cv69fpNu.js", "/assets/index-BWMxe9sO.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "role-splat": { "id": "role-splat", "parentId": "root", "path": ":role/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-BPr3C2NI.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-Cv69fpNu.js", "/assets/index-BWMxe9sO.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-a5a93199.js", "version": "a5a93199", "sri": void 0 };
+const serverManifest = { "entry": { "module": "/assets/entry.client-Duqma3Cv.js", "imports": ["/assets/jsx-runtime-D_zvdyIk.js", "/assets/chunk-62JRHF6Z-W8r8RY01.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/root-CWbpClD_.js", "imports": ["/assets/jsx-runtime-D_zvdyIk.js", "/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_index-Bn0BTm_z.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "routes/login": { "id": "routes/login", "parentId": "root", "path": "login", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/login-BNDqrRCz.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/api-Bf-8Spio.js", "/assets/authService--roMXTV4.js", "/assets/index-BkkqtvC9.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "signup-route": { "id": "signup-route", "parentId": "root", "path": "signup", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/signup-CmnJ7zUE.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/index-BkkqtvC9.js", "/assets/authService--roMXTV4.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "register-route": { "id": "register-route", "parentId": "root", "path": "register", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/signup-CmnJ7zUE.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/index-BkkqtvC9.js", "/assets/authService--roMXTV4.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "forgot-password-route": { "id": "forgot-password-route", "parentId": "root", "path": "forgot-password", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/forgot-password-CF8m0W7c.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/authService--roMXTV4.js", "/assets/index-BkkqtvC9.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "portal-role-root": { "id": "portal-role-root", "parentId": "root", "path": "portal/:role", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-BG1SPzpg.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-Bf-8Spio.js", "/assets/index-BkkqtvC9.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "portal-role-splat": { "id": "portal-role-splat", "parentId": "root", "path": "portal/:role/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-BG1SPzpg.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-Bf-8Spio.js", "/assets/index-BkkqtvC9.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "role-root": { "id": "role-root", "parentId": "root", "path": ":role", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-BG1SPzpg.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-Bf-8Spio.js", "/assets/index-BkkqtvC9.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 }, "role-splat": { "id": "role-splat", "parentId": "root", "path": ":role/*", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasClientMiddleware": false, "hasDefaultExport": true, "hasErrorBoundary": false, "module": "/assets/_role-BG1SPzpg.js", "imports": ["/assets/chunk-62JRHF6Z-W8r8RY01.js", "/assets/jsx-runtime-D_zvdyIk.js", "/assets/QueryClientProvider-BDZ3rP-W.js", "/assets/query-CoXrFZ2c.js", "/assets/api-Bf-8Spio.js", "/assets/index-BkkqtvC9.js"], "css": [], "clientActionModule": void 0, "clientLoaderModule": void 0, "clientMiddlewareModule": void 0, "hydrateFallbackModule": void 0 } }, "url": "/assets/manifest-4086119d.js", "version": "4086119d", "sri": void 0 };
 const assetsBuildDirectory = "build\\client";
 const basename = "/";
 const future = { "unstable_optimizeDeps": false, "v8_passThroughRequests": false, "v8_trailingSlashAwareDataRequests": false, "unstable_previewServerPrerendering": false, "v8_middleware": false, "v8_splitRouteModules": false, "v8_viteEnvironmentApi": false };

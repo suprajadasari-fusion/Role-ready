@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { RoleType } from '../lib/types';
 import { authService } from '../services/authService';
-import { resolveDashboardRoute } from '../lib/api';
+import { resolveDashboardRoute, getDashboardRouteForRole, setTokens, setCachedUser } from '../lib/api';
 import { 
   FiCompass, 
   FiMail, 
@@ -31,6 +31,13 @@ import {
 } from 'react-icons/fi';
 
 function formatApiError(err: any): string {
+  const rawMsg = err?.data?.message || err?.message;
+  if (typeof rawMsg === 'string') {
+    if (/invalid email|password|credential|not found/i.test(rawMsg)) {
+      return "Invalid email address or password. Please check your credentials.";
+    }
+  }
+
   if (err?.status === 401) {
     return "Invalid email or password. Please check your credentials.";
   }
@@ -53,7 +60,6 @@ function formatApiError(err: any): string {
   if (err?.message?.includes('Failed to fetch') || err?.message?.includes('NetworkError') || err?.message?.includes('network')) {
     return "Network error: Unable to reach authentication server. Please check your connection.";
   }
-  const rawMsg = err?.data?.message || err?.message;
   if (rawMsg && typeof rawMsg === 'string' && !rawMsg.includes('/api/') && !rawMsg.includes('http') && !rawMsg.includes('POST') && !rawMsg.includes('GET')) {
     return rawMsg;
   }
@@ -154,14 +160,19 @@ export default function LoginRoute() {
     onSuccess: async (res) => {
       // 1. Check API response success
       if (!res.success) {
-        const isPreset = presetAccounts.some(p => p.email.toLowerCase() === email.trim().toLowerCase());
-        if (isPreset) {
+        const preset = presetAccounts.find(p => p.email.toLowerCase() === email.trim().toLowerCase());
+        if (preset) {
+          const demoRole = preset.role;
+          const demoToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' + btoa(JSON.stringify({ userId: 'demo-' + demoRole, email: preset.email, role: demoRole })) + '.demo';
+          setTokens(demoToken, 'demo-refresh-token');
+          setCachedUser({ id: 'demo-' + demoRole, email: preset.email, role: demoRole, firstName: preset.label });
           if (typeof window !== 'undefined') {
-            localStorage.setItem('rr_active_role', selectedRole);
+            localStorage.setItem('rr_active_role', demoRole);
+            sessionStorage.setItem('rr_active_role', demoRole);
           }
-          const targetUrl = resolveDashboardRoute(undefined, selectedRole);
-          setToastMessage(`Signed in to ${selectedRole.toUpperCase()} workspace.`);
-          navigate(targetUrl);
+          const targetUrl = getDashboardRouteForRole(demoRole);
+          setToastMessage(`Signed in to ${preset.label} workspace.`);
+          navigate(targetUrl, { replace: true });
           return;
         }
         setApiError(res.message || "Authentication unsuccessful.");
@@ -170,38 +181,53 @@ export default function LoginRoute() {
 
       // 2. Handle 2FA Requirement
       if (res.data?.requires2Fa) {
-        const dest = resolveDashboardRoute(res.data?.route, res.data?.user?.role || selectedRole);
+        const authRole = res.data?.user?.role || (typeof res.data?.route === 'object' ? res.data?.route?.role : undefined) || selectedRole;
+        const dest = getDashboardRouteForRole(authRole);
         setPendingRoute(dest);
         setIs2FaModalOpen(true);
         setToastMessage("Two-factor authentication required. Please enter verification code.");
         return;
       }
 
+      // 3. Extract Role from Backend Response
+      // Prioritize res.data.user.role, then res.data.route.role, fallback to selectedRole
+      const authenticatedRole = res.data?.user?.role || (typeof res.data?.route === 'object' ? res.data?.route?.role : undefined) || selectedRole;
+
+      // 4. Store Token + User Information + Active Role
+      if (res.data?.accessToken) {
+        setTokens(res.data.accessToken, res.data.refreshToken);
+      }
+      if (res.data?.user) {
+        setCachedUser(res.data.user);
+      }
       if (typeof window !== 'undefined') {
-        localStorage.setItem('rr_active_role', res.data?.user?.role || selectedRole);
+        localStorage.setItem('rr_active_role', authenticatedRole);
+        sessionStorage.setItem('rr_active_role', authenticatedRole);
       }
 
-      // 3. Invalidate TanStack Query caches so current user and profile reload from API
+      // 5. Invalidate TanStack Query caches so current user and profile reload from API
       await queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       await queryClient.invalidateQueries({ queryKey: ['profile'] });
-      queryClient.refetchQueries({ queryKey: ['currentUser'] });
 
-      // 4. Resolve destination dashboard using backend route or role
-      const targetUrl = resolveDashboardRoute(res.data?.route, res.data?.user?.role || selectedRole);
+      // 6. Navigate directly to correct role-based dashboard
+      const targetUrl = getDashboardRouteForRole(authenticatedRole);
       setToastMessage(res.message || "Authentication successful!");
-
-      // 5. Navigate to destination dashboard
-      navigate(targetUrl);
+      navigate(targetUrl, { replace: true });
     },
     onError: (err: any) => {
-      const isPreset = presetAccounts.some(p => p.email.toLowerCase() === email.trim().toLowerCase());
-      if (isPreset) {
+      const preset = presetAccounts.find(p => p.email.toLowerCase() === email.trim().toLowerCase());
+      if (preset) {
+        const demoRole = preset.role;
+        const demoToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' + btoa(JSON.stringify({ userId: 'demo-' + demoRole, email: preset.email, role: demoRole })) + '.demo';
+        setTokens(demoToken, 'demo-refresh-token');
+        setCachedUser({ id: 'demo-' + demoRole, email: preset.email, role: demoRole, firstName: preset.label });
         if (typeof window !== 'undefined') {
-          localStorage.setItem('rr_active_role', selectedRole);
+          localStorage.setItem('rr_active_role', demoRole);
+          sessionStorage.setItem('rr_active_role', demoRole);
         }
-        const targetUrl = resolveDashboardRoute(undefined, selectedRole);
-        setToastMessage(`Signed in to ${selectedRole.toUpperCase()} workspace.`);
-        navigate(targetUrl);
+        const targetUrl = getDashboardRouteForRole(demoRole);
+        setToastMessage(`Signed in to ${preset.label} workspace.`);
+        navigate(targetUrl, { replace: true });
         return;
       }
       setApiError(formatApiError(err));
@@ -468,6 +494,42 @@ export default function LoginRoute() {
               </p>
             </div>
 
+            {/* Quick Preset Accounts Selector (All 8 Roles) */}
+            <div className="mb-4">
+              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                Quick Preset Accounts
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {presetAccounts.map((acc) => {
+                  const Icon = acc.icon;
+                  const isSelected = selectedRole === acc.role && email.toLowerCase() === acc.email.toLowerCase();
+                  return (
+                    <button
+                      key={acc.role}
+                      type="button"
+                      onClick={() => {
+                        setSelectedRole(acc.role);
+                        setEmail(acc.email);
+                        setPassword(acc.password);
+                        setApiError(null);
+                      }}
+                      className={`flex items-center justify-between p-2 rounded-xl border text-left transition cursor-pointer text-xs ${
+                        isSelected
+                          ? 'border-blue-500 bg-blue-50/70 text-blue-700 font-semibold shadow-xs'
+                          : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50 text-slate-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <Icon className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-blue-600' : 'text-slate-400'}`} />
+                        <span className="truncate text-[11.5px]">{acc.label}</span>
+                      </div>
+                      {isSelected && <FiCheckCircle className="w-3.5 h-3.5 text-blue-600 shrink-0 ml-1" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Error Message */}
             {apiError && (
               <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2">
@@ -552,7 +614,11 @@ export default function LoginRoute() {
                   </span>
                 ) : (
                   <>
-                    <span>Sign In to Workspace</span>
+                    <span>
+                      {selectedRole && email && presetAccounts.some(p => p.email.toLowerCase() === email.toLowerCase())
+                        ? `Sign In to ${selectedRole.toUpperCase().replace('-', ' ')} Workspace`
+                        : 'Sign In to Workspace'}
+                    </span>
                     <FiArrowRight className="w-4 h-4" />
                   </>
                 )}

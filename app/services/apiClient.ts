@@ -54,10 +54,12 @@ export function clearTokens() {
   if (typeof window !== 'undefined') {
     localStorage.removeItem('rr_access_token');
     localStorage.removeItem('rr_refresh_token');
+    localStorage.removeItem('rr_user');
+    localStorage.removeItem('rr_active_role');
     sessionStorage.removeItem('rr_access_token');
     sessionStorage.removeItem('rr_refresh_token');
-    localStorage.removeItem('rr_user');
     sessionStorage.removeItem('rr_user');
+    sessionStorage.removeItem('rr_active_role');
   }
 }
 

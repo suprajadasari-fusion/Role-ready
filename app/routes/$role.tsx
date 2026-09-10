@@ -21,15 +21,18 @@ export const getRoleUrlSlug = (role: RoleType): string => {
 export const roleAliasMap: Record<string, RoleType> = {
   'super-admin': 'super-admin',
   'superadmin': 'super-admin',
+  'super_admin': 'super-admin',
   'admin': 'super-admin',
   
   'school': 'school',
   'schools': 'school',
   'schooladmin': 'school',
+  'school_admin': 'school',
   
   'college': 'college',
   'colleges': 'college',
   'collegeadmin': 'college',
+  'college_admin': 'college',
   
   'mentor': 'mentor',
   'mentors': 'mentor',
@@ -39,6 +42,7 @@ export const roleAliasMap: Record<string, RoleType> = {
   'training': 'training',
   'trainings': 'training',
   'training-institute': 'training',
+  'training_institute': 'training',
   'training-institutes': 'training',
   'traininginstitute': 'training',
   'traininginstitutes': 'training',
@@ -55,6 +59,7 @@ export const roleAliasMap: Record<string, RoleType> = {
   'company': 'company',
   'companies': 'company',
   'companyadmin': 'company',
+  'company_admin': 'company',
   'enterprise': 'company',
 
   'parent': 'parent',

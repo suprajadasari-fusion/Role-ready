@@ -240,13 +240,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
     };
   }, [isProfileMenuOpen]);
 
-  const handleLogout = async () => {
+  // Logout Confirmation Modal State
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogoutClick = () => {
+    setIsProfileMenuOpen(false);
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = async () => {
+    setIsLoggingOut(true);
     try {
       await logoutUser();
     } catch {
       // Clean up local tokens
     } finally {
       if (typeof window !== 'undefined') {
+        localStorage.removeItem('rr_access_token');
+        localStorage.removeItem('rr_refresh_token');
+        localStorage.removeItem('rr_user');
+        localStorage.removeItem('rr_active_role');
+        sessionStorage.removeItem('rr_access_token');
+        sessionStorage.removeItem('rr_refresh_token');
+        sessionStorage.removeItem('rr_user');
+        sessionStorage.removeItem('rr_active_role');
         window.location.href = '/login';
       }
     }
@@ -417,7 +435,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {/* Popover Logout Option */}
               <button
                 type="button"
-                onClick={handleLogout}
+                onClick={handleLogoutClick}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-medium transition-colors cursor-pointer ${
                   isDarkMode ? 'hover:bg-rose-500/20 text-rose-400' : 'hover:bg-rose-50 text-rose-600'
                 }`}
@@ -476,7 +494,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Dedicated Log Out Button Below Profile Box */}
           <button
             type="button"
-            onClick={handleLogout}
+            onClick={handleLogoutClick}
             className={`w-full mt-2 flex items-center justify-center min-h-[38px] gap-2 py-2 px-3.5 rounded-xl text-[13.5px] font-semibold transition-colors duration-150 cursor-pointer border ${
               isDarkMode
                 ? 'bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 shadow-xs'
@@ -488,6 +506,58 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
       </aside>
+
+      {/* Logout Confirmation Dialog Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-fade-in">
+          <div 
+            className={`w-full max-w-sm rounded-2xl p-6 border shadow-2xl transition-all text-center ${
+              isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-800'
+            }`}
+          >
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto mb-4 border border-rose-500/20">
+              <FiLogOut className="w-6 h-6" />
+            </div>
+
+            <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+              Confirm Log Out
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+              Are you sure you want to end your active session? You will be redirected to the sign in page.
+            </p>
+
+            <div className="flex items-center gap-3 mt-6">
+              <button
+                type="button"
+                onClick={() => setShowLogoutConfirm(false)}
+                disabled={isLoggingOut}
+                className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${
+                  isDarkMode 
+                    ? 'border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200' 
+                    : 'border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmLogout}
+                disabled={isLoggingOut}
+                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition-colors cursor-pointer shadow-md shadow-rose-600/20 flex items-center justify-center gap-1.5 disabled:opacity-50"
+              >
+                {isLoggingOut ? (
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Logging out...</span>
+                  </span>
+                ) : (
+                  <span>Yes, Log Out</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
