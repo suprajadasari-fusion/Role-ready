@@ -6,6 +6,7 @@ import { MentorDashboard } from './Pages/MentorDashboard';
 import { TrainingDashboard } from './Pages/TrainingDashboard';
 import { RecruiterDashboard } from './Pages/RecruiterDashboard';
 import { CompanyDashboard } from './Pages/CompanyDashboard';
+import { ParentDashboard } from './Pages/ParentDashboard';
 import { UserProfileView } from './profile/UserProfileView';
 
 interface RoleWorkspaceViewsProps {
@@ -38,6 +39,8 @@ export const RoleWorkspaceViews: React.FC<RoleWorkspaceViewsProps> = ({
       return <RecruiterDashboard activeSubView={activeSubView} onShowToast={onShowToast} isDarkMode={isDarkMode} />;
     case 'company':
       return <CompanyDashboard activeSubView={activeSubView} onShowToast={onShowToast} isDarkMode={isDarkMode} />;
+    case 'parent':
+      return <ParentDashboard activeSubView={activeSubView} onShowToast={onShowToast} isDarkMode={isDarkMode} />;
     default:
       return null;
   }

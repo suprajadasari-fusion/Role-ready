@@ -1,5 +1,6 @@
 import React from 'react';
 import { RoleType } from '../lib/types';
+import { logoutUser } from '../lib/api';
 import { 
   FiCompass, 
   FiShield, 
@@ -48,7 +49,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
 
 
-  const roleNavItems: Record<RoleType, Array<{ id: string; label: string; icon: any }>> = {
+  const roleNavItems: Record<RoleType, Array<{ id: string; label: string; icon: any; section?: string }>> = {
     'super-admin': [
       { id: 'overview', label: 'Dashboard Overview', icon: FiGrid },
       { id: 'access', label: 'Access Provisioning', icon: FiShield },
@@ -117,6 +118,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
       { id: 'internships', label: 'Internship Programs', icon: FiBriefcase },
       { id: 'partnerships', label: 'Campus Partnerships', icon: FiAward },
       { id: 'pipeline', label: 'Talent Pipeline', icon: FiPieChart }
+    ],
+    'parent': [
+      { id: 'overview', label: 'Dashboard', icon: FiGrid },
+      { id: 'children', label: 'My Children', icon: FiUsers },
+      { id: 'accounts', label: 'Family Accounts', icon: FiShield },
+      { id: 'attendance', label: 'Attendance', icon: FiCalendar, section: 'Academic' },
+      { id: 'academic', label: 'Academic Performance', icon: FiBookOpen },
+      { id: 'learning', label: 'Learning Progress', icon: FiActivity },
+      { id: 'career', label: 'Career Progress', icon: FiTrendingUp, section: 'Career' },
+      { id: 'career-reports', label: 'Career Reports', icon: FiFileText },
+      { id: 'scholarships', label: 'Scholarships', icon: FiAward, section: 'Opportunities' },
+      { id: 'mentors', label: 'Mentor Booking', icon: FiUserCheck, section: 'Communication' },
+      { id: 'notifications', label: 'Notifications', icon: FiBell },
+      { id: 'subscription', label: 'Subscription Plans', icon: FiCreditCard, section: 'Subscription' },
+      { id: 'settings', label: 'Settings', icon: FiSliders, section: 'Settings' }
     ]
   };
 
@@ -139,7 +155,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <h2 className={`font-bold text-xl tracking-tight font-sans ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
             Role Ready
           </h2>
-          <span className="inline-block text-[11px] font-semibold bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-md border border-blue-400/20">
+          <span className="inline-block text-[12px] font-medium bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-md border border-blue-400/20">
             {currentWorkspace === 'super-admin' ? 'Super Admin Portal' : `${currentWorkspace.charAt(0).toUpperCase() + currentWorkspace.slice(1)} Workspace`}
           </span>
         </div>
@@ -148,39 +164,47 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Dynamic Nav Items */}
       <nav className="flex-1 overflow-y-auto p-3 flex flex-col justify-between">
         <div>
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             {navItems
               .filter((item) => item.id !== 'profile')
               .map((item) => {
                 const Icon = item.icon;
                 const isActive = activeView === item.id;
                 return (
-                  <button
-                    key={item.id}
-                    onClick={() => onViewChange(item.id)}
-                    className={`w-full flex items-center justify-between min-h-[38px] px-3.5 py-2 rounded-xl text-xs font-bold transition-colors duration-150 cursor-pointer border ${
-                      isActive 
-                        ? 'bg-[#12163A] text-white shadow-md border-[#3665EE]/40' 
-                        : isDarkMode
-                          ? 'border-transparent text-slate-300 hover:bg-[#12163A]/60 hover:text-white'
-                          : 'border-transparent text-[#4B5563] hover:bg-[#DEE9FF]/60 hover:text-[#12163A]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
-                      <Icon className={`w-4 h-4 shrink-0 transition-colors duration-150 ${
-                        isActive ? 'text-[#3665EE]' : 'text-[#94A3B8]'
-                      }`} />
-                      <span className="leading-none truncate whitespace-nowrap text-left">{item.label}</span>
-                    </div>
-                    {item.id === 'access' && (
-                      <span className="bg-[#3665EE]/20 text-[#3665EE] text-[10px] px-2 py-0.5 rounded-full font-bold ml-2 shrink-0">
-                        {totalEntities}
-                      </span>
+                  <React.Fragment key={item.id}>
+                    {item.section && (
+                      <div className={`pt-3.5 pb-1 px-3 text-[12px] font-semibold uppercase tracking-wider ${
+                        isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                      }`}>
+                        {item.section}
+                      </div>
                     )}
-                    {item.id === 'ai' && (
-                      <span className="bg-[#E4F4EC] text-[#12163A] text-[10px] px-2 py-0.5 rounded-full font-bold ml-2 shrink-0">Live</span>
-                    )}
-                  </button>
+                    <button
+                      onClick={() => onViewChange(item.id)}
+                      className={`w-full flex items-center justify-between min-h-[42px] px-3.5 py-2.5 rounded-xl text-[15px] font-medium leading-[1.5] transition-colors duration-150 cursor-pointer border ${
+                        isActive 
+                          ? 'bg-[#12163A] text-white shadow-md border-[#3665EE]/40' 
+                          : isDarkMode
+                            ? 'border-transparent text-slate-300 hover:bg-[#12163A]/60 hover:text-white'
+                            : 'border-transparent text-[#4B5563] hover:bg-[#DEE9FF]/60 hover:text-[#12163A]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+                        <Icon className={`w-4.5 h-4.5 shrink-0 transition-colors duration-150 ${
+                          isActive ? 'text-[#3665EE]' : 'text-[#94A3B8]'
+                        }`} />
+                        <span className="truncate whitespace-nowrap text-left">{item.label}</span>
+                      </div>
+                      {item.id === 'access' && (
+                        <span className="bg-[#3665EE]/20 text-[#3665EE] text-[12px] px-2 py-0.5 rounded-full font-semibold ml-2 shrink-0">
+                          {totalEntities}
+                        </span>
+                      )}
+                      {item.id === 'ai' && (
+                        <span className="bg-[#E4F4EC] text-[#12163A] text-[12px] px-2 py-0.5 rounded-full font-semibold ml-2 shrink-0">Live</span>
+                      )}
+                    </button>
+                  </React.Fragment>
                 );
               })}
           </div>
@@ -190,7 +214,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="mt-auto pt-2">
           <button
             onClick={() => onViewChange('profile')}
-            className={`w-full flex items-center justify-between min-h-[38px] px-3.5 py-2 rounded-xl text-xs font-bold transition-colors duration-150 cursor-pointer border ${
+            className={`w-full flex items-center justify-between min-h-[42px] px-3.5 py-2.5 rounded-xl text-[15px] font-medium leading-[1.5] transition-colors duration-150 cursor-pointer border ${
               activeView === 'profile'
                 ? 'bg-[#12163A] text-white shadow-md border-[#3665EE]/40' 
                 : isDarkMode
@@ -199,10 +223,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             }`}
           >
             <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
-              <FiUser className={`w-4 h-4 shrink-0 transition-colors duration-150 ${
+              <FiUser className={`w-4.5 h-4.5 shrink-0 transition-colors duration-150 ${
                 activeView === 'profile' ? 'text-[#3665EE]' : 'text-[#94A3B8]'
               }`} />
-              <span className="leading-none truncate whitespace-nowrap text-left">Profile</span>
+              <span className="truncate whitespace-nowrap text-left">Profile</span>
             </div>
           </button>
         </div>
@@ -214,12 +238,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
       }`}>
         {/* Prominent Log Out Button */}
         <button
-          onClick={() => {
-            if (typeof window !== 'undefined') {
-              window.location.href = '/login';
+          onClick={async () => {
+            try {
+              await logoutUser();
+            } catch {
+              // Ignore
+            } finally {
+              if (typeof window !== 'undefined') {
+                window.location.href = '/login';
+              }
             }
           }}
-          className={`w-full flex items-center justify-center min-h-[38px] gap-2 py-2 px-3.5 rounded-xl text-xs font-bold transition-colors duration-150 cursor-pointer border ${
+          className={`w-full flex items-center justify-center min-h-[40px] gap-2 py-2 px-3.5 rounded-xl text-[14px] font-semibold transition-colors duration-150 cursor-pointer border ${
             isDarkMode
               ? 'bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 shadow-xs'
               : 'bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100 hover:border-rose-300 shadow-xs'

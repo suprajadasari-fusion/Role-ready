@@ -55,7 +55,9 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           />
           <div className="space-y-1 pb-1">
             <div className="flex items-center gap-3 flex-wrap">
-              <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight">{profile.fullName || 'User Profile'}</h2>
+              <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+                {profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : (profile.fullName || 'User Profile')}
+              </h2>
               <span className="bg-blue-500/15 border border-blue-500/30 text-blue-500 text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
                 <FiShield className="w-3.5 h-3.5" />
                 <span>{roleDisplayNames[profile.role] || profile.role}</span>

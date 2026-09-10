@@ -17,6 +17,26 @@ type Pages = {
   "/login": {
     params: {};
   };
+  "/signup": {
+    params: {};
+  };
+  "/register": {
+    params: {};
+  };
+  "/forgot-password": {
+    params: {};
+  };
+  "/portal/:role": {
+    params: {
+      "role": string;
+    };
+  };
+  "/portal/:role/*": {
+    params: {
+      "role": string;
+      "*": string;
+    };
+  };
   "/:role": {
     params: {
       "role": string;
@@ -33,7 +53,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/login" | "/:role" | "/:role/*";
+    page: "/" | "/login" | "/signup" | "/register" | "/forgot-password" | "/portal/:role" | "/portal/:role/*" | "/:role" | "/:role/*";
   };
   "routes/_index.tsx": {
     id: "routes/_index";
@@ -43,7 +63,24 @@ type RouteFiles = {
     id: "routes/login";
     page: "/login";
   };
+  "routes/signup.tsx": {
+    id: "signup-route";
+    page: "/signup";
+  } | {
+    id: "register-route";
+    page: "/register";
+  };
+  "routes/forgot-password.tsx": {
+    id: "forgot-password-route";
+    page: "/forgot-password";
+  };
   "routes/$role.tsx": {
+    id: "portal-role-root";
+    page: "/portal/:role";
+  } | {
+    id: "portal-role-splat";
+    page: "/portal/:role/*";
+  } | {
     id: "role-root";
     page: "/:role";
   } | {
@@ -56,6 +93,11 @@ type RouteModules = {
   "root": typeof import("./app/root.tsx");
   "routes/_index": typeof import("./app/routes/_index.tsx");
   "routes/login": typeof import("./app/routes/login.tsx");
+  "signup-route": typeof import("./app/routes/signup.tsx");
+  "register-route": typeof import("./app/routes/signup.tsx");
+  "forgot-password-route": typeof import("./app/routes/forgot-password.tsx");
+  "portal-role-root": typeof import("./app/routes/$role.tsx");
+  "portal-role-splat": typeof import("./app/routes/$role.tsx");
   "role-root": typeof import("./app/routes/$role.tsx");
   "role-splat": typeof import("./app/routes/$role.tsx");
 };

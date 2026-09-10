@@ -48,7 +48,7 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
           </div>
           <h3 className={`text-2xl font-bold mb-1 ${textHeading}`}>{totalEntities}</h3>
           <span className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
-            <FiTrendingUp className="w-3.5 h-3.5" /> +14.2% active growth
+            <FiTrendingUp className="w-3.5 h-3.5" /> {totalEntities > 0 ? `${totalEntities} registered partners` : 'Awaiting registrations'}
           </span>
         </div>
 
@@ -61,20 +61,20 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
           </div>
           <h3 className={`text-2xl font-bold mb-1 ${textHeading}`}>{totalSeats.toLocaleString()}</h3>
           <span className="text-[11px] font-semibold text-blue-400 flex items-center gap-1">
-            <FiShield className="w-3.5 h-3.5" /> 84.6% allocated
+            <FiShield className="w-3.5 h-3.5" /> {totalSeats > 0 ? 'Allocated across entities' : 'Quotas not allocated'}
           </span>
         </div>
 
         <div className={`p-5 rounded-2xl border transition ${cardBg}`}>
           <div className="flex items-center justify-between mb-3">
-            <span className={`text-xs font-semibold ${textMuted}`}>AI Career DNA Runs</span>
-            <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+            <span className={`text-xs font-semibold ${textMuted}`}>System Infrastructure</span>
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
               <FiCpu className="w-5 h-5" />
             </div>
           </div>
-          <h3 className={`text-2xl font-bold mb-1 ${textHeading}`}>2.8M</h3>
+          <h3 className={`text-2xl font-bold mb-1 ${textHeading}`}>Live</h3>
           <span className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
-            <FiTrendingUp className="w-3.5 h-3.5" /> 99.4% Latency &lt;450ms
+            <FiTrendingUp className="w-3.5 h-3.5" /> Platform Services Active
           </span>
         </div>
 
@@ -87,7 +87,7 @@ export const MetricsGrid: React.FC<MetricsGridProps> = ({
           </div>
           <h3 className={`text-2xl font-bold mb-1 ${textHeading}`}>{pendingCount}</h3>
           <span className="text-[11px] font-semibold text-amber-400 flex items-center gap-1">
-            Action required by Admin
+            {pendingCount > 0 ? 'Action required by Admin' : 'All entities verified'}
           </span>
         </div>
       </div>

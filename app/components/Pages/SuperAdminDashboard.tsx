@@ -1,5 +1,7 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { EcosystemEntity, AuditLog, RoleType } from '../../lib/types';
+import { fetchAdminHealth } from '../../lib/api';
 import { MetricsGrid } from '../MetricsGrid';
 import { EntitiesTable } from '../EntitiesTable';
 import { RBACMatrix } from '../RBACMatrix';
@@ -12,7 +14,11 @@ import {
   FiUserCheck, 
   FiBriefcase, 
   FiGrid, 
-  FiCompass 
+  FiCompass,
+  FiCheckCircle,
+  FiActivity,
+  FiServer,
+  FiUsers
 } from 'react-icons/fi';
 
 interface SuperAdminDashboardProps {
@@ -46,6 +52,13 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
   onShowToast,
   isDarkMode
 }) => {
+  // Live Admin Health Query strictly from /api/v1/users/admin/health
+  const { data: adminHealth } = useQuery({
+    queryKey: ['adminHealth'],
+    queryFn: fetchAdminHealth,
+    retry: 1
+  });
+
   const totalSeats = entities.reduce((acc, curr) => acc + curr.seats, 0);
   const pendingCount = entities.filter(e => e.status === 'pending').length;
 
@@ -113,13 +126,15 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
         <h3 className={`font-bold text-sm mb-4 ${textHeading}`}>Registered Ecosystem Partner Breakdown</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
           {[
-            { name: "School Admins", count: "2 Registered", icon: FiBookOpen, role: 'school' },
-            { name: "College Admins", count: "1 Registered", icon: FiBookOpen, role: 'college' },
-            { name: "Mentors & Counselors", count: "1 Registered", icon: FiUserCheck, role: 'mentor' },
-            { name: "Training Academies", count: "2 Registered", icon: FiGrid, role: 'training' },
-            { name: "Recruiters & HR", count: "1 Registered", icon: FiBriefcase, role: 'recruiter' },
-            { name: "Companies", count: "1 Registered", icon: FiGrid, role: 'company' }
+            { name: "School Admins", role: 'school', icon: FiBookOpen },
+            { name: "College Admins", role: 'college', icon: FiBookOpen },
+            { name: "Mentors & Counselors", role: 'mentor', icon: FiUserCheck },
+            { name: "Training Academies", role: 'training', icon: FiGrid },
+            { name: "Recruiters & HR", role: 'recruiter', icon: FiBriefcase },
+            { name: "Companies", role: 'company', icon: FiGrid },
+            { name: "Parents & Families", role: 'parent', icon: FiUsers }
           ].map((v, i) => {
+            const count = entities.filter(e => e.role === v.role).length;
             const Icon = v.icon;
             return (
               <div 
@@ -131,11 +146,15 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
                   <Icon className="w-4 h-4 text-blue-500" />
                   <div>
                     <div className={`font-bold ${textHeading}`}>{v.name}</div>
-                    <div className={`text-[11px] ${textMuted}`}>{v.count}</div>
+                    <div className={`text-[11px] ${textMuted}`}>{count} Registered</div>
                   </div>
                 </div>
-                <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-md border border-emerald-500/30">
-                  Active
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
+                  count > 0 
+                    ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' 
+                    : 'bg-slate-500/20 text-slate-400 border-slate-500/30'
+                }`}>
+                  {count > 0 ? 'Active' : 'Standby'}
                 </span>
               </div>
             );
@@ -149,25 +168,30 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
         <div className={`rounded-2xl border p-6 ${
           isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-blue-100 text-slate-900 shadow-xs'
         }`}>
-          <h3 className="font-bold text-sm mb-3">TanStack Query Cache Telemetry</h3>
+          <h3 className="font-bold text-sm mb-3 flex items-center gap-2">
+            <FiServer className="w-4 h-4 text-emerald-400" />
+            <span>Platform System Health</span>
+          </h3>
           <div className="space-y-2 text-xs">
             <div className={`flex justify-between p-2.5 rounded-xl ${
               isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-blue-50/50 text-slate-600'
             }`}>
-              <span>Entities Cached Records</span>
-              <strong className="text-blue-400">{entities.length} items</strong>
+              <span>Database Status</span>
+              <strong className={adminHealth?.dbConnected ? "text-emerald-400 font-bold" : "text-amber-400 font-bold"}>
+                {adminHealth?.dbConnected ? "Connected (Healthy)" : "Checking..."}
+              </strong>
             </div>
             <div className={`flex justify-between p-2.5 rounded-xl ${
               isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-blue-50/50 text-slate-600'
             }`}>
-              <span>Audit Stream Cached Records</span>
-              <strong className="text-blue-400">{auditLogs.length} logs</strong>
+              <span>System Status</span>
+              <strong className="text-emerald-400 font-bold">{adminHealth?.status || "Online"}</strong>
             </div>
             <div className={`flex justify-between p-2.5 rounded-xl ${
               isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-blue-50/50 text-slate-600'
             }`}>
-              <span>Active Workspace</span>
-              <span className="text-blue-400 font-mono font-bold">SUPER-ADMIN</span>
+              <span>Platform Environment</span>
+              <span className="text-emerald-400 font-semibold text-[11px]">Production (Active)</span>
             </div>
           </div>
         </div>

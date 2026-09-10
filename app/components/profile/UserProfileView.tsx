@@ -44,7 +44,7 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
       onShowToast("Profile information updated successfully!");
     },
     onError: (err: any) => {
-      onShowToast(`Failed to update profile: ${err.message || 'Server error'}`);
+      onShowToast("Unable to update profile. Please try again.");
     }
   });
 
@@ -60,30 +60,27 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
     }
   });
 
-  // Client-Side Validation Logic
+  // Client-Side Validation Logic matching backend schema
   const validateForm = (): boolean => {
     if (!formData) return false;
     const newErrors: Record<string, string> = {};
 
-    // Name Validation
-    if (!formData.fullName || !formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required.";
+    // First Name Validation
+    if (!formData.firstName || !formData.firstName.trim()) {
+      newErrors.firstName = "First name is required.";
     }
 
-    // Email Validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email || !formData.email.trim()) {
-      newErrors.email = "Email address is required.";
-    } else if (!emailRegex.test(formData.email.trim())) {
-      newErrors.email = "Please enter a valid email address format.";
+    // Last Name Validation
+    if (!formData.lastName || !formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required.";
     }
 
-    // Mobile Validation
-    const mobileDigits = formData.mobile.replace(/\D/g, '');
-    if (!formData.mobile || !formData.mobile.trim()) {
-      newErrors.mobile = "Mobile number is required.";
-    } else if (mobileDigits.length < 7) {
-      newErrors.mobile = "Please enter a valid mobile number with at least 7 digits.";
+    // Phone / Mobile Validation
+    const phoneVal = (formData.phoneNumber || formData.mobile || '').replace(/\D/g, '');
+    if (!phoneVal) {
+      newErrors.phoneNumber = "Phone number is required.";
+    } else if (phoneVal.length < 7) {
+      newErrors.phoneNumber = "Please enter a valid phone number with at least 7 digits.";
     }
 
     setErrors(newErrors);
@@ -93,7 +90,16 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
   // Field change handler
   const handleFieldChange = (field: keyof UserProfile, value: any) => {
     if (!formData) return;
-    setFormData({ ...formData, [field]: value });
+    const updated = { ...formData, [field]: value };
+    if (field === 'firstName' || field === 'lastName') {
+      const f = field === 'firstName' ? value : formData.firstName || '';
+      const l = field === 'lastName' ? value : formData.lastName || '';
+      updated.fullName = `${f} ${l}`.trim();
+    }
+    if (field === 'phoneNumber') {
+      updated.mobile = value;
+    }
+    setFormData(updated);
     if (errors[field]) {
       setErrors((prev) => {
         const copy = { ...prev };
@@ -108,14 +114,23 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
     if (!formData) return;
     const currentSkills = formData.skills || [];
     if (!currentSkills.includes(skill)) {
-      setFormData({ ...formData, skills: [...currentSkills, skill] });
+      const newSkills = [...currentSkills, skill];
+      setFormData({
+        ...formData,
+        skills: newSkills,
+        roleData: { ...(formData.roleData || {}), skills: newSkills }
+      });
     }
   };
 
   const handleRemoveSkill = (index: number) => {
     if (!formData) return;
     const updatedSkills = (formData.skills || []).filter((_, i) => i !== index);
-    setFormData({ ...formData, skills: updatedSkills });
+    setFormData({
+      ...formData,
+      skills: updatedSkills,
+      roleData: { ...(formData.roleData || {}), skills: updatedSkills }
+    });
   };
 
   // Photo change handler
@@ -126,11 +141,27 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
     }
   };
 
-  // Save changes handler
+  // Save changes handler matching PUT /api/v1/profile/complete
   const handleSave = () => {
     if (!formData) return;
     if (validateForm()) {
-      updateMutation.mutate(formData);
+      const payload = {
+        firstName: formData.firstName || '',
+        lastName: formData.lastName || '',
+        phoneNumber: formData.phoneNumber || formData.mobile || '',
+        bio: formData.bio || '',
+        onboardingCompleted: true,
+        roleData: {
+          ...(formData.roleData || {}),
+          dob: formData.dob || '',
+          gender: formData.gender || '',
+          location: formData.location || '',
+          education: { qualification: formData.education || '' },
+          qualification: formData.qualification || '',
+          skills: formData.skills || []
+        }
+      };
+      updateMutation.mutate(payload as any);
     } else {
       onShowToast("Please fix validation errors before saving.");
     }

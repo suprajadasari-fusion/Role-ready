@@ -5,8 +5,10 @@ import {
   FiBell, 
   FiUserCheck, 
   FiSun, 
-  FiMoon 
+  FiMoon,
+  FiUser
 } from 'react-icons/fi';
+import { useCurrentUser } from '~/hooks/useUser';
 
 interface TopbarProps {
   currentWorkspace: RoleType;
@@ -25,6 +27,18 @@ export const Topbar: React.FC<TopbarProps> = ({
   isDarkMode,
   onToggleTheme
 }) => {
+  const { data: currentUser } = useCurrentUser();
+
+  const userDisplayName = currentUser?.profile?.firstName && currentUser?.profile?.lastName
+    ? `${currentUser.profile.firstName} ${currentUser.profile.lastName}`
+    : (currentUser?.profile?.firstName || currentUser?.email || 'System User');
+
+  const userRoleDisplay = currentUser?.role
+    ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1).toLowerCase()
+    : (currentWorkspace === 'super-admin' ? 'Super Admin' : currentWorkspace.charAt(0).toUpperCase() + currentWorkspace.slice(1));
+
+  const userAvatar = currentUser?.avatarUrl || currentUser?.profile?.avatarUrl;
+
   const roleNameMap: Record<RoleType, string> = {
     'super-admin': 'Super Admin (Governance)',
     'school': 'School Admin Portal',
@@ -32,7 +46,8 @@ export const Topbar: React.FC<TopbarProps> = ({
     'mentor': 'Mentor Desk',
     'training': 'Training Institute Portal',
     'recruiter': 'Recruiter Talent Desk',
-    'company': 'Enterprise Company Portal'
+    'company': 'Enterprise Company Portal',
+    'parent': 'Parent & Family Intelligence Portal'
   };
 
   return (
@@ -52,7 +67,7 @@ export const Topbar: React.FC<TopbarProps> = ({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={`Search in ${roleNameMap[currentWorkspace]}...`}
-            className={`w-full pl-9 pr-4 py-2 rounded-xl text-xs transition focus:outline-none focus:ring-2 focus:ring-[#3665EE] ${
+            className={`w-full pl-9 pr-4 py-2 rounded-xl text-[14px] font-normal leading-normal transition focus:outline-none focus:ring-2 focus:ring-[#3665EE] ${
               isDarkMode 
                 ? 'bg-slate-800/80 border border-slate-700 text-white placeholder-slate-400' 
                 : 'bg-[#DEE9FF]/40 border border-[#C6D9FF] text-[#12163A] placeholder-[#6B7280]'
@@ -68,7 +83,7 @@ export const Topbar: React.FC<TopbarProps> = ({
           onClick={onToggleTheme}
           aria-label={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-[13px] font-semibold transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${
             isDarkMode 
               ? 'bg-slate-800 border-amber-500/40 text-amber-400 hover:bg-slate-700' 
               : 'bg-[#DEE9FF] border-[#C6D9FF] text-[#12163A] hover:bg-[#CBDDFF]'
@@ -104,17 +119,21 @@ export const Topbar: React.FC<TopbarProps> = ({
 
         <div className={`h-6 w-px ${isDarkMode ? 'bg-slate-800' : 'bg-slate-200'}`} />
 
-        {/* Profile Avatar Badge */}
-        <div className="flex items-center gap-2.5 hover:scale-105 transition-transform duration-200 cursor-pointer">
-          <div className="w-8 h-8 rounded-xl bg-[#12163A] text-white font-bold flex items-center justify-center text-xs shadow-md border border-[#3665EE]/40">
-            <FiUserCheck className="w-4 h-4 text-[#3665EE]" />
+        {/* Live Authenticated User Profile Badge */}
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-[#12163A] text-white font-bold flex items-center justify-center text-xs shadow-md border border-[#3665EE]/40 overflow-hidden">
+            {userAvatar ? (
+              <img src={userAvatar} alt={userDisplayName} className="w-full h-full object-cover" />
+            ) : (
+              <FiUser className="w-4 h-4 text-[#3665EE]" />
+            )}
           </div>
           <div className="hidden sm:block text-left">
-            <div className={`text-xs font-semibold leading-tight ${isDarkMode ? 'text-white' : 'text-[#12163A]'}`}>
-              System Administrator
+            <div className={`text-[13px] md:text-[14px] font-semibold leading-tight truncate max-w-[150px] ${isDarkMode ? 'text-white' : 'text-[#12163A]'}`} title={userDisplayName}>
+              {userDisplayName}
             </div>
-            <div className="text-[10px] font-medium text-[#3665EE]">
-              {currentWorkspace === 'super-admin' ? 'Super Admin' : currentWorkspace.charAt(0).toUpperCase() + currentWorkspace.slice(1)}
+            <div className="text-[12px] font-medium text-[#3665EE]">
+              {userRoleDisplay}
             </div>
           </div>
         </div>

@@ -48,7 +48,9 @@ export const ProfileDetails: React.FC<ProfileDetailsProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div className={`p-4 rounded-2xl border space-y-1 ${subCardClass}`}>
               <span className={`text-[11px] font-medium block ${textMuted}`}>Full Name</span>
-              <p className="font-bold text-sm text-slate-900 dark:text-white">{profile.fullName || 'N/A'}</p>
+              <p className="font-bold text-sm text-slate-900 dark:text-white">
+                {profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : (profile.fullName || 'N/A')}
+              </p>
             </div>
 
             <div className={`p-4 rounded-2xl border space-y-1 ${subCardClass}`}>
@@ -60,9 +62,9 @@ export const ProfileDetails: React.FC<ProfileDetailsProps> = ({
 
             <div className={`p-4 rounded-2xl border space-y-1 ${subCardClass}`}>
               <span className={`text-[11px] font-medium flex items-center gap-1 ${textMuted}`}>
-                <FiPhone className="w-3 h-3 text-blue-500" /> Mobile Number
+                <FiPhone className="w-3 h-3 text-blue-500" /> Phone Number
               </span>
-              <p className="font-bold text-sm text-slate-900 dark:text-white">{profile.mobile || 'N/A'}</p>
+              <p className="font-bold text-sm text-slate-900 dark:text-white">{profile.phoneNumber || profile.mobile || 'N/A'}</p>
             </div>
 
             <div className={`p-4 rounded-2xl border space-y-1 ${subCardClass}`}>

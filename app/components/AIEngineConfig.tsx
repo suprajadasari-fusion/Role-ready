@@ -109,7 +109,7 @@ export const AIEngineConfig: React.FC<AIEngineConfigProps> = ({ onSaveWeights, i
 
           {/* Microservices Health Dashboard */}
           <div className={`p-5 rounded-2xl border ${subCardClass}`}>
-            <h3 className={`font-bold text-sm mb-4 ${textHeading}`}>AI Microservice Telemetry</h3>
+            <h3 className={`font-bold text-sm mb-4 ${textHeading}`}>AI Engine Modules</h3>
             <div className="space-y-3 text-xs">
               {[
                 { name: "Neural Candidate Matcher v2.4", status: "Operational", latency: "18ms" },
