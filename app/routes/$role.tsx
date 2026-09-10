@@ -2,14 +2,15 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchEntities, fetchAuditLogs, addEntity, updateEntity, deleteEntity } from '../lib/api';
+import { getAccessToken, getRefreshToken, tryRefreshToken } from '../services/apiClient';
 import { RoleType, EcosystemEntity, StatusType } from '../lib/types';
 import { Sidebar } from '../components/Sidebar';
 import { Topbar } from '../components/Topbar';
 import { GrantAccessModal } from '../components/GrantAccessModal';
 import { EditModal } from '../components/EditModal';
 import { RoleWorkspaceViews } from '../components/RoleWorkspaceViews';
-import { SuperAdminDashboard } from '../components/dashboards/SuperAdminDashboard';
-import { FaCircleCheck, FaPlus } from 'react-icons/fa6';
+import { SuperAdminDashboard } from '../components/Pages/SuperAdminDashboard';
+import { FiCheckCircle, FiPlus } from 'react-icons/fi';
 
 export default function RoleDashboardRoute() {
   const params = useParams();
@@ -17,7 +18,47 @@ export default function RoleDashboardRoute() {
   const location = useLocation();
   const queryClient = useQueryClient();
 
+<<<<<<< HEAD
   // Singular and Plural Alias Mapping so URLs like /student, /discover, /schools work 100%
+=======
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  // Authentication Guard: Check access token or try transparent refresh before rendering
+  useEffect(() => {
+    let isMounted = true;
+    const verifySession = async () => {
+      const token = getAccessToken();
+      if (token) {
+        if (isMounted) setIsCheckingAuth(false);
+        return;
+      }
+
+      // If no access token in memory/storage, attempt refresh token rotation
+      const refreshToken = getRefreshToken();
+      if (refreshToken) {
+        try {
+          const newToken = await tryRefreshToken();
+          if (newToken && isMounted) {
+            setIsCheckingAuth(false);
+            return;
+          }
+        } catch {
+          // Token refresh failed
+        }
+      }
+
+      // If neither access token nor valid refresh token exists, redirect to /login
+      if (isMounted) {
+        navigate('/login', { replace: true });
+      }
+    };
+
+    verifySession();
+    return () => { isMounted = false; };
+  }, [navigate]);
+
+  // Singular and Plural Alias Mapping so URLs like /mentors, /schools, /colleges work 100%
+>>>>>>> origin/omsai
   const roleAliasMap: Record<string, RoleType> = {
     'student': 'student',
     'students': 'student',
@@ -45,7 +86,20 @@ export default function RoleDashboardRoute() {
     'hr': 'recruiter',
     
     'company': 'company',
+<<<<<<< HEAD
     'companies': 'company'
+=======
+    'companies': 'company',
+    'enterprise': 'company',
+
+    'parent': 'parent',
+    'parents': 'parent',
+    'family': 'parent',
+
+    'student': 'parent',
+    'students': 'parent',
+    'learner': 'parent'
+>>>>>>> origin/omsai
   };
 
   // Dedicated standalone module direct paths (e.g. /discover, /scholarships, /jobs)
@@ -56,7 +110,8 @@ export default function RoleDashboardRoute() {
 
   // Parse path segments reactively using useLocation()
   const pathSegments = location.pathname.split('/').filter(Boolean);
-  const rawPathRole = pathSegments[0]?.toLowerCase() || '';
+  const isPortalPrefix = pathSegments[0]?.toLowerCase() === 'portal';
+  const rawPathRole = isPortalPrefix ? (pathSegments[1]?.toLowerCase() || '') : (pathSegments[0]?.toLowerCase() || '');
   const rawParamRole = (params.role || '').toLowerCase();
 
   // Check if top segment is a standalone module directly (e.g. /jobs -> workspace=student, subview=jobs)
@@ -67,9 +122,15 @@ export default function RoleDashboardRoute() {
     : (roleAliasMap[rawParamRole] || roleAliasMap[rawPathRole] || 'student');
   const currentWorkspace: RoleType = resolvedRole;
 
+<<<<<<< HEAD
   const activeSubView = isDirectModule 
     ? rawPathRole 
     : ((params["*"] || pathSegments[1] || 'overview').toLowerCase().replace(/^\//, '') || 'overview');
+=======
+  // Synchronous, flicker-free activeSubView derived directly from URL location
+  const rawSubView = isPortalPrefix ? (pathSegments[2] || 'overview') : (params["*"] || pathSegments[1] || 'overview');
+  const activeSubView = rawSubView.toLowerCase().replace(/^\//, '') || 'overview';
+>>>>>>> origin/omsai
 
   const [activeRoleFilter, setActiveRoleFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -144,15 +205,17 @@ export default function RoleDashboardRoute() {
   };
 
   const handleWorkspaceChange = (role: RoleType) => {
-    navigate(`/${role}`);
+    const prefix = isPortalPrefix ? '/portal' : '';
+    navigate(`${prefix}/${role}`);
     showToast(`Switched to ${role.toUpperCase()} Workspace Portal!`);
   };
 
   const handleViewChange = (view: string) => {
+    const prefix = isPortalPrefix ? '/portal' : '';
     if (view === 'overview') {
-      navigate(`/${currentWorkspace}`);
+      navigate(`${prefix}/${currentWorkspace}`);
     } else {
-      navigate(`/${currentWorkspace}/${view}`);
+      navigate(`${prefix}/${currentWorkspace}/${view}`);
     }
   };
 
@@ -171,7 +234,8 @@ export default function RoleDashboardRoute() {
         'mentor': 'Mentor & Counselor Desk Overview',
         'training': 'Training Institute Portal Overview',
         'recruiter': 'Recruiter Talent Desk Overview',
-        'company': 'Enterprise Company Portal Overview'
+        'company': 'Enterprise Company Portal Overview',
+        'parent': 'Parent & Family Intelligence Portal Overview'
       };
       return portalNames[currentWorkspace] || 'Workspace Overview';
     }
@@ -184,9 +248,32 @@ export default function RoleDashboardRoute() {
         'mentor': 'Mentor Profile & Credentials Verification',
         'training': 'Training Academy Profile & Credentials',
         'recruiter': 'Recruiter Profile & Corporate Settings',
-        'company': 'Enterprise Company Profile & Verification'
+        'company': 'Enterprise Company Profile & Verification',
+        'parent': 'Parent Profile & Family Governance Settings'
       };
       return profileTitles[currentWorkspace] || 'User Profile & Settings';
+    }
+
+    if (currentWorkspace === 'parent') {
+      const parentTitles: Record<string, string> = {
+        'children': 'My Children & Student Credentials Desk',
+        'accounts': 'Family Accounts & Member Governance',
+        'attendance': 'Child Attendance & Classroom Presence',
+        'academic': 'Academic Performance & Subject Mastery Analysis',
+        'learning': 'Student Learning Progress & Course Tracks',
+        'career': 'Career Progress, DNA & Milestones Roadmap',
+        'career-reports': 'AI Career Guidance & Diagnostic Reports',
+        'family-reports': 'Family AI Guidance & Milestone Reports',
+        'scholarships': 'Scholarship Directory & Financial Aid Opportunities',
+        'mentors': '1-on-1 Mentor & Counselor Booking Desk',
+        'notifications': 'Family & Student Activity Notifications',
+        'subscription': 'Family Subscription & Seat Allocation Plans',
+        'settings': 'Parent Account Settings & Security',
+        'fees': 'Fee Management & Subscription Invoicing'
+      };
+      if (parentTitles[activeSubView]) {
+        return parentTitles[activeSubView];
+      }
     }
 
     const titles: Record<string, string> = {
@@ -211,11 +298,69 @@ export default function RoleDashboardRoute() {
       'assessments': 'Assessments & Career Readiness',
       'reports': 'Career & AI Intelligence Reports',
       'events': 'Events & Guidance Workshops',
+<<<<<<< HEAD
       'analytics': 'Student Analytics & Growth'
+=======
+      'analytics': 'Student Analytics & Growth',
+      'performance': 'Performance Monitoring Dashboard',
+      'placement': 'Placement & Internship Readiness Reports',
+      'notifications': 'Portal Notifications Desk',
+      'settings': 'School Governance & Settings',
+      'programs': 'Academic Programs & Degree Tracks',
+      'admissions': 'College Admissions & Cutoff Management',
+      'applications': 'Student Applications & Enrollment Pipeline',
+      'scholarships': 'Institutional Scholarship & Aid Cell',
+      'placement-cell': 'Campus Placement Cell & Drive Hub',
+      'industry-connect': 'Corporate Recruiter & Industry MoUs',
+      'availability': 'Slot Booking & Availability Calendar',
+      'student-requests': 'Student Counseling Booking Requests',
+      'video-sessions': 'Live 1-on-1 Video Counseling Room',
+      'guidance': 'Student Assessment Review & Career Guidance',
+      'ratings': 'Student Ratings & Session Reviews',
+      'wallet': 'Mentor Wallet Earnings & Payout Desk',
+      'verification': 'Company Profile & Enterprise Verification',
+      'campus-hiring': 'University Campus Hiring & Placement Drives',
+      'student-search': 'Student Talent Search & Candidate Database',
+      'ai-match': 'AI Neural Candidate Matcher Engine',
+      'hiring-analytics': 'Hiring Analytics & Placement Funnel',
+      'drives': 'Campus Placement Drives',
+      'skills': 'Student Skill Matrix & ATS Fit',
+      'recruiters': 'Corporate Recruiting Partners',
+      'offers': 'Offer Letters & Compensation (CTC)',
+      'calendar': 'Counseling Booking Calendar',
+      'mentees': 'Assigned Mentees Roster',
+      'counseling': 'Counseling Notes & Video Room',
+      'courses': 'Skill Courses & Curriculum Track',
+      'certs': 'Certifications Registry',
+      'hiring': 'Hiring Partner Enterprises',
+      'jobs': 'Job & Internship Requisitions',
+      'matcher': 'AI Candidate Matcher Engine',
+      'interviews': 'Scheduled Candidate Interviews',
+      'pipeline': 'Talent Funnel Pipeline',
+      'discovery': 'AI Career Discovery Engine',
+      'dna': 'Student Career DNA Profile',
+      'roadmap': 'Personalized Career Milestones Roadmap',
+      'resume': 'AI Student Resume & Portfolio Suite',
+      'learning': 'Student Learning Journey & Courses',
+      'colleges': 'College & University Explorer',
+      'mentors': '1-on-1 Mentor & Counselor Booking Desk',
+      'fees': 'Fee Management & Subscription Invoicing'
+>>>>>>> origin/omsai
     };
 
     return titles[activeSubView] || `${activeSubView.toUpperCase()} Workspace`;
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className={`min-h-screen flex flex-col items-center justify-center font-sans ${
+        isDarkMode ? 'bg-[#0f1228] text-white' : 'bg-slate-50 text-slate-900'
+      }`}>
+        <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-xs font-semibold text-slate-400">Verifying authentication session...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen flex w-full transition-colors duration-200 ${
@@ -252,6 +397,7 @@ export default function RoleDashboardRoute() {
         <main key={`${currentWorkspace}-${activeSubView}`} className="p-4 sm:p-6 lg:p-8 flex-1 animate-fade-in min-w-0 w-full" role="main">
           {/* Toast Notification Banner */}
           {toastMessage && (
+<<<<<<< HEAD
             <div role="status" aria-live="polite" className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl shadow-xl border border-blue-500/30 flex items-center gap-3 animate-bounce max-w-xs sm:max-w-md">
               <FaCircleCheck className="w-5 h-5 text-blue-400 shrink-0" />
               <span className="text-xs font-medium truncate">{toastMessage}</span>
@@ -262,6 +408,18 @@ export default function RoleDashboardRoute() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
             <div className="min-w-0">
               <h1 className={`text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight truncate ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+=======
+            <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl border border-blue-500/30 flex items-center gap-3 animate-bounce">
+              <FiCheckCircle className="w-5 h-5 text-blue-400" />
+              <span className="text-xs font-semibold">{toastMessage}</span>
+            </div>
+          )}
+
+          {/* Clean Single Title Page Header Banner */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div>
+              <h1 className={`text-[30px] md:text-[32px] font-bold leading-[1.2] tracking-[-0.02em] ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+>>>>>>> origin/omsai
                 {getSubViewTitle()}
               </h1>
             </div>
@@ -269,9 +427,13 @@ export default function RoleDashboardRoute() {
             {currentWorkspace === 'super-admin' && (activeSubView === 'access' || activeSubView === 'overview') && (
               <button
                 onClick={() => setIsGrantModalOpen(true)}
+<<<<<<< HEAD
                 className="bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-2 shrink-0 self-start sm:self-auto"
+=======
+                className="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-[14px] px-4 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-2"
+>>>>>>> origin/omsai
               >
-                <FaPlus className="w-3.5 h-3.5" />
+                <FiPlus className="w-4 h-4" />
                 <span>Provision Partner Access</span>
               </button>
             )}

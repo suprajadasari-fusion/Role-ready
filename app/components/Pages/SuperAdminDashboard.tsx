@@ -1,5 +1,7 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { EcosystemEntity, AuditLog, RoleType } from '../../lib/types';
+import { fetchAdminHealth } from '../../lib/api';
 import { MetricsGrid } from '../MetricsGrid';
 import { EntitiesTable } from '../EntitiesTable';
 import { RBACMatrix } from '../RBACMatrix';
@@ -21,7 +23,11 @@ import {
   FiUserCheck, 
   FiBriefcase, 
   FiGrid, 
-  FiCompass 
+  FiCompass,
+  FiCheckCircle,
+  FiActivity,
+  FiServer,
+  FiUsers
 } from 'react-icons/fi';
 >>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
 
@@ -56,6 +62,13 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
   onShowToast,
   isDarkMode
 }) => {
+  // Live Admin Health Query strictly from /api/v1/users/admin/health
+  const { data: adminHealth } = useQuery({
+    queryKey: ['adminHealth'],
+    queryFn: fetchAdminHealth,
+    retry: 1
+  });
+
   const totalSeats = entities.reduce((acc, curr) => acc + curr.seats, 0);
   const pendingCount = entities.filter(e => e.status === 'pending').length;
 
@@ -123,13 +136,15 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
         <h3 className={`font-semibold text-base mb-4 ${textHeading}`}>Registered Ecosystem Partner Breakdown</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
           {[
-            { name: "School Admins", count: "2 Registered", icon: FiBookOpen, role: 'school' },
-            { name: "College Admins", count: "1 Registered", icon: FiBookOpen, role: 'college' },
-            { name: "Mentors & Counselors", count: "1 Registered", icon: FiUserCheck, role: 'mentor' },
-            { name: "Training Academies", count: "2 Registered", icon: FiGrid, role: 'training' },
-            { name: "Recruiters & HR", count: "1 Registered", icon: FiBriefcase, role: 'recruiter' },
-            { name: "Companies", count: "1 Registered", icon: FiGrid, role: 'company' }
+            { name: "School Admins", role: 'school', icon: FiBookOpen },
+            { name: "College Admins", role: 'college', icon: FiBookOpen },
+            { name: "Mentors & Counselors", role: 'mentor', icon: FiUserCheck },
+            { name: "Training Academies", role: 'training', icon: FiGrid },
+            { name: "Recruiters & HR", role: 'recruiter', icon: FiBriefcase },
+            { name: "Companies", role: 'company', icon: FiGrid },
+            { name: "Parents & Families", role: 'parent', icon: FiUsers }
           ].map((v, i) => {
+            const count = entities.filter(e => e.role === v.role).length;
             const Icon = v.icon;
             return (
               <div 
@@ -140,12 +155,25 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
                 <div className="flex items-center gap-3">
                   <Icon className="w-4 h-4 text-blue-500" />
                   <div>
+<<<<<<< HEAD:app/components/dashboards/SuperAdminDashboard.tsx
                     <div className={`font-semibold text-sm ${textHeading}`}>{v.name}</div>
                     <div className={`text-xs font-normal ${textMuted}`}>{v.count}</div>
                   </div>
                 </div>
                 <span className="text-xs font-medium bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-md border border-emerald-500/30">
                   Active
+=======
+                    <div className={`font-bold ${textHeading}`}>{v.name}</div>
+                    <div className={`text-[11px] ${textMuted}`}>{count} Registered</div>
+                  </div>
+                </div>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
+                  count > 0 
+                    ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' 
+                    : 'bg-slate-500/20 text-slate-400 border-slate-500/30'
+                }`}>
+                  {count > 0 ? 'Active' : 'Standby'}
+>>>>>>> origin/omsai:app/components/Pages/SuperAdminDashboard.tsx
                 </span>
               </div>
             );
@@ -159,6 +187,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
         <div className={`rounded-2xl border p-6 ${
           isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-blue-100 text-slate-900 shadow-xs'
         }`}>
+<<<<<<< HEAD:app/components/dashboards/SuperAdminDashboard.tsx
           <h3 className="font-semibold text-base mb-3">TanStack Query Cache Telemetry</h3>
           <div className="space-y-2 text-sm">
             <div className={`flex justify-between p-2.5 rounded-xl ${
@@ -166,18 +195,42 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({
             }`}>
               <span>Entities Cached Records</span>
               <strong className="text-blue-500 font-semibold">{entities.length} items</strong>
+=======
+          <h3 className="font-bold text-sm mb-3 flex items-center gap-2">
+            <FiServer className="w-4 h-4 text-emerald-400" />
+            <span>Platform System Health</span>
+          </h3>
+          <div className="space-y-2 text-xs">
+            <div className={`flex justify-between p-2.5 rounded-xl ${
+              isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-blue-50/50 text-slate-600'
+            }`}>
+              <span>Database Status</span>
+              <strong className={adminHealth?.dbConnected ? "text-emerald-400 font-bold" : "text-amber-400 font-bold"}>
+                {adminHealth?.dbConnected ? "Connected (Healthy)" : "Checking..."}
+              </strong>
+>>>>>>> origin/omsai:app/components/Pages/SuperAdminDashboard.tsx
             </div>
             <div className={`flex justify-between p-2.5 rounded-xl ${
               isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-blue-50/50 text-slate-600'
             }`}>
+<<<<<<< HEAD:app/components/dashboards/SuperAdminDashboard.tsx
               <span>Audit Stream Cached Records</span>
               <strong className="text-blue-500 font-semibold">{auditLogs.length} logs</strong>
+=======
+              <span>System Status</span>
+              <strong className="text-emerald-400 font-bold">{adminHealth?.status || "Online"}</strong>
+>>>>>>> origin/omsai:app/components/Pages/SuperAdminDashboard.tsx
             </div>
             <div className={`flex justify-between p-2.5 rounded-xl ${
               isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-blue-50/50 text-slate-600'
             }`}>
+<<<<<<< HEAD:app/components/dashboards/SuperAdminDashboard.tsx
               <span>Active Workspace</span>
               <span className="text-blue-500 font-mono font-semibold">Super Admin</span>
+=======
+              <span>Platform Environment</span>
+              <span className="text-emerald-400 font-semibold text-[11px]">Production (Active)</span>
+>>>>>>> origin/omsai:app/components/Pages/SuperAdminDashboard.tsx
             </div>
           </div>
         </div>

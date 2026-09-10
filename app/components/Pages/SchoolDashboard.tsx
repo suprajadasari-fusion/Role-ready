@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   FiPieChart, 
   FiUsers, 
@@ -28,6 +29,8 @@ import {
 } from 'react-icons/fi';
 import { ActionModal } from '../ActionModal';
 import { VideoCallModal } from '../VideoCallModal';
+import { StudentToolsViews } from '../StudentToolsViews';
+import { schoolService, SchoolProfile } from '../../services/schoolService';
 
 interface SchoolDashboardProps {
   activeSubView: string;
@@ -40,6 +43,8 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
   onShowToast,
   isDarkMode
 }) => {
+  const queryClient = useQueryClient();
+
   // State for Student Roster & Student Details Modal (School Admin View)
   const [selectedGrade, setSelectedGrade] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -62,10 +67,40 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
 
   const [schoolProfile, setSchoolProfile] = useState({
     name: "St. Xavier's International School",
-    affiliation: "CBSE Affiliation #10301 Verified",
+    affiliation: "CBSE Affiliation Verified",
     principal: "Dr. A. K. Sharma",
     email: "principal@stxaviers.edu",
     year: "2026-2027"
+  });
+
+  // Live queries
+  const { data: schoolData, isLoading } = useQuery({
+    queryKey: ['schoolProfile'],
+    queryFn: () => schoolService.getSchoolProfile()
+  });
+
+  const { data: cohortAptitude } = useQuery({
+    queryKey: ['cohortAptitude'],
+    queryFn: () => schoolService.getCohortAptitudeAnalytics()
+  });
+
+  const { data: cohortSkills } = useQuery({
+    queryKey: ['cohortSkills'],
+    queryFn: () => schoolService.getCohortSkillAnalytics()
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (updates: {
+      schoolProfile?: SchoolProfile;
+      students?: any[];
+      teachers?: any[];
+    }) => schoolService.updateSchoolData(updates),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['schoolProfile'] });
+    },
+    onError: (err: any) => {
+      onShowToast("Unable to save changes. Please try again.");
+    }
   });
 
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
@@ -75,47 +110,7 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
     fields: []
   });
 
-  const [teachersList, setTeachersList] = useState([
-    {
-      id: "TCH-201",
-      name: "Dr. Rajesh Verma",
-      qualification: "Ph.D. Computer Science & AI (IIT Delhi)",
-      dept: "Computer Science & AI",
-      subject: "Artificial Intelligence & Machine Learning",
-      classes: "Grade 11-A, 12-A",
-      studentsCount: "120 Students Assigned",
-      experience: "14 Years Teaching Experience",
-      email: "rajesh.verma@dpsrkp.edu.in",
-      rating: "4.9 / 5.0 (Master Faculty)",
-      projects: "18 AI Science Exhibition Projects Supervised"
-    },
-    {
-      id: "TCH-202",
-      name: "Prof. Sunita Rao",
-      qualification: "M.Sc Biotech & Molecular Genetics (AIIMS)",
-      dept: "Science & Biotech",
-      subject: "Biology & Genetics",
-      classes: "Grade 11-B, 12-B",
-      studentsCount: "115 Students Assigned",
-      experience: "11 Years Teaching Experience",
-      email: "sunita.rao@dpsrkp.edu.in",
-      rating: "4.8 / 5.0 (Senior Mentor)",
-      projects: "14 Bio-Informatics Research Cohorts"
-    },
-    {
-      id: "TCH-203",
-      name: "Ketan Mehta",
-      qualification: "M.Tech Financial Mathematics (ISI Kolkata)",
-      dept: "Mathematics & Fintech",
-      subject: "Advanced Stochastics & Calculus",
-      classes: "Grade 12-C",
-      studentsCount: "90 Students Assigned",
-      experience: "9 Years Teaching Experience",
-      email: "ketan.mehta@dpsrkp.edu.in",
-      rating: "4.9 / 5.0 (Math Specialist)",
-      projects: "12 Algorithmic Trading Simulations"
-    }
-  ]);
+  const [teachersList, setTeachersList] = useState<any[]>([]);
 
   const cardClass = isDarkMode
     ? 'bg-slate-900 border-slate-800 text-white shadow-xl'
@@ -129,129 +124,8 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
   const textHeading = isDarkMode ? 'text-white' : 'text-slate-900';
   const borderDivider = isDarkMode ? 'border-slate-800' : 'border-slate-100';
 
-  // Sample School Students Data State
-  const [students, setStudents] = useState([
-    {
-      id: "STU-8801",
-      name: "Aarav Sharma",
-      grade: "Grade 12",
-      section: "Section A",
-      careerScore: 94,
-      assessmentStatus: "Completed (4/4)",
-      careerDnaStatus: "RIE Verified",
-      learningProgress: "88%",
-      skillProgress: "92%",
-      resumeScore: "88/100",
-      placementReadiness: "High Readiness",
-      status: "Active",
-      email: "aarav.sharma@school.edu",
-      careerGoal: "AI & Neural Systems Engineer",
-      hollandCode: "RIE (Realistic • Investigative • Enterprising)",
-      topSkills: ["Python", "PyTorch", "System Design"],
-      topCollege: "IIT Bombay",
-      topScholarship: "National STEM Leadership Aid (₹3.5L/yr)"
-    },
-    {
-      id: "STU-8802",
-      name: "Ananya Roy",
-      grade: "Grade 11",
-      section: "Section B",
-      careerScore: 91,
-      assessmentStatus: "Completed (4/4)",
-      careerDnaStatus: "ISA Verified",
-      learningProgress: "92%",
-      skillProgress: "89%",
-      resumeScore: "85/100",
-      placementReadiness: "High Readiness",
-      status: "Active",
-      email: "ananya.roy@school.edu",
-      careerGoal: "Biotechnology Researcher",
-      hollandCode: "ISA (Investigative • Social • Artistic)",
-      topSkills: ["Genomics", "R", "Cell Culture"],
-      topCollege: "BITS Pilani",
-      topScholarship: "Global Innovation Grant (₹2.0L/yr)"
-    },
-    {
-      id: "STU-8803",
-      name: "Karan Patel",
-      grade: "Grade 12",
-      section: "Section C",
-      careerScore: 86,
-      assessmentStatus: "Completed (3/4)",
-      careerDnaStatus: "EAS Verified",
-      learningProgress: "78%",
-      skillProgress: "82%",
-      resumeScore: "79/100",
-      placementReadiness: "Moderate Readiness",
-      status: "Active",
-      email: "karan.patel@school.edu",
-      careerGoal: "Fintech Analyst",
-      hollandCode: "EAS (Enterprising • Artistic • Social)",
-      topSkills: ["Financial Modeling", "Excel", "Python"],
-      topCollege: "IIIT Hyderabad",
-      topScholarship: "State Higher Ed Grant (₹1.5L/yr)"
-    },
-    {
-      id: "STU-8804",
-      name: "Riya Sen",
-      grade: "Grade 10",
-      section: "Section A",
-      careerScore: 89,
-      assessmentStatus: "Completed (4/4)",
-      careerDnaStatus: "ART Verified",
-      learningProgress: "84%",
-      skillProgress: "86%",
-      resumeScore: "82/100",
-      placementReadiness: "High Readiness",
-      status: "Active",
-      email: "riya.sen@school.edu",
-      careerGoal: "UI/UX Product Designer",
-      hollandCode: "ART (Artistic • Realistic • Technical)",
-      topSkills: ["Figma", "User Research", "Prototyping"],
-      topCollege: "NID Ahmedabad",
-      topScholarship: "Creative Merit Scholarship (₹1.8L/yr)"
-    },
-    {
-      id: "STU-8805",
-      name: "Devansh Verma",
-      grade: "Grade 9",
-      section: "Section B",
-      careerScore: 78,
-      assessmentStatus: "Pending (2/4)",
-      careerDnaStatus: "In Progress",
-      learningProgress: "65%",
-      skillProgress: "70%",
-      resumeScore: "70/100",
-      placementReadiness: "Needs Attention",
-      status: "Active",
-      email: "devansh.v@school.edu",
-      careerGoal: "Robotics Technician",
-      hollandCode: "RIC (Realistic • Investigative • Conventional)",
-      topSkills: ["C++", "Arduino", "3D Modeling"],
-      topCollege: "DTU Delhi",
-      topScholarship: "State Talent Search Aid (₹1.0L/yr)"
-    },
-    {
-      id: "STU-8806",
-      name: "Priya Sharma",
-      grade: "Grade 8",
-      section: "Section A",
-      careerScore: 82,
-      assessmentStatus: "Completed (4/4)",
-      careerDnaStatus: "SIA Verified",
-      learningProgress: "80%",
-      skillProgress: "78%",
-      resumeScore: "75/100",
-      placementReadiness: "Developing",
-      status: "Active",
-      email: "priya.s@school.edu",
-      careerGoal: "Environmental Scientist",
-      hollandCode: "SIA (Social • Investigative • Artistic)",
-      topSkills: ["Data Collection", "Public Speaking", "Biology"],
-      topCollege: "St. Xavier's College",
-      topScholarship: "Green Earth Fellowship (₹1.2L/yr)"
-    }
-  ]);
+  // Live School Students Roster State
+  const [students, setStudents] = useState<any[]>([]);
 
   const filteredStudents = students.filter(s => {
     const matchesGrade = selectedGrade === 'All' || s.grade === selectedGrade;
@@ -276,6 +150,18 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
     setActionModalConfig({ title, subtitle, fields });
     setIsActionModalOpen(true);
   };
+
+  useEffect(() => {
+    if (schoolData) {
+      if (schoolData.profile) setSchoolProfile(schoolData.profile);
+      if (Array.isArray(schoolData.teachers) && schoolData.teachers.length > 0) {
+        setTeachersList(schoolData.teachers);
+      }
+      if (Array.isArray(schoolData.students) && schoolData.students.length > 0) {
+        setStudents(schoolData.students);
+      }
+    }
+  }, [schoolData]);
 
   const handleModalFormSubmit = (data: Record<string, string>) => {
     if (actionModalConfig.title === "Onboard Student Batch") {
@@ -305,9 +191,12 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
         topScholarship: "National STEM Leadership Aid (₹3.5L/yr)"
       };
 
-      setStudents(prev => [newStudent, ...prev]);
+      const updated = [newStudent, ...students];
+      setStudents(updated);
+      updateMutation.mutate({ students: updated });
       onShowToast(`Successfully onboarded student: ${newStudent.name} (${newStudent.grade})!`);
     } else if (actionModalConfig.title === "Add Teacher") {
+<<<<<<< HEAD:app/components/dashboards/SchoolDashboard.tsx
       const teacherName = data.name || "New Faculty Member";
       const teacherDept = data.department || "Computer Science & Tech";
       const teacherSubject = data.subject || "STEM & AI Fundamentals";
@@ -350,6 +239,24 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
       };
       setEventsList(prev => [newEv, ...prev]);
       onShowToast(`Scheduled new event: ${newEv.title}!`);
+=======
+      const newTch = {
+        id: `TCH-${Math.floor(204 + Math.random() * 800)}`,
+        name: data.name || "Faculty Member",
+        qualification: "M.Sc / B.Ed",
+        dept: data.department || "Academic Department",
+        subject: data.department || "General Subject",
+        classes: "Grade 10, 11",
+        studentsCount: "60 Students Assigned",
+        experience: "5 Years Experience",
+        email: `${(data.name || 'faculty').toLowerCase().replace(/\s+/g, '.')}@school.edu`,
+        rating: "4.8 / 5.0"
+      };
+      const updated = [newTch, ...teachersList];
+      setTeachersList(updated);
+      updateMutation.mutate({ teachers: updated });
+      onShowToast(`Successfully added teacher: ${newTch.name}!`);
+>>>>>>> origin/omsai:app/components/Pages/SchoolDashboard.tsx
     } else {
       onShowToast(`Action completed: ${actionModalConfig.title}`);
     }
@@ -368,15 +275,15 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
 
     setIsSavingEdit(true);
 
-    setTimeout(() => {
-      setStudents(prev => prev.map(s => s.id === editingStudent.id ? { ...s, ...editingStudent } : s));
-      if (selectedStudent && selectedStudent.id === editingStudent.id) {
-        setSelectedStudent((prev: any) => (prev ? { ...prev, ...editingStudent } : null));
-      }
-      setIsSavingEdit(false);
-      onShowToast(`Successfully saved changes for ${editingStudent.name} (${editingStudent.id})!`);
-      setEditingStudent(null);
-    }, 450);
+    const updated = students.map(s => s.id === editingStudent.id ? { ...s, ...editingStudent } : s);
+    setStudents(updated);
+    if (selectedStudent && selectedStudent.id === editingStudent.id) {
+      setSelectedStudent((prev: any) => (prev ? { ...prev, ...editingStudent } : null));
+    }
+    updateMutation.mutate({ students: updated });
+    setIsSavingEdit(false);
+    onShowToast(`Successfully saved changes for ${editingStudent.name} (${editingStudent.id})!`);
+    setEditingStudent(null);
   };
 
   // Handle Save Teacher Changes
@@ -391,35 +298,51 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
 
     setIsSavingEdit(true);
 
-    setTimeout(() => {
-      setTeachersList(prev => prev.map(t => t.id === editingTeacher.id ? { ...t, ...editingTeacher } : t));
-      if (selectedTeacher && selectedTeacher.id === editingTeacher.id) {
-        setSelectedTeacher((prev: any) => (prev ? { ...prev, ...editingTeacher } : null));
-      }
-      setIsSavingEdit(false);
-      onShowToast(`Updated faculty profile for ${editingTeacher.name} (${editingTeacher.id})!`);
-      setEditingTeacher(null);
-    }, 450);
+    const updated = teachersList.map(t => t.id === editingTeacher.id ? { ...t, ...editingTeacher } : t);
+    setTeachersList(updated);
+    if (selectedTeacher && selectedTeacher.id === editingTeacher.id) {
+      setSelectedTeacher((prev: any) => (prev ? { ...prev, ...editingTeacher } : null));
+    }
+    updateMutation.mutate({ teachers: updated });
+    setIsSavingEdit(false);
+    onShowToast(`Updated faculty profile for ${editingTeacher.name} (${editingTeacher.id})!`);
+    setEditingTeacher(null);
   };
 
   // Handle Save School Profile
   const handleSaveSchoolProfile = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSavingEdit(true);
-    setTimeout(() => {
-      setIsSavingEdit(false);
-      setIsEditingSchoolProfile(false);
-      onShowToast("Successfully updated School Profile & Accreditation details!");
-    }, 450);
+    updateMutation.mutate({ schoolProfile });
+    setIsSavingEdit(false);
+    setIsEditingSchoolProfile(false);
+    onShowToast("Successfully updated School Profile & Accreditation details!");
   };
+
+  if (['discovery', 'assessment', 'psychometric', 'dna', 'ai-recommendations', 'scholarships', 'colleges', 'roadmap', 'resume-ats', 'learning'].includes(activeSubView)) {
+    return <StudentToolsViews activeSubView={activeSubView} onShowToast={onShowToast} isDarkMode={isDarkMode} />;
+  }
 
   const renderContent = () => {
     // 1. DASHBOARD OVERVIEW
     if (activeSubView === 'overview') {
+      const totalStudents = students.length;
+      const totalTeachers = teachersList.length;
+      const completedCount = students.filter(s => s.assessmentStatus?.toLowerCase().includes('completed')).length;
+      const testPercent = totalStudents > 0 ? ((completedCount / totalStudents) * 100).toFixed(1) : "0.0";
+      const avgReadiness = totalStudents > 0 
+        ? (students.reduce((acc, s) => acc + (Number(s.careerScore) || 0), 0) / totalStudents).toFixed(1)
+        : "0.0";
+      const attentionCount = students.filter(s => s.placementReadiness?.toLowerCase().includes('needs') || (s.careerScore || 0) < 80).length;
+      const placementCount = students.filter(s => s.placementReadiness?.toLowerCase().includes('high')).length;
+      const placementPercent = totalStudents > 0 ? Math.round((placementCount / totalStudents) * 100) : 0;
+      const grades = ['Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'];
+
       return (
         <div className="space-y-6 font-sans">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="p-6 rounded-[24px] bg-[#12163A] text-white shadow-md border border-[#12163A] space-y-2 hover-card-lift">
+<<<<<<< HEAD:app/components/dashboards/SchoolDashboard.tsx
               <span className="font-medium text-[13px] block text-slate-300">Total Students (Grades 8-12)</span>
               <div className="text-2xl lg:text-3xl font-bold tracking-tight text-white">{students.length + 3814}</div>
               <span className="text-xs font-medium text-[#E4F4EC] bg-[#E4F4EC]/10 px-2 py-0.5 rounded-full inline-block">100% Active Profiles</span>
@@ -441,12 +364,38 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
               <span className="font-medium text-[13px] block text-[#4B5563]">Avg Career Readiness Score</span>
               <div className="text-2xl lg:text-3xl font-bold tracking-tight text-[#12163A]">88.2 / 100</div>
               <span className="text-xs font-medium text-[#3665EE]">Top 5% Regionally</span>
+=======
+              <span className="font-semibold block text-slate-300">Total Students (Grades 8-12)</span>
+              <div className="text-3xl font-extrabold text-white">{totalStudents}</div>
+              <span className="text-[11px] font-bold text-[#E4F4EC] bg-[#E4F4EC]/10 px-2 py-0.5 rounded-full inline-block">
+                {totalStudents > 0 ? 'Live Roster Active' : 'Roster Empty'}
+              </span>
+            </div>
+
+            <div className="p-6 rounded-[24px] bg-[#F6E6D8] text-[#12163A] shadow-sm border border-[#EAD0BC] space-y-2 hover-card-lift">
+              <span className="font-semibold block text-[#4B5563]">Total Teachers & Mentors</span>
+              <div className="text-3xl font-extrabold text-[#12163A]">{totalTeachers}</div>
+              <span className="text-[11px] font-bold text-[#12163A]/70">Registered Faculty</span>
+            </div>
+
+            <div className="p-6 rounded-[24px] bg-[#DEE9FF] text-[#12163A] shadow-sm border border-[#C6D9FF] space-y-2 hover-card-lift">
+              <span className="font-semibold block text-[#4B5563]">Assessment Completion</span>
+              <div className="text-3xl font-extrabold text-[#3665EE]">{testPercent}%</div>
+              <span className="text-[11px] font-bold text-[#12163A]">{completedCount} / {totalStudents} Tested</span>
+            </div>
+
+            <div className="p-6 rounded-[24px] bg-[#E4F4EC] text-[#12163A] shadow-sm border border-[#C3E6D5] space-y-2 hover-card-lift">
+              <span className="font-semibold block text-[#4B5563]">Avg Career Readiness Score</span>
+              <div className="text-3xl font-extrabold text-[#12163A]">{avgReadiness} / 100</div>
+              <span className="text-[11px] font-bold text-[#3665EE]">Live Cohort Metric</span>
+>>>>>>> origin/omsai:app/components/Pages/SchoolDashboard.tsx
             </div>
           </div>
 
           <div className="p-6 rounded-[24px] bg-white border border-slate-200 shadow-xs space-y-4">
             <h3 className="font-semibold text-base text-[#12163A]">Grade Enrolment & Career DNA Status</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+<<<<<<< HEAD:app/components/dashboards/SchoolDashboard.tsx
               {[
                 { grade: "Grade 8", count: 620, readiness: "76% Ready", bg: "bg-[#DEE9FF]", border: "border-[#C6D9FF]" },
                 { grade: "Grade 9", count: 780, readiness: "82% Ready", bg: "bg-[#F6E6D8]", border: "border-[#EAD0BC]" },
@@ -460,25 +409,52 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                   <span className={`text-xs font-medium ${g.dark ? 'text-[#E4F4EC]' : 'text-[#3665EE]'}`}>{g.readiness}</span>
                 </div>
               ))}
+=======
+              {grades.map((g, i) => {
+                const count = students.filter(s => s.grade === g).length;
+                const gradeStudents = students.filter(s => s.grade === g);
+                const gradeAvg = gradeStudents.length > 0
+                  ? Math.round(gradeStudents.reduce((acc, s) => acc + (Number(s.careerScore) || 0), 0) / gradeStudents.length)
+                  : 0;
+                const dark = g === 'Grade 12';
+                return (
+                  <div key={i} className={`p-4 rounded-[20px] border text-center ${i % 2 === 0 ? "bg-[#DEE9FF] border-[#C6D9FF]" : "bg-[#F6E6D8] border-[#EAD0BC]"} ${dark ? 'bg-[#12163A] border-[#12163A] text-white' : 'text-[#12163A]'} hover-card-lift`}>
+                    <span className="font-bold block text-xs">{g}</span>
+                    <div className="text-2xl font-extrabold my-1">{count}</div>
+                    <span className={`text-[10px] font-bold ${dark ? 'text-[#E4F4EC]' : 'text-[#3665EE]'}`}>{gradeAvg}% Ready</span>
+                  </div>
+                );
+              })}
+>>>>>>> origin/omsai:app/components/Pages/SchoolDashboard.tsx
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-sm">
             <div className="p-6 rounded-[24px] bg-[#DEE9FF] text-[#12163A] border border-[#C6D9FF] shadow-xs space-y-3">
               <div className="flex items-center justify-between">
+<<<<<<< HEAD:app/components/dashboards/SchoolDashboard.tsx
                 <h4 className="font-semibold text-base text-[#12163A]">Learning Progress</h4>
                 <span className="font-semibold text-sm text-[#3665EE]">86.4% Avg</span>
+=======
+                <h4 className="font-bold text-sm text-[#12163A]">Learning Progress</h4>
+                <span className="font-bold text-[#3665EE]">{testPercent}% Avg</span>
+>>>>>>> origin/omsai:app/components/Pages/SchoolDashboard.tsx
               </div>
               <p className="text-sm font-normal text-[#4B5563]">Course completion rates across AI, STEM, & Skill tracks</p>
               <div className="w-full h-2.5 bg-white/80 rounded-full overflow-hidden">
-                <div className="h-full bg-[#3665EE] rounded-full" style={{ width: '86%' }} />
+                <div className="h-full bg-[#3665EE] rounded-full" style={{ width: `${testPercent}%` }} />
               </div>
             </div>
 
             <div className="p-6 rounded-[24px] bg-[#F6E6D8] text-[#12163A] border border-[#EAD0BC] shadow-xs space-y-3">
               <div className="flex items-center justify-between">
+<<<<<<< HEAD:app/components/dashboards/SchoolDashboard.tsx
                 <h4 className="font-semibold text-base text-[#12163A]">Students Requiring Attention</h4>
                 <span className="font-medium text-xs text-[#12163A] bg-[#12163A]/10 px-2.5 py-0.5 rounded-full">42 Students</span>
+=======
+                <h4 className="font-bold text-sm text-[#12163A]">Students Requiring Attention</h4>
+                <span className="font-bold text-[#12163A] bg-[#12163A]/10 px-2.5 py-0.5 rounded-full">{attentionCount} Students</span>
+>>>>>>> origin/omsai:app/components/Pages/SchoolDashboard.tsx
               </div>
               <p className="text-sm font-normal text-[#4B5563]">Incomplete assessments or low career readiness score</p>
               <button 
@@ -491,12 +467,17 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
 
             <div className="p-6 rounded-[24px] bg-[#E4F4EC] text-[#12163A] border border-[#C3E6D5] shadow-xs space-y-3">
               <div className="flex items-center justify-between">
+<<<<<<< HEAD:app/components/dashboards/SchoolDashboard.tsx
                 <h4 className="font-semibold text-base text-[#12163A]">Placement Readiness</h4>
                 <span className="font-semibold text-sm text-[#12163A]">78% Placement Ready</span>
+=======
+                <h4 className="font-bold text-sm text-[#12163A]">Placement Readiness</h4>
+                <span className="font-bold text-[#12163A]">{placementPercent}% Placement Ready</span>
+>>>>>>> origin/omsai:app/components/Pages/SchoolDashboard.tsx
               </div>
               <p className="text-sm font-normal text-[#4B5563]">Grade 11 & 12 students qualified for internships & admissions</p>
               <div className="w-full h-2.5 bg-white/80 rounded-full overflow-hidden">
-                <div className="h-full bg-[#3665EE] rounded-full" style={{ width: '78%' }} />
+                <div className="h-full bg-[#3665EE] rounded-full" style={{ width: `${placementPercent}%` }} />
               </div>
             </div>
           </div>
@@ -596,12 +577,28 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                     <th className="p-3.5 text-right">Action</th>
                   </tr>
                 </thead>
+<<<<<<< HEAD:app/components/dashboards/SchoolDashboard.tsx
                 <tbody className="divide-y divide-[#C6D9FF]/60 text-sm font-normal">
                   {filteredStudents.map((s) => (
                     <tr key={s.id} className="hover:bg-[#DEE9FF]/30 transition-colors">
                       <td className="p-3.5 font-medium text-[#12163A]">
                         <div>{s.name} ({s.grade} - {s.section})</div>
                         <div className="text-xs font-normal text-[#6B7280]">{s.email}</div>
+=======
+                <tbody className="divide-y divide-slate-100">
+                  {filteredStudents.length === 0 ? (
+                    <tr>
+                      <td colSpan={10} className="p-8 text-center text-xs text-slate-400">
+                        No students found in roster. Click '+ Onboard Student Batch' to add students.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredStudents.map((s) => (
+                    <tr key={s.id} className="hover:bg-[#DEE9FF]/20 transition-colors">
+                      <td className="p-3.5 font-bold text-[#12163A]">
+                        <div>{s.name}</div>
+                        <div className="text-[10px] font-normal text-[#6B7280]">{s.email}</div>
+>>>>>>> origin/omsai:app/components/Pages/SchoolDashboard.tsx
                       </td>
                       <td className="p-3.5 font-mono text-xs text-[#3665EE]">{s.id}</td>
                       <td className="p-3.5 font-semibold text-[#3665EE]">{s.careerScore} / 100</td>
@@ -650,7 +647,7 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
 >>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
                       </td>
                     </tr>
-                  ))}
+                  )))}
                 </tbody>
               </table>
             </div>
@@ -823,7 +820,11 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                 <FiGrid className="w-5 h-5 text-[#3665EE]" /> Teacher & Faculty Management
 >>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
               </h2>
+<<<<<<< HEAD:app/components/dashboards/SchoolDashboard.tsx
               <p className="text-sm font-normal text-[#6B7280]">142 Registered school teachers & career mentors across departments</p>
+=======
+              <p className="text-[#6B7280]">{teachersList.length} Registered school teachers & career mentors across departments</p>
+>>>>>>> origin/omsai:app/components/Pages/SchoolDashboard.tsx
             </div>
             <button 
               onClick={() => openTriggerModal("Add Teacher", "Register a new teacher or mentor", [
@@ -840,6 +841,7 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
           </div>
 
           <div className="space-y-3">
+<<<<<<< HEAD:app/components/dashboards/SchoolDashboard.tsx
             {teachersList.map((t, i) => (
               <div key={i} className="p-4 rounded-[20px] border bg-[#DEE9FF] border-[#C6D9FF] flex items-center justify-between text-[#12163A] transition-all hover:shadow-md">
                 <div>
@@ -871,8 +873,39 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                   </button>
                 </div>
 >>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
+=======
+            {teachersList.length === 0 ? (
+              <div className="py-12 text-center text-xs text-slate-400">
+                <FiGrid className="w-8 h-8 mx-auto text-blue-400 mb-2 opacity-50" />
+                No teachers or mentors registered yet. Click '+ Add Teacher' to onboard faculty.
+>>>>>>> origin/omsai:app/components/Pages/SchoolDashboard.tsx
               </div>
-            ))}
+            ) : (
+              teachersList.map((t, i) => (
+                <div key={i} className="p-4 rounded-[20px] border bg-[#DEE9FF] border-[#C6D9FF] flex items-center justify-between text-[#12163A] transition-all hover:shadow-md">
+                  <div>
+                    <h4 className="font-bold text-sm text-[#12163A]">{t.name}</h4>
+                    <span className="text-[#3665EE] font-semibold">{t.dept} • {t.subject}</span>
+                    <div className="text-[11px] text-[#4B5563]">{t.classes} • Assigned: {t.studentsCount}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => setEditingTeacher({ ...t })}
+                      className="bg-[#3665EE] hover:bg-[#2A54D5] text-white font-bold px-3 py-1.5 rounded-xl cursor-pointer transition hover:scale-105 active:scale-95 shadow-md flex items-center gap-1.5"
+                      title={`Edit ${t.name}'s Profile`}
+                    >
+                      <FiEdit2 className="w-3.5 h-3.5" /> Edit
+                    </button>
+                    <button 
+                      onClick={() => setSelectedTeacher(t)}
+                      className="bg-[#12163A] hover:bg-[#1A2050] text-white font-bold px-3.5 py-1.5 rounded-xl cursor-pointer transition hover:scale-105 active:scale-95 shadow-md flex items-center gap-1.5"
+                    >
+                      <FiEye className="w-3.5 h-3.5" /> View
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       );
@@ -996,6 +1029,7 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
           </div>
 
           <div className="space-y-3">
+<<<<<<< HEAD:app/components/dashboards/SchoolDashboard.tsx
 <<<<<<< HEAD
             {eventsList.map((ev, i) => (
               <div key={i} className={`p-4 rounded-[20px] border flex items-center justify-between ${ev.bg} ${ev.border} text-[#12163A]`}>
@@ -1029,8 +1063,36 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
                   </button>
                 </div>
 >>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
+=======
+            {(schoolData?.events && schoolData.events.length > 0) ? (
+              schoolData.events.map((ev, i) => (
+                <div key={i} className="p-4 rounded-[20px] border flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#E4F4EC] border-[#C3E6D5] text-[#12163A] hover-card-lift">
+                  <div>
+                    <h4 className="font-bold text-sm text-[#12163A]">{ev.title}</h4>
+                    <span className="text-[#3665EE] font-semibold block sm:inline">{ev.date}</span>
+                    <div className="text-[11px] text-[#4B5563]">Speaker: <span className="font-bold text-[#12163A]">{ev.speaker}</span></div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setVideoSessionConfig({ title: ev.title, hostName: ev.speaker });
+                        setIsVideoCallOpen(true);
+                      }}
+                      className="bg-[#12163A] hover:bg-[#1A2050] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md hover:scale-105 active:scale-95 text-xs shrink-0"
+                    >
+                      <FiVideo className="w-4 h-4 text-emerald-400 animate-pulse" />
+                      <span>Join Video Call</span>
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="py-12 text-center text-xs text-slate-400">
+                <FiVideo className="w-8 h-8 mx-auto text-blue-400 mb-2 opacity-50" />
+                No career events or guidance sessions scheduled yet. Click '+ Schedule Event' to create a session.
+>>>>>>> origin/omsai:app/components/Pages/SchoolDashboard.tsx
               </div>
-            ))}
+            )}
           </div>
         </div>
       );
@@ -1121,6 +1183,7 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="p-5 rounded-[24px] bg-[#E4F4EC] border border-[#C3E6D5] text-[#12163A]">
+<<<<<<< HEAD:app/components/dashboards/SchoolDashboard.tsx
               <span className="font-medium text-[13px] text-[#4B5563]">Placement Ready</span>
               <div className="text-2xl font-bold text-[#12163A] mt-1">3,420 Students</div>
             </div>
@@ -1135,6 +1198,22 @@ export const SchoolDashboard: React.FC<SchoolDashboardProps> = ({
             <div className="p-5 rounded-[24px] bg-rose-50 border border-rose-200 text-rose-800">
               <span className="font-medium text-[13px] text-rose-600">Requiring Guidance</span>
               <div className="text-2xl font-bold text-rose-700 mt-1">180 Students</div>
+=======
+              <span className="font-semibold text-[#4B5563]">Placement Ready</span>
+              <div className="text-2xl font-extrabold text-[#12163A] mt-1">{students.filter(s => s.placementReadiness?.toLowerCase().includes('high')).length} Students</div>
+            </div>
+            <div className="p-5 rounded-[24px] bg-[#DEE9FF] border border-[#C6D9FF] text-[#12163A]">
+              <span className="font-semibold text-[#4B5563]">Internship Ready</span>
+              <div className="text-2xl font-extrabold text-[#3665EE] mt-1">{students.filter(s => s.placementReadiness?.toLowerCase().includes('high') || s.placementReadiness?.toLowerCase().includes('moderate')).length} Students</div>
+            </div>
+            <div className="p-5 rounded-[24px] bg-[#F6E6D8] border border-[#EAD0BC] text-[#12163A]">
+              <span className="font-semibold text-[#4B5563]">Resume ATS Verified</span>
+              <div className="text-2xl font-extrabold text-[#12163A] mt-1">{students.filter(s => Boolean(s.resumeScore)).length} Verified</div>
+            </div>
+            <div className="p-5 rounded-[24px] bg-rose-50 border border-rose-200 text-rose-800">
+              <span className="font-semibold text-rose-600">Requiring Guidance</span>
+              <div className="text-2xl font-extrabold text-rose-700 mt-1">{students.filter(s => s.placementReadiness?.toLowerCase().includes('needs') || (Number(s.careerScore) || 0) < 80).length} Students</div>
+>>>>>>> origin/omsai:app/components/Pages/SchoolDashboard.tsx
             </div>
           </div>
         </div>

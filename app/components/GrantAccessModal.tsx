@@ -150,6 +150,7 @@ export const GrantAccessModal: React.FC<GrantAccessModalProps> = ({
                 <option value="training" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>Training Institute</option>
                 <option value="recruiter" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>Recruiter / HR Lead</option>
                 <option value="company" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>Enterprise Employer</option>
+                <option value="parent" className={isDarkMode ? 'bg-slate-900 text-white' : ''}>Parent & Family Account</option>
               </select>
             </div>
 

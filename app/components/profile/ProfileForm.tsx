@@ -76,59 +76,78 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-xs">
-          {/* Full Name */}
+          {/* First Name */}
           <div>
-            <label className={labelClass}>Full Name *</label>
+            <label className={labelClass}>First Name *</label>
             <div className="relative">
               <input 
                 type="text"
-                value={formData.fullName}
-                onChange={(e) => onChange('fullName', e.target.value)}
-                placeholder="Enter full name"
-                className={inputClass(!!errors.fullName)}
+                value={formData.firstName || ''}
+                onChange={(e) => onChange('firstName', e.target.value)}
+                placeholder="Enter first name"
+                className={inputClass(!!errors.firstName)}
               />
             </div>
-            {errors.fullName && (
+            {errors.firstName && (
               <p className="text-[11px] text-rose-500 font-bold mt-1 flex items-center gap-1">
-                <FiAlertCircle className="w-3 h-3" /> {errors.fullName}
+                <FiAlertCircle className="w-3 h-3" /> {errors.firstName}
               </p>
             )}
           </div>
 
-          {/* Email Address */}
+          {/* Last Name */}
           <div>
-            <label className={labelClass}>Email Address *</label>
+            <label className={labelClass}>Last Name *</label>
+            <div className="relative">
+              <input 
+                type="text"
+                value={formData.lastName || ''}
+                onChange={(e) => onChange('lastName', e.target.value)}
+                placeholder="Enter last name"
+                className={inputClass(!!errors.lastName)}
+              />
+            </div>
+            {errors.lastName && (
+              <p className="text-[11px] text-rose-500 font-bold mt-1 flex items-center gap-1">
+                <FiAlertCircle className="w-3 h-3" /> {errors.lastName}
+              </p>
+            )}
+          </div>
+
+          {/* Email Address (Account identifier - Read only) */}
+          <div>
+            <label className={labelClass}>
+              Email Address <span className="text-[10px] text-slate-400 font-normal">(Account Identity)</span>
+            </label>
             <div className="relative">
               <input 
                 type="email"
                 value={formData.email}
-                onChange={(e) => onChange('email', e.target.value)}
-                placeholder="Enter email address"
-                className={inputClass(!!errors.email)}
+                disabled
+                title="Account email cannot be modified from profile"
+                className="w-full px-4 py-2.5 rounded-xl border text-xs font-semibold bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 cursor-not-allowed"
               />
             </div>
-            {errors.email && (
-              <p className="text-[11px] text-rose-500 font-bold mt-1 flex items-center gap-1">
-                <FiAlertCircle className="w-3 h-3" /> {errors.email}
-              </p>
-            )}
           </div>
 
-          {/* Mobile Number */}
+          {/* Phone Number */}
           <div>
-            <label className={labelClass}>Mobile Number *</label>
+            <label className={labelClass}>Phone Number *</label>
             <div className="relative">
               <input 
                 type="text"
-                value={formData.mobile}
-                onChange={(e) => onChange('mobile', e.target.value)}
+                value={formData.phoneNumber || formData.mobile || ''}
+                onChange={(e) => {
+                  onChange('phoneNumber', e.target.value);
+                  onChange('mobile', e.target.value);
+                }}
                 placeholder="+91 98765 43210"
-                className={inputClass(!!errors.mobile)}
+                className={inputClass(!!errors.phoneNumber)}
               />
             </div>
-            {errors.mobile && (
+            {errors.phoneNumber && (
               <p className="text-[11px] text-rose-500 font-bold mt-1 flex items-center gap-1">
-                <FiAlertCircle className="w-3 h-3" /> {errors.mobile}
+                <FiAlertCircle className="w-3 h-3" /> {errors.phoneNumber}
               </p>
             )}
           </div>

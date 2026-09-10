@@ -13,6 +13,18 @@ type Matches = [{
   id: "root";
   module: typeof import("../../root.js");
 }, {
+  id: "portal-role-root";
+  module: typeof import("../$role.js");
+}] | [{
+  id: "root";
+  module: typeof import("../../root.js");
+}, {
+  id: "portal-role-splat";
+  module: typeof import("../$role.js");
+}] | [{
+  id: "root";
+  module: typeof import("../../root.js");
+}, {
   id: "role-root";
   module: typeof import("../$role.js");
 }] | [{

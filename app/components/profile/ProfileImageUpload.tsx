@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { FiCamera, FiUpload, FiUser } from 'react-icons/fi';
+import { uploadProfileAttachment } from '../../lib/api';
 
 interface ProfileImageUploadProps {
   avatarUrl: string;
@@ -15,21 +16,33 @@ export const ProfileImageUpload: React.FC<ProfileImageUploadProps> = ({
   isDarkMode = false
 }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isUploading, setIsUploading] = React.useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert("File size exceeds 5MB limit. Please choose a smaller image.");
+      if (file.size > 10 * 1024 * 1024) {
+        alert("File size exceeds 10MB limit. Please choose a smaller image.");
         return;
       }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
-          onPhotoChange(reader.result);
+      try {
+        setIsUploading(true);
+        const res = await uploadProfileAttachment(file);
+        setIsUploading(false);
+        if (res && res.url) {
+          onPhotoChange(res.url);
         }
-      };
-      reader.readAsDataURL(file);
+      } catch (err: any) {
+        setIsUploading(false);
+        console.warn("Direct upload error, using local data preview:", err);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (typeof reader.result === 'string') {
+            onPhotoChange(reader.result);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
     }
   };
 

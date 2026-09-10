@@ -86,6 +86,7 @@ export const AuditFeed: React.FC<AuditFeedProps> = ({
               </tr>
             </thead>
             <tbody className={`divide-y ${borderDivider}`}>
+<<<<<<< HEAD
               {logs.map((log) => (
                 <tr key={log.id} className={`transition ${isDarkMode ? 'hover:bg-slate-800/60' : 'hover:bg-blue-50/40'}`}>
                   <td className={`py-3.5 px-4 font-mono text-xs ${textMuted}`}>{log.time}</td>
@@ -102,9 +103,36 @@ export const AuditFeed: React.FC<AuditFeedProps> = ({
                     <span className="bg-emerald-500/20 text-emerald-400 font-medium px-2.5 py-0.5 rounded-full text-xs">
                       {log.status}
                     </span>
+=======
+              {logs.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className={`py-12 text-center ${textMuted}`}>
+                    <FiShield className="w-8 h-8 mx-auto text-blue-400 mb-2 opacity-50" />
+                    No security audit logs recorded yet.
+>>>>>>> origin/omsai
                   </td>
                 </tr>
-              ))}
+              ) : (
+                logs.map((log) => (
+                  <tr key={log.id} className={`transition ${isDarkMode ? 'hover:bg-slate-800/60' : 'hover:bg-blue-50/40'}`}>
+                    <td className={`py-3.5 px-4 font-mono ${textMuted}`}>{log.time}</td>
+                    <td className={`py-3.5 px-4 font-bold ${textHeading}`}>{log.admin}</td>
+                    <td className="py-3.5 px-4 font-semibold text-blue-400">{log.action}</td>
+                    <td className={`py-3.5 px-4 ${isDarkMode ? 'text-slate-300' : 'text-slate-800'}`}>{log.target}</td>
+                    <td className="py-3.5 px-4">
+                      <span className="bg-blue-500/20 text-blue-300 font-bold px-2 py-0.5 rounded-md text-[10px]">
+                        {log.role}
+                      </span>
+                    </td>
+                    <td className={`py-3.5 px-4 font-mono text-[11px] ${textMuted}`}>{log.ip}</td>
+                    <td className="py-3.5 px-4">
+                      <span className="bg-emerald-500/20 text-emerald-400 font-bold px-2.5 py-0.5 rounded-full text-[10px]">
+                        {log.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -129,6 +157,7 @@ export const AuditFeed: React.FC<AuditFeedProps> = ({
         </span>
       </div>
 
+<<<<<<< HEAD
       <div className="space-y-3">
         {logs.slice(0, 5).map((log) => (
           <div key={log.id} className={`p-3 rounded-xl border flex items-center justify-between transition ${
@@ -144,8 +173,32 @@ export const AuditFeed: React.FC<AuditFeedProps> = ({
               </span>
               <span className={`text-xs font-mono ${textMuted}`}>{log.time}</span>
             </div>
+=======
+      <div className="space-y-3 text-xs">
+        {logs.length === 0 ? (
+          <div className={`p-6 rounded-xl border text-center ${isDarkMode ? 'bg-slate-800/40 border-slate-800 text-slate-400' : 'bg-blue-50/20 border-blue-100 text-slate-500'}`}>
+            <FiShield className="w-6 h-6 mx-auto mb-1.5 text-blue-400 opacity-60" />
+            <span>No live audit events captured yet. System monitoring active.</span>
+>>>>>>> origin/omsai
           </div>
-        ))}
+        ) : (
+          logs.slice(0, 5).map((log) => (
+            <div key={log.id} className={`p-3 rounded-xl border flex items-center justify-between transition ${
+              isDarkMode ? 'bg-slate-800/80 border-slate-700/80' : 'bg-blue-50/40 border-blue-100'
+            }`}>
+              <div>
+                <div className={`font-bold ${textHeading}`}>{log.action}</div>
+                <div className={`text-[11px] ${textMuted}`}>Actor: {log.admin} • Target: {log.target}</div>
+              </div>
+              <div className="text-right">
+                <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full block mb-1">
+                  {log.status}
+                </span>
+                <span className={`text-[10px] font-mono ${textMuted}`}>{log.time}</span>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

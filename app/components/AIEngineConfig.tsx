@@ -127,8 +127,13 @@ export const AIEngineConfig: React.FC<AIEngineConfigProps> = ({ onSaveWeights, i
 
           {/* Microservices Health Dashboard */}
           <div className={`p-5 rounded-2xl border ${subCardClass}`}>
+<<<<<<< HEAD
             <h3 className={`font-semibold text-base mb-4 ${textHeading}`}>AI Microservice Telemetry</h3>
             <div className="space-y-3">
+=======
+            <h3 className={`font-bold text-sm mb-4 ${textHeading}`}>AI Engine Modules</h3>
+            <div className="space-y-3 text-xs">
+>>>>>>> origin/omsai
               {[
                 { name: "Neural Candidate Matcher v2.4", status: "Operational", latency: "18ms" },
                 { name: "Holland RIASEC Scoring Model", status: "Operational", latency: "12ms" },

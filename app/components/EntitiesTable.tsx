@@ -27,7 +27,8 @@ import {
   FiBriefcase,
   FiAward,
   FiUserCheck,
-  FiChevronRight
+  FiChevronRight,
+  FiUsers
 } from 'react-icons/fi';
 >>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
 
@@ -60,7 +61,7 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
 
   const roleCounts: Record<string, number> = {
     all: entities.length,
-    school: 0, college: 0, mentor: 0, training: 0, recruiter: 0, company: 0
+    school: 0, college: 0, mentor: 0, training: 0, recruiter: 0, company: 0, parent: 0
   };
 
   entities.forEach(e => {
@@ -91,7 +92,8 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
     mentor: "Mentor Desk",
     training: "Training Inst.",
     recruiter: "Recruiter HR",
-    company: "Enterprise Co."
+    company: "Enterprise Co.",
+    parent: "Parent Portal"
   };
 
   const cardClass = isDarkMode
@@ -164,7 +166,8 @@ export const EntitiesTable: React.FC<EntitiesTableProps> = ({
           { id: 'mentor', label: 'Mentors', icon: FiUserCheck },
           { id: 'training', label: 'Training', icon: FiBookOpen },
           { id: 'recruiter', label: 'Recruiters', icon: FiBriefcase },
-          { id: 'company', label: 'Companies', icon: FiGrid }
+          { id: 'company', label: 'Companies', icon: FiGrid },
+          { id: 'parent', label: 'Parents', icon: FiUsers }
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeFilter === tab.id;

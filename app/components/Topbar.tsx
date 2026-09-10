@@ -14,9 +14,14 @@ import { useAppSelector } from '~/store/store';
   FiBell, 
   FiUserCheck, 
   FiSun, 
-  FiMoon 
+  FiMoon,
+  FiUser
 } from 'react-icons/fi';
+<<<<<<< HEAD
 >>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
+=======
+import { useCurrentUser } from '~/hooks/useUser';
+>>>>>>> origin/omsai
 
 interface TopbarProps {
   currentWorkspace: RoleType;
@@ -39,18 +44,35 @@ export const Topbar: React.FC<TopbarProps> = ({
   onNavigateNotifications,
   onToggleMobileSidebar
 }) => {
+<<<<<<< HEAD
   const unreadCount = useAppSelector(state => state.notifications.unreadCount);
   const profile = useAppSelector(state => state.profile);
 
   const roleNameMap: Record<string, string> = {
     'student': 'Student Workspace Portal',
+=======
+  const { data: currentUser } = useCurrentUser();
+
+  const userDisplayName = currentUser?.profile?.firstName && currentUser?.profile?.lastName
+    ? `${currentUser.profile.firstName} ${currentUser.profile.lastName}`
+    : (currentUser?.profile?.firstName || currentUser?.email || 'System User');
+
+  const userRoleDisplay = currentUser?.role
+    ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1).toLowerCase()
+    : (currentWorkspace === 'super-admin' ? 'Super Admin' : currentWorkspace.charAt(0).toUpperCase() + currentWorkspace.slice(1));
+
+  const userAvatar = currentUser?.avatarUrl || currentUser?.profile?.avatarUrl;
+
+  const roleNameMap: Record<RoleType, string> = {
+>>>>>>> origin/omsai
     'super-admin': 'Super Admin (Governance)',
     'school': 'School Admin Portal',
     'college': 'College Admin Portal',
     'mentor': 'Mentor Desk',
     'training': 'Training Institute Portal',
     'recruiter': 'Recruiter Talent Desk',
-    'company': 'Enterprise Company Portal'
+    'company': 'Enterprise Company Portal',
+    'parent': 'Parent & Family Intelligence Portal'
   };
 
   return (
@@ -97,9 +119,14 @@ export const Topbar: React.FC<TopbarProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
+<<<<<<< HEAD
             placeholder={`Search in ${roleNameMap[currentWorkspace] || 'Workspace'}...`}
             aria-label="Search Workspace"
             className={`w-full pl-9 pr-4 py-2 rounded-xl text-xs sm:text-sm font-normal transition focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+=======
+            placeholder={`Search in ${roleNameMap[currentWorkspace]}...`}
+            className={`w-full pl-9 pr-4 py-2 rounded-xl text-[14px] font-normal leading-normal transition focus:outline-none focus:ring-2 focus:ring-[#3665EE] ${
+>>>>>>> origin/omsai
               isDarkMode 
                 ? 'bg-slate-800/80 border border-slate-700 text-white placeholder-slate-400' 
                 : 'bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400'
@@ -119,8 +146,12 @@ export const Topbar: React.FC<TopbarProps> = ({
 =======
           aria-label={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+<<<<<<< HEAD
           className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${
 >>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
+=======
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-[13px] font-semibold transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer ${
+>>>>>>> origin/omsai
             isDarkMode 
               ? 'bg-slate-800 border-amber-500/40 text-amber-400 hover:bg-slate-700' 
               : 'bg-blue-50 border-blue-200 text-slate-900 hover:bg-blue-100'
@@ -188,6 +219,7 @@ export const Topbar: React.FC<TopbarProps> = ({
         <div className={`h-6 w-px ${isDarkMode ? 'bg-slate-800' : 'bg-slate-200'}`} />
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         {/* User Profile Avatar */}
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-md">
@@ -204,14 +236,29 @@ export const Topbar: React.FC<TopbarProps> = ({
         <div className="flex items-center gap-2.5 hover:scale-105 transition-transform duration-200 cursor-pointer">
           <div className="w-8 h-8 rounded-xl bg-[#12163A] text-white font-bold flex items-center justify-center text-xs shadow-md border border-[#3665EE]/40">
             <FiUserCheck className="w-4 h-4 text-[#3665EE]" />
+=======
+        {/* Live Authenticated User Profile Badge */}
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-[#12163A] text-white font-bold flex items-center justify-center text-xs shadow-md border border-[#3665EE]/40 overflow-hidden">
+            {userAvatar ? (
+              <img src={userAvatar} alt={userDisplayName} className="w-full h-full object-cover" />
+            ) : (
+              <FiUser className="w-4 h-4 text-[#3665EE]" />
+            )}
+>>>>>>> origin/omsai
           </div>
           <div className="hidden sm:block text-left">
-            <div className={`text-xs font-semibold leading-tight ${isDarkMode ? 'text-white' : 'text-[#12163A]'}`}>
-              System Administrator
+            <div className={`text-[13px] md:text-[14px] font-semibold leading-tight truncate max-w-[150px] ${isDarkMode ? 'text-white' : 'text-[#12163A]'}`} title={userDisplayName}>
+              {userDisplayName}
             </div>
+<<<<<<< HEAD
             <div className="text-[10px] font-medium text-[#3665EE]">
               {currentWorkspace === 'super-admin' ? 'Super Admin' : currentWorkspace.charAt(0).toUpperCase() + currentWorkspace.slice(1)}
 >>>>>>> c478195d4840fca4c8f52e87362353b7e38cff2c
+=======
+            <div className="text-[12px] font-medium text-[#3665EE]">
+              {userRoleDisplay}
+>>>>>>> origin/omsai
             </div>
           </div>
         </div>

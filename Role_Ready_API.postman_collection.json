@@ -1,0 +1,1129 @@
+{
+  "info": {
+    "_postman_id": "b3e945c1-12ef-4d32-9c31-7bfae689d021",
+    "name": "Role Ready API - Production (Render)",
+    "description": "Comprehensive Postman collection for Role Ready IAM, Authentication, User, and Profile Management APIs.\n\nBase URL: https://role-ready-backendcode.onrender.com",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://role-ready-backendcode.onrender.com",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminAccessToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. SaaS Multi-Role Onboarding",
+      "description": "Endpoints for self-registration of various ecosystem personas: Student, Parent, Mentor, Recruiter, and Company Admin.",
+      "item": [
+        {
+          "name": "Register Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@roleready.ai\",\n  \"password\": \"Password123!\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phone\": \"9876543210\",\n  \"parentName\": \"Jane Doe\",\n  \"parentEmail\": \"parent@roleready.ai\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register/student",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register",
+                "student"
+              ]
+            },
+            "description": "Self-registration for Student persona. Sends verification OTP to the student email."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/register/student"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Student registration completed. verification OTP sent to email.\",\n  \"data\": {\n    \"id\": \"e968269f-...\",\n    \"email\": \"student@roleready.ai\",\n    \"role\": \"STUDENT\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Register Parent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"parent@roleready.ai\",\n  \"password\": \"Password123!\",\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"phone\": \"9876543211\",\n  \"childrenDetails\": [\n    {\n      \"studentId\": \"97fb19ea-a617-4315-b0fb-a92f3de927b1\",\n      \"relationship\": \"Father\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register/parent",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register",
+                "parent"
+              ]
+            },
+            "description": "Self-registration for Parent persona linking to student ID."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/register/parent"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Parent registration completed. verification OTP sent to email.\",\n  \"data\": {\n    \"id\": \"c741-...\",\n    \"email\": \"parent@roleready.ai\",\n    \"role\": \"PARENT\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Register Mentor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"mentor@roleready.ai\",\n  \"password\": \"Password123!\",\n  \"firstName\": \"Robert\",\n  \"lastName\": \"Smith\",\n  \"phone\": \"9876543212\",\n  \"skills\": [\n    \"TypeScript\",\n    \"System Design\"\n  ],\n  \"experience\": 8,\n  \"bio\": \"Senior engineering architect specializing in SaaS.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register/mentor",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register",
+                "mentor"
+              ]
+            },
+            "description": "Registration for Mentor persona. Profile enters verification stage."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/register/mentor"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Mentor registration completed. Pending profile verification.\",\n  \"data\": {\n    \"id\": \"8c5c-...\",\n    \"email\": \"mentor@roleready.ai\",\n    \"role\": \"MENTOR\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Register Recruiter",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"recruiter@company.com\",\n  \"password\": \"Password123!\",\n  \"firstName\": \"Emily\",\n  \"lastName\": \"Davis\",\n  \"phone\": \"9876543213\",\n  \"companyName\": \"TechCorp\",\n  \"designation\": \"Talent Acquisition Lead\",\n  \"experience\": 5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register/recruiter",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register",
+                "recruiter"
+              ]
+            },
+            "description": "Registration for Recruiter persona representing hiring organizations."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/register/recruiter"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Recruiter registration completed.\",\n  \"data\": {\n    \"id\": \"7f81-...\",\n    \"email\": \"recruiter@company.com\",\n    \"role\": \"RECRUITER\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Register Company Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@company.com\",\n  \"password\": \"Password123!\",\n  \"firstName\": \"Michael\",\n  \"lastName\": \"Brown\",\n  \"phone\": \"9876543214\",\n  \"companyProfile\": \"Enterprise workflow automation platform.\",\n  \"industry\": \"Software\",\n  \"gst\": \"29AAAAA1111A1Z1\",\n  \"website\": \"https://company.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register/company",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register",
+                "company"
+              ]
+            },
+            "description": "Registration for Company Admin persona with business verification attributes."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/register/company"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Company admin registration completed.\",\n  \"data\": {\n    \"id\": \"0d91...\",\n    \"email\": \"admin@company.com\",\n    \"role\": \"COMPANY_ADMIN\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Session & IAM Token Control",
+      "description": "Authentication, JWT issuance, token rotation, and session invalidation.",
+      "item": [
+        {
+          "name": "Log In",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.accessToken) {",
+                  "        pm.collectionVariables.set('accessToken', jsonData.data.accessToken);",
+                  "        pm.environment.set('accessToken', jsonData.data.accessToken);",
+                  "        console.log('accessToken saved automatically');",
+                  "    }",
+                  "    if (jsonData.data && jsonData.data.refreshToken) {",
+                  "        pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken);",
+                  "        pm.environment.set('refreshToken', jsonData.data.refreshToken);",
+                  "        console.log('refreshToken saved automatically');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@roleready.ai\",\n  \"password\": \"Password123!\",\n  \"deviceId\": \"dev-01\",\n  \"platform\": \"Web\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Authenticates credentials and automatically extracts accessToken & refreshToken into variables."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/login"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Authentication successful\",\n  \"data\": {\n    \"requires2Fa\": false,\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"user\": {\n      \"id\": \"97fb19ea-a617-4315-b0fb-a92f3de927b1\",\n      \"email\": \"student@roleready.ai\",\n      \"role\": \"STUDENT\",\n      \"firstName\": \"John\"\n    },\n    \"route\": \"/portal/student\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Refresh Access Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.accessToken) {",
+                  "        pm.collectionVariables.set('accessToken', jsonData.data.accessToken);",
+                  "        pm.environment.set('accessToken', jsonData.data.accessToken);",
+                  "    }",
+                  "    if (jsonData.data && jsonData.data.refreshToken) {",
+                  "        pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken);",
+                  "        pm.environment.set('refreshToken', jsonData.data.refreshToken);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-refresh-token",
+                "value": "{{refreshToken}}",
+                "description": "Alternative header method"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            },
+            "description": "Rotates refresh token and issues a new access token."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/refresh"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Tokens rotated successfully\",\n  \"data\": {\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Log Out",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "Invalidates user session and blacklists the current JWT access token."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/logout"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Logged out successfully. Session invalidated.\",\n  \"data\": null\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Verification & Password Workflows",
+      "description": "Email OTP verification, SMS/phone verification, forgot password, and reset password.",
+      "item": [
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@roleready.ai\",\n  \"otpCode\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/verify-email",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "verify-email"
+              ]
+            },
+            "description": "Verifies student or user email address using OTP code."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/verify-email"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Email verified successfully\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Verify Phone",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@roleready.ai\",\n  \"phone\": \"9876543210\",\n  \"otpCode\": \"654321\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/verify-phone",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "verify-phone"
+              ]
+            },
+            "description": "Verifies mobile phone number with SMS OTP code."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/verify-phone"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Phone number verified successfully\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@roleready.ai\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/forgot-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "forgot-password"
+              ]
+            },
+            "description": "Requests password reset OTP to be dispatched to user email."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/forgot-password"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Password reset OTP sent successfully\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reset Password (using OTP)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student@roleready.ai\",\n  \"otpCode\": \"123456\",\n  \"newPassword\": \"NewSecurePassword456!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/reset-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "reset-password"
+              ]
+            },
+            "description": "Completes password reset using received OTP code."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/reset-password"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Password reset successfully\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Change Password (Authenticated session)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"Password123!\",\n  \"newPassword\": \"AnotherSecurePassword789!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/change-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "change-password"
+              ]
+            },
+            "description": "Updates password for an active authenticated session."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/change-password"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Password updated successfully\",\n  \"data\": null\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Legacy / Backward-Compatible Endpoints",
+      "description": "Earlier version auth routes preserved for backward compatibility.",
+      "item": [
+        {
+          "name": "POST /api/v1/auth/register (Legacy)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"legacy.user@roleready.ai\",\n  \"password\": \"Password123!\",\n  \"role\": \"student\",\n  \"phone\": \"9876543210\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/register"
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"User registered successfully. Verify OTP sent to email.\",\n  \"data\": {\n    \"id\": \"e5f6...\",\n    \"email\": \"legacy.user@roleready.ai\",\n    \"role\": \"STUDENT\",\n    \"isVerified\": false\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST /api/v1/auth/verify-otp (Legacy)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"legacy.user@roleready.ai\",\n  \"otpCode\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/verify-otp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "verify-otp"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/verify-otp"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Account verified successfully. You can now log in.\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST /api/v1/auth/resend-otp (Legacy)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"legacy.user@roleready.ai\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/resend-otp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "resend-otp"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/resend-otp"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"OTP resent successfully\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST /api/v1/auth/refresh-token (Legacy)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh-token",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh-token"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/refresh-token"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Access token refreshed successfully\",\n  \"data\": {\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST /api/v1/auth/send-otp (Legacy)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"legacy.user@roleready.ai\",\n  \"purpose\": \"login\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/send-otp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "send-otp"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/auth/send-otp"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Verification OTP sent successfully\",\n  \"data\": null\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. User Verification & Admin Health APIs",
+      "description": "User identity extraction and administrative system diagnostics.",
+      "item": [
+        {
+          "name": "GET /api/v1/users/me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
+            },
+            "description": "Fetches currently authenticated user identity, roles, and profile snapshot."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/api/v1/users/me"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"User profile retrieved successfully\",\n  \"data\": {\n    \"id\": \"a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d\",\n    \"email\": \"student@roleready.ai\",\n    \"role\": \"STUDENT\",\n    \"profile\": {\n      \"firstName\": \"John\",\n      \"lastName\": \"Doe\",\n      \"phoneNumber\": \"9876543210\",\n      \"bio\": \"Enthusiastic computer science student.\",\n      \"avatarUrl\": \"https://cloudinary.com/...\"\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET /api/v1/users/admin/health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/admin/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "admin",
+                "health"
+              ]
+            },
+            "description": "Administrative endpoint reporting database connectivity and system health status."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/api/v1/users/admin/health"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Admin health statistics fetched\",\n  \"data\": {\n    \"dbConnected\": true,\n    \"status\": \"Healthy\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "6. User Profile Management APIs",
+      "description": "Profile data queries, onboarding completion, avatar URL update, and Cloudinary multipart attachment upload.",
+      "item": [
+        {
+          "name": "GET /api/v1/profile/",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/profile/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "profile",
+                ""
+              ]
+            },
+            "description": "Retrieves comprehensive profile details for the authenticated user."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{baseUrl}}/api/v1/profile/"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Profile details retrieved successfully\",\n  \"data\": {\n    \"id\": \"a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"phoneNumber\": \"9876543210\",\n    \"bio\": \"Enthusiastic computer science student.\",\n    \"avatarUrl\": \"https://cloudinary.com/...\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "PUT /api/v1/profile/complete",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Johnathan\",\n  \"lastName\": \"Doe\",\n  \"phoneNumber\": \"9876543210\",\n  \"bio\": \"Software engineering aspirant interested in backend architectures.\",\n  \"onboardingCompleted\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/profile/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "profile",
+                "complete"
+              ]
+            },
+            "description": "Completes user onboarding and updates core profile details."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/api/v1/profile/complete"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Profile completed successfully.\",\n  \"data\": {\n    \"firstName\": \"Johnathan\",\n    \"lastName\": \"Doe\",\n    \"phoneNumber\": \"9876543210\",\n    \"bio\": \"Software engineering aspirant interested in backend architectures.\",\n    \"onboardingCompleted\": true\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "PUT /api/v1/profile/avatar",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"avatarUrl\": \"https://res.cloudinary.com/wukw36tp/image/upload/v12345/avatars/user-avatar.jpg\",\n  \"avatarPublicId\": \"avatars/user-avatar\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/profile/avatar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "profile",
+                "avatar"
+              ]
+            },
+            "description": "Sets the avatar image URL and Cloudinary public ID for the profile."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/api/v1/profile/avatar"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Avatar updated successfully.\",\n  \"data\": {\n    \"avatarUrl\": \"https://res.cloudinary.com/wukw36tp/image/upload/v12345/avatars/user-avatar.jpg\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST /api/v1/profile/upload",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Select PDF document, JPEG, or PNG image in Postman"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/profile/upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "profile",
+                "upload"
+              ]
+            },
+            "description": "Uploads PDF document or profile image to Cloudinary storage via multipart/form-data."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/profile/upload"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"File uploaded successfully to Cloudinary storage\",\n  \"data\": {\n    \"url\": \"https://res.cloudinary.com/wukw36tp/image/upload/v1776415705/profile_attachments/sample.pdf\",\n    \"publicId\": \"profile_attachments/sample\",\n    \"format\": \"pdf\",\n    \"bytes\": 10240\n  }\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

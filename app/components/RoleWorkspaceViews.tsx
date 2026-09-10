@@ -1,11 +1,12 @@
 import React from 'react';
 import { RoleType } from '../lib/types';
-import { SchoolDashboard } from './dashboards/SchoolDashboard';
-import { CollegeDashboard } from './dashboards/CollegeDashboard';
-import { MentorDashboard } from './dashboards/MentorDashboard';
-import { TrainingDashboard } from './dashboards/TrainingDashboard';
-import { RecruiterDashboard } from './dashboards/RecruiterDashboard';
-import { CompanyDashboard } from './dashboards/CompanyDashboard';
+import { SchoolDashboard } from './Pages/SchoolDashboard';
+import { CollegeDashboard } from './Pages/CollegeDashboard';
+import { MentorDashboard } from './Pages/MentorDashboard';
+import { TrainingDashboard } from './Pages/TrainingDashboard';
+import { RecruiterDashboard } from './Pages/RecruiterDashboard';
+import { CompanyDashboard } from './Pages/CompanyDashboard';
+import { ParentDashboard } from './Pages/ParentDashboard';
 import { UserProfileView } from './profile/UserProfileView';
 import { StudentDashboard } from './dashboards/StudentDashboard';
 
@@ -43,6 +44,8 @@ export const RoleWorkspaceViews: React.FC<RoleWorkspaceViewsProps> = ({
       return <RecruiterDashboard activeSubView={activeSubView} onShowToast={onShowToast} isDarkMode={isDarkMode} />;
     case 'company':
       return <CompanyDashboard activeSubView={activeSubView} onShowToast={onShowToast} isDarkMode={isDarkMode} />;
+    case 'parent':
+      return <ParentDashboard activeSubView={activeSubView} onShowToast={onShowToast} isDarkMode={isDarkMode} />;
     default:
       return <StudentDashboard onShowToast={onShowToast} onNavigateView={onNavigateView} isDarkMode={isDarkMode} />;
   }
